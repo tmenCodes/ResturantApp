@@ -1,3 +1,6 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.HttpLogging;
@@ -17,23 +20,19 @@ public class RegisterUser : Controller
     private readonly UserManager<WebUser> _userManager;
     private readonly SignInManager<WebUser> _signInManager;
     private readonly ILogger<RegisterUser> _logger;
+    private readonly IConfiguration _configuration;
 
 
     public RegisterUser(UserManager<WebUser> userManager, SignInManager<WebUser> signInManager,
-        ILogger<RegisterUser> logger)
+        ILogger<RegisterUser> logger, IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+        _configuration = configuration;
     }
 
-    public class WebUserDto
-    {
-        public string? FullName { get; set; }
-        public string? Username { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-    }
+
 
     // [HttpGet("CheckUserLogin")]
     // public bool IsUserCurrentlySignedIn(IdentityUser user)
@@ -44,11 +43,10 @@ public class RegisterUser : Controller
     // }
 
     [HttpPost("SignOut")]
-    public async Task<IActionResult> SignOut()
+    public IActionResult SignOut()
     {
-        await _signInManager.SignOutAsync();
-        return Ok("user is signed out"); 
-
+        // JWT is stateless — nothing to invalidate server-side. The client discards the token.
+        return Ok(new { message = "Signed out." });
     }
 
 
@@ -70,19 +68,46 @@ public class RegisterUser : Controller
         if (user is null)
             return Unauthorized("Invalid email or password.");
 
-        var result = await _signInManager.PasswordSignInAsync(
-            user.UserName!, login.Password, isPersistent: true, lockoutOnFailure: true);
+        var result = await _signInManager.CheckPasswordSignInAsync(
+            user, login.Password, lockoutOnFailure: true);
 
         if (result.Succeeded)
         {
             _logger.LogInformation("User {UserName} logged in.", user.UserName);
-            return Ok(new { message = "Login successful" });
+            var token = GenerateJwtToken(user);
+            return Ok(new { token, message = "Login successful" });
         }
 
         if (result.IsLockedOut)
             return StatusCode(429, "Account is locked. Try again later.");
 
         return Unauthorized("Invalid email or password.");
+    }
+
+    private string GenerateJwtToken(WebUser user)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        var expiresInMinutes = jwtSettings.GetValue<double?>("ExpiresInMinutes") ?? 60;
+
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(expiresInMinutes),
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     
@@ -132,6 +157,16 @@ public class RegisterUser : Controller
     //
     //     return BadRequest("The email is already in use");
     // }
+    
+    
+    public class WebUserDto
+    {
+        public string? FullName { get; set; }
+        public string? Username { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+    }
+    
     
     
 [HttpPost("CreateUser")]
@@ -228,7 +263,7 @@ public class RegisterUser : Controller
     }
 
     
-   // [Authorize]
+    [Authorize]
     [HttpGet("GetTheCurrentUser")]
     public async Task<IActionResult> GetTheCurrentUser()
     {
@@ -247,27 +282,25 @@ public class RegisterUser : Controller
       //return Ok(false); 
     }
 
-    // [Authorize]
+    [Authorize]
     [HttpGet("IsUserLoggedIn")]
     public async Task<IActionResult> CheckIsUserLoggedIn()
     {
         _logger.LogCritical("--------------------------------------------------------------");
         _logger.LogCritical("from the httpcontext user identity");
         _logger.LogCritical(HttpContext.User.Identity.Name);
-  
+
 
 //possibly wrap into try catch
         var user = await _userManager.GetUserAsync(HttpContext.User);
-  
-        _logger.LogCritical(user.Email);
-        
-        
+
         if (user != null)
         {
+            _logger.LogCritical(user.Email);
             return Ok(true);
         }
         return Unauthorized();
-        //return Ok(false); 
+        //return Ok(false);
     }
 
     

@@ -38,20 +38,10 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-//builder.Services.AddTransient<Resturant.Application.Respository.IRepo<User>, UsersRepo>();
 
-//builder.Services.AddTransient<IRepository, OrderRepo>();
 
 builder.Services.AddRepositoryService();
 
-//builder.Services.AddTransient<ExceptionHandlingMIddleware>();
-
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        // ... other options
-    })
-    .AddCookie();
 
 
 builder.Services.AddAuthorization();
@@ -62,8 +52,34 @@ builder.Services.AddIdentityApiEndpoints<WebUser>()
     .AddEntityFrameworkStores<RestaurantContext>()
     .AddApiEndpoints();
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
+
+
+// 3. Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
+
+
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
     // Password settings.
     // options.Password.RequireDigit = true;
     // options.Password.RequireLowercase = true;
@@ -80,8 +96,9 @@ builder.Services.Configure<IdentityOptions>(options =>
     // User settings.
    // options.User.AllowedUserNameCharacters =
      //   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-});
+  
+     //options.User.RequireUniqueEmail = true;
+//});
 
 builder.Services.AddDbContext<RestaurantContext>(options
       => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), 
@@ -136,24 +153,6 @@ builder.Services.AddCors(options =>
 
 // Add the CORS middleware
 //app.UseCors(MyAllowSpecificOrigins);
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // options.Cookie.Domain = "http://54.235.37.4"; // Set the domain for the authentication cookie
-    // options.Cookie.Path = "/"; // Ensure the cookie is accessible across the entire domain
-    // options.Cookie.HttpOnly = true; 
-    //this is needed if you want cookie to work in an http setting
-   // options.Cookie.HttpOnly = true; 
-    
-    options.Cookie.SameSite = SameSiteMode.None;
-
-    //this turns off https secure cookies
-   // options.Cookie.HttpOnly = true;
-   
-   //this always needs to be on for http.context.user.indetity to work 
-  options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-   //does not really work when using cookiesecurepolicy.none ---switch to https tommorow
- //  options.Cookie.SecurePolicy = CookieSecurePolicy.None;
-});
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
