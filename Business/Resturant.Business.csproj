@@ -8,7 +8,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Data\Resturant.Data.csproj" />
-	
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
 	</ItemGroup>
 
 	

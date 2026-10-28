@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Resturant.Business.Auth;
 using Resturant.Business.Services;
 
 namespace Resturant.Business;
@@ -16,6 +17,8 @@ public static class BusinessServiceCollectionExtensions
         services.TryAddScoped<IMenuService, MenuService>();
         services.TryAddScoped<ICartService, CartService>();
         services.TryAddScoped<IUserProfileService, UserProfileService>();
+        services.TryAddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.TryAddScoped<IAccountService, AccountService>();
         return services;
     }
 }

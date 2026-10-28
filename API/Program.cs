@@ -27,6 +27,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Resturant.Data;
 using Resturant.Business;
+using Resturant.Business.Auth;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddRepositoryService();
 builder.Services.AddBusinessLayer();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
 
 
