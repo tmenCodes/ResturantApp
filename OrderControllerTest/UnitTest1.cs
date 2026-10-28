@@ -9,8 +9,8 @@
 // using Microsoft.Extensions.Logging;
 // using Microsoft.Identity.Client;
 // using Moq;
-// using Resturant.Domain.Entity;
-// using Resturant.Infrastructure.Context;
+// using Resturant.Data.Entities;
+// using Resturant.Data.Context;
 // //using OrderController = API.Controllers.OrderController;
 //
 // namespace OrderControllerTest;

@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Resturant.Domain.Entity;
-using Resturant.Infrastructure.Identity;
-using Resturant.Infrastructure.Context;
-using Resturant.Application.DTO;
+using Resturant.Data.Entities;
+using Resturant.Data.Identity;
+using Resturant.Data.Context;
+using Resturant.Business.Dtos;
 
 namespace API.Controllers;
 

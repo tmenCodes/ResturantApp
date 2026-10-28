@@ -5,16 +5,15 @@ using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Hangfire.Dashboard;
-using Resturant.Domain.Entity;
+using Resturant.Data.Entities;
 
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
-using Resturant.Application.DTO;
-using Resturant.Domain.SeedWork;
-using Resturant.Infrastructure.Context;
-using MenuItem = Resturant.Domain.Entity.MenuItem;
+using Resturant.Business.Dtos;
+using Resturant.Data.Repositories;
+using Resturant.Data.Context;
+using MenuItem = Resturant.Data.Entities.MenuItem;
 
 
 namespace API.Controllers

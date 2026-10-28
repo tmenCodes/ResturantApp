@@ -364,4 +364,4 @@ FodyWeavers.xsd**/.DS_Store
 .DS_Store
 .github/Worflow/
 .github/Worflow/
-Infrastructure/Migrations/
+Data/Migrations/

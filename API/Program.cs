@@ -14,20 +14,18 @@ using System.Text;
 
 //using Restuarant.Infrastucture.Repository; 
 using Newtonsoft.Json;
-using Resturant.Infrastructure.Context;
+using Resturant.Data.Context;
 
-using Resturant.Domain.Entity;
-using Resturant.Infrastructure.Identity;
+using Resturant.Data.Entities;
+using Resturant.Data.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Resturant.Application.Extension;
-using Resturant.Infrastructure;
+using Resturant.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -103,7 +101,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<RestaurantContext>(options
       => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), 
-          optionsBuilder => optionsBuilder.MigrationsAssembly("Resturant.Infrastructure"))
+          optionsBuilder => optionsBuilder.MigrationsAssembly("Resturant.Data"))
       
  //  => options.UseInMemoryDatabase("TestDB").ConfigureWarnings(warning => warning.Ignore(InMemoryEventId.TransactionIgnoredWarning))
 );
@@ -111,7 +109,6 @@ builder.Services.AddDbContext<RestaurantContext>(options
 
 //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 //builder.AddServices();
-builder.Services.AddAnotherService(); 
 //builder.Services.AddHangfire(configuration =>
 //{
 //    configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

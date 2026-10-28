@@ -1,6 +1,6 @@
 # ResturantApp
 
-A restaurant management API built with ASP.NET Core, following a clean architecture layout (Domain / Application / Infrastructure / API).
+A restaurant management API built with ASP.NET Core. It is the middle tier of a 3-tier application (Angular → API → PostgreSQL) and is organized in three layers: API → Business → Data. See [docs/architecture.md](docs/architecture.md).
 
 ## Tech Stack
 
@@ -9,16 +9,15 @@ A restaurant management API built with ASP.NET Core, following a clean architect
 - **ASP.NET Core Identity** + **JWT Bearer** authentication
 - **Hangfire** for background jobs
 - **Swagger / Swashbuckle** for API documentation
-- **MediatR** for request/response handling
 
 ## Project Structure
 
 ```
 ResturantApp/
-├── API/                  # Web API entry point, controllers, configuration
-├── Application/          # Application logic, services, use cases
-├── Domain/               # Domain entities and core business rules
-├── Infrastructure/       # EF Core context, migrations, external services
+├── API/                  # Presentation layer: controllers, contracts, configuration
+├── Business/             # Business layer: services and DTOs
+├── Data/                 # Data layer: entities, EF Core context, repositories, migrations
+├── docs/                 # Architecture documentation
 ├── OrderControllerTest/  # Integration tests
 ├── TestProject1/         # Unit tests
 ├── UnitTesting1/         # Unit tests
@@ -49,7 +48,7 @@ ResturantApp/
 
 4. **Apply database migrations**
    ```bash
-   dotnet ef database update --project Infrastructure --startup-project API
+   dotnet ef database update --project Data --startup-project API
    ```
 
 5. **Run the API**

@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Resturant.Domain.Entity;
-using Resturant.Infrastructure.Identity;
+using Resturant.Data.Entities;
+using Resturant.Data.Identity;
 using API.Contracts;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 

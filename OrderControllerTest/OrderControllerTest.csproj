@@ -31,9 +31,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\API\API.csproj" />
-      <ProjectReference Include="..\Application\Resturant.Application.csproj" />
-      <ProjectReference Include="..\Domain\Resturant.Domain.csproj" />
-      <ProjectReference Include="..\Infrastructure\Resturant.Infrastructure.csproj" />
+      <ProjectReference Include="..\Business\Resturant.Business.csproj" />
+      <ProjectReference Include="..\Data\Resturant.Data.csproj" />
 
     </ItemGroup>
 

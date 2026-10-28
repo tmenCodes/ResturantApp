@@ -1,0 +1,13 @@
+using Microsoft.Extensions.DependencyInjection;
+using Resturant.Data.Repositories;
+
+namespace Resturant.Data;
+
+public static class ExtensionServiceMethods
+{
+    public static void AddRepositoryService(this IServiceCollection services)
+    {
+        services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+        
+    }
+}

@@ -1,4 +1,4 @@
-using Resturant.Domain.Entity;
+using Resturant.Data.Entities;
 
 namespace API.Contracts;
 

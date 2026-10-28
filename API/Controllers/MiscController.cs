@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Resturant.Domain.Entity;
-using Resturant.Infrastructure.Context;
+using Resturant.Data.Entities;
+using Resturant.Data.Context;
 
 namespace API.Controllers;
 

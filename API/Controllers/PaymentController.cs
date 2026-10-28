@@ -4,12 +4,12 @@ using Hangfire.Logging.LogProviders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Resturant.Infrastructure.Context;
-using Resturant.Application.DTO;
-using Resturant.Domain.Entity;
+using Resturant.Data.Context;
+using Resturant.Business.Dtos;
+using Resturant.Data.Entities;
 using API.Contracts;
 using Microsoft.EntityFrameworkCore;
-using MenuItem = Resturant.Domain.Entity.MenuItem;
+using MenuItem = Resturant.Data.Entities.MenuItem;
 
 namespace API.Controllers
 {
