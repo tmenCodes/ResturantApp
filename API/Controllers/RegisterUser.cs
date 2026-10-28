@@ -82,6 +82,7 @@ public class RegisterUser : Controller
         return _accountService.UserNameExistsAsync(username);
     }
 
+    [Authorize]
     [HttpGet("ReturnAllUsers")]
     public async Task<IActionResult> GetAllUsers()
     {

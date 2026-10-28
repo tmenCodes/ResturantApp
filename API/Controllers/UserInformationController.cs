@@ -59,6 +59,7 @@ public class UserInformationController : Controller
         return Ok(await _userProfileService.GetOrderedItemsAsync(CurrentUserName ?? string.Empty));
     }
 
+    [Authorize]
     [HttpPut("UpdateUserPaymentInformation")]
     public async Task<IActionResult> UpdateUserPaymentInformation(UserPaymentInformationDto userPaymentInformationdto)
     {
