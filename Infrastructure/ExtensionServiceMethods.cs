@@ -8,7 +8,7 @@ public static class ExtensionServiceMethods
 {
     public static void AddRepositoryService(this IServiceCollection services)
     {
-        services.AddScoped<IRepository, ShoppingCartRepo>();
+        services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
         
     }
 }

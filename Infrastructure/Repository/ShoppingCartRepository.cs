@@ -6,25 +6,15 @@ using Resturant.Infrastructure.Context;
 
 namespace Resturant.Infrastructure.Repository;
 
-public class ShoppingCartRepo : IRepository
+public class ShoppingCartRepository : IShoppingCartRepository
 {
       private readonly RestaurantContext _context; 
    
-    public ShoppingCartRepo(RestaurantContext context)
+    public ShoppingCartRepository(RestaurantContext context)
     {
         ArgumentException.ThrowIfNullOrEmpty(nameof(context));
         _context = context; 
 
-    }
-    
-    public async Task<List<ShoppingCart>> ReturnListItemsAsync()
-    
-    {
-        
-
-        var tempCartItems = await  _context.
-            ShoppingCarts.Include("MenuItems").ToListAsync();
-        return tempCartItems;
     }
     
     public async Task<ShoppingCart?> ReturnCartItemsByGuidAsync(string guid)

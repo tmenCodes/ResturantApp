@@ -25,11 +25,11 @@ namespace API.Controllers
     {
         //private readonly IMediator _mediator;
         private readonly  RestaurantContext _context;
-        private readonly IRepository _shoppingCartRepository;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
         private readonly ILogger<OrderController> _logger;
         
         
-        public OrderController(RestaurantContext context,  IRepository shoppingCartRepository , ILogger<OrderController> logger)
+        public OrderController(RestaurantContext context,  IShoppingCartRepository shoppingCartRepository , ILogger<OrderController> logger)
         {
             //   _mediator = mediatR ?? throw  new ArgumentNullException(nameof(mediatR));
             _context = context; 

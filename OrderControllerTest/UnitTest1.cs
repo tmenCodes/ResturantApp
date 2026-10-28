@@ -45,7 +45,7 @@
 //             new TemporaryCartItems() { Id = 1, Indentity = Guid.NewGuid(), Created = DateTime.Now, TotalPrice = 100 },
 //         };
 //
-//         var mockRepo = new Mock<IRepository>();
+//         var mockRepo = new Mock<IShoppingCartRepository>();
 //         mockRepo.Setup(m => m.ReturnListItemsAsync()).ReturnsAsync(temporaryCartItems);
 //         
 //         var controller = new OrderController(null, mockRepo.Object);
@@ -62,7 +62,7 @@
 //     public async Task GetTotalPriceReturnsTotalPrice()
 //     {
 //
-//         var mockRepo = new Mock<IRepository>();
+//         var mockRepo = new Mock<IShoppingCartRepository>();
 //         var dbContext = new Mock<RestaurantContext>();
 //         
 //         mockRepo.Setup(x => x.ReturnCartItemsByGuidAsync(It.IsAny<string>()))
@@ -99,7 +99,7 @@
 //     [Fact]
 //     public async Task RemoveTempCartItemsMethodAsyncTask()
 //     {
-//         var mockRepo = new Mock<IRepository>();
+//         var mockRepo = new Mock<IShoppingCartRepository>();
 //         var menuItems= new MenuItems() { Name = "Egg Rolls" };
 //         
 //         mockRepo.Setup(m => m.FindByPrimaryKey(It.IsAny<int>())).ReturnsAsync(menuItems);

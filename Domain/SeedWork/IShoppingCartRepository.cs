@@ -3,9 +3,9 @@ using Resturant.Domain.Entity;
 namespace Resturant.Domain.SeedWork
 {
 
-    public interface IRepository
+    /// <summary>Reads and writes shopping carts and their order items.</summary>
+    public interface IShoppingCartRepository
     {
-        Task<List<ShoppingCart>> ReturnListItemsAsync();
         Task<ShoppingCart?> ReturnCartItemsByGuidAsync(string guid);
 
         Task<int> SaveCartItemsAsync();
