@@ -7,12 +7,12 @@ namespace Resturant.Domain.Entity;
 public class MenuItem
 {
     public int Id { get; set; }
-    public string MenuItemName { get; set; } 
+    public string Name { get; set; } 
     
-    public string MenuItemDescription { get; set; }
+    public string Description { get; set; }
     
-    public string MenuItemImageUrl { get; set; } = string.Empty;
-    public decimal MenuItemBasePrice { get;  set; }
+    public string ImageUrl { get; set; } = string.Empty;
+    public decimal BasePrice { get;  set; }
     
     
 }

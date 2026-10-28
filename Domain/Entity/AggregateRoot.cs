@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Resturant.Domain.Entity
 {
-    public abstract class Aggregateroot : Entity
+    public abstract class AggregateRoot : Entity
     {
 
-        protected Aggregateroot(Guid id) : base(id) { }
+        protected AggregateRoot(Guid id) : base(id) { }
 
         //a parameterless ctor is needed for ef framework 
-        protected Aggregateroot()
+        protected AggregateRoot()
         {
             
         }

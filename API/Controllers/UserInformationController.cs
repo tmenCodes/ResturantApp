@@ -41,7 +41,7 @@ public class UserInformationController : Controller
         {
             _logger.LogInformation($"User {user.UserName} has logged in.");
             
-            UserPaymentInformation userpaymentinfo = new UserPaymentInformation
+            SavedPaymentMethod userpaymentinfo = new SavedPaymentMethod
             {
                 Credit = userPaymentInformationdto.CardType,
                 NameonCard = userPaymentInformationdto.NameonCard,
@@ -50,7 +50,7 @@ public class UserInformationController : Controller
                 CVV = userPaymentInformationdto.CVV,
                 UserName = user.UserName,
             };
-            await _context.UserPaymentInformation.AddAsync(userpaymentinfo);
+            await _context.SavedPaymentMethods.AddAsync(userpaymentinfo);
             await _context.SaveChangesAsync();
             return Ok(userpaymentinfo);
         }
@@ -67,7 +67,7 @@ public class UserInformationController : Controller
        // var user = HttpContext.User.Identity.Name;
        if (user is not null)
        {
-           var userPaymentInformation = await _context.UserPaymentInformation.OrderBy(x => x.Id)
+           var userPaymentInformation = await _context.SavedPaymentMethods.OrderBy(x => x.Id)
                .FirstOrDefaultAsync(x => x.UserName == user!.UserName);
            return Ok(userPaymentInformation);
        }
@@ -83,11 +83,11 @@ public class UserInformationController : Controller
         var user = HttpContext?.User?.Identity?.Name;
 
         //getting the payment information
-        var User = await _context.CustomerPaymentInformation.Where(name => name.UserProfileName == user)
+        var User = await _context.Checkouts.Where(name => name.UserProfileName == user)
             .ToListAsync();
 
         //getting the actual car information
-        var shoppingCartItems = await _context.ShoppingCartItems.ToListAsync();
+        var shoppingCartItems = await _context.ShoppingCarts.ToListAsync();
 
 
         // //join to the two tables above 
@@ -112,18 +112,18 @@ public class UserInformationController : Controller
         var user = HttpContext?.User?.Identity?.Name;
 
         //getting the payment information
-        var User = await _context.CustomerPaymentInformation.Where(name => name.UserProfileName == user).Distinct()
+        var User = await _context.Checkouts.Where(name => name.UserProfileName == user).Distinct()
             .ToListAsync();
 
         //get the guid, from user then jst query 
         var MenuItems = await _context.OrderItem.ToListAsync();
-        //  var guidy = await _context.MenuItems.Where(x => x.ShoppingCartItems == Guids).ToListAsync();
+        //  var guidy = await _context.MenuItems.Where(x => x.ShoppingCart == Guids).ToListAsync();
 
 
         // //join to the two tables above 
         var joining =
             from customer in User
-            join items in MenuItems on customer.ShoppingCartIdentity equals items.ShoppingCartItemsIdentity
+            join items in MenuItems on customer.ShoppingCartIdentity equals items.ShoppingCartIdentity
             select new UserPaymentMenuItems()
             {
                 Date = customer.CheckoutTime,
@@ -178,7 +178,7 @@ public class UserInformationController : Controller
 
         if (user is not null)
         {
-            var userPaymentInformation = await _context.UserPaymentInformation.OrderBy(users => users.Id)
+            var userPaymentInformation = await _context.SavedPaymentMethods.OrderBy(users => users.Id)
                 .FirstOrDefaultAsync(x => x.UserName == user.UserName);
             if (userPaymentInformation is not null)
             {

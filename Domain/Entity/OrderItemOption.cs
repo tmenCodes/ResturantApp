@@ -1,6 +1,6 @@
 namespace Resturant.Domain.Entity;
 
-public class OrderItemOptions
+public class OrderItemOption
 {
     public int Id { get; set; }
     
@@ -12,6 +12,6 @@ public class OrderItemOptions
     // Foreign key to the parent OrderItem--
         
       public OrderItem OrderItem { get; set; }  
-      public int OrderId { get; set; }
+      public int OrderItemId { get; set; }
 
 }

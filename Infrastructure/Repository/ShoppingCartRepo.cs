@@ -17,20 +17,20 @@ public class ShoppingCartRepo : IRepository
 
     }
     
-    public async Task<List<ShoppingCartItems>> ReturnListItemsAsync()
+    public async Task<List<ShoppingCart>> ReturnListItemsAsync()
     
     {
         
 
         var tempCartItems = await  _context.
-            ShoppingCartItems.Include("MenuItems").ToListAsync();
+            ShoppingCarts.Include("MenuItems").ToListAsync();
         return tempCartItems;
     }
     
-    public async Task<ShoppingCartItems?> ReturnCartItemsByGuidAsync(string guid)
+    public async Task<ShoppingCart?> ReturnCartItemsByGuidAsync(string guid)
     {
-        ShoppingCartItems? tempItemPrice = await _context.
-            ShoppingCartItems.FirstOrDefaultAsync(x=>x.Identity.ToString() == guid);
+        ShoppingCart? tempItemPrice = await _context.
+            ShoppingCarts.FirstOrDefaultAsync(x=>x.Identity.ToString() == guid);
         return tempItemPrice ?? null; 
     }
     
@@ -43,17 +43,17 @@ public class ShoppingCartRepo : IRepository
     public async Task<List<OrderItem>> ReturnMenuItemsListAsync()
     {
         //respository pattern should only return primitives---not any dtos
-        return await _context.ShoppingCartItems
+        return await _context.ShoppingCarts
             .Where(x => x.Identity.ToString() != string.Empty)
             .SelectMany(x => x.OrderItems).ToListAsync();
-            //.Select(x => new MenuDTO() { Id = x.Id, Name = x.Name, Price = x.Price, GuidId = x.ShoppingCartItemsIdentity.ToString() }).ToListAsync();
+            //.Select(x => new MenuDTO() { Id = x.Id, Name = x.Name, Price = x.Price, GuidId = x.ShoppingCartIdentity.ToString() }).ToListAsync();
             
     }
 
     public async Task<List<OrderItem>>  ReturnMenuItemListByGuid(string guidId)
     {
 
-        var shoppingCart = await _context.ShoppingCartItems
+        var shoppingCart = await _context.ShoppingCarts
             .Where(x => x.Identity.ToString() == guidId)
             .SelectMany(x => x.OrderItems
             ).Include(x=>x.Options).ToListAsync();
@@ -63,7 +63,7 @@ public class ShoppingCartRepo : IRepository
         
     }
 
-    public async Task AddShoppingCartItem(ShoppingCartItems shoppingCartItem)
+    public async Task AddShoppingCartItem(ShoppingCart shoppingCartItem)
     {
         await _context.AddAsync(shoppingCartItem);
     }
@@ -72,7 +72,7 @@ public class ShoppingCartRepo : IRepository
     //calculates all menu time prices
     public decimal SubTotalMenuPrice(Guid menuGuid)
     {
-        return _context.ShoppingCartItems.Where(x => x.Identity == menuGuid).
+        return _context.ShoppingCarts.Where(x => x.Identity == menuGuid).
             SelectMany(x=>x.OrderItems).
             Sum(x => x.TotalItemPrice);
         

@@ -1,6 +1,6 @@
 ﻿namespace Resturant.Domain.Entity
 {
-    public class CustomerPaymentInformation
+    public class Checkout
     {
         public int Id { get; set; }
         public string? Credit { get; set; }

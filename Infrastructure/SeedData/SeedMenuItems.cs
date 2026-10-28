@@ -10,12 +10,12 @@ public class SeedMenuItems : IEntityTypeConfiguration<MenuItem>
     public void Configure(EntityTypeBuilder<MenuItem> builder)
     {
         builder.HasData(
-            new MenuItem() { Id = 1, MenuItemName = "Egg Roll Platter", MenuItemBasePrice = 14.95m, MenuItemDescription = "Carrots, Tomato, Lettuce", MenuItemImageUrl = "EggRollPlatter.png"},
-            new MenuItem() { Id = 2, MenuItemName = "Papaya Salad", MenuItemBasePrice = 8.95m,   MenuItemDescription = "Green Papaya, snake beans, cherry tomato", MenuItemImageUrl = "PapayaSalad.png"},
-            new MenuItem() { Id = 3, MenuItemName = "Tofu Stir Fry", MenuItemBasePrice = 10.95m, MenuItemDescription = "Tofu, bell peppers, green onion", MenuItemImageUrl = "TofuStirFry.png"},
-            new MenuItem() { Id = 4, MenuItemName = "Chopped Beef", MenuItemBasePrice = 12.95m, MenuItemDescription = "Mushrooms, Carrots, Okra", MenuItemImageUrl =  "ChoppedBeef.png"},
-            new MenuItem() { Id = 5, MenuItemName = "Veggie Platter", MenuItemBasePrice = 9.95m, MenuItemDescription = "Edamame, Carrots, Avocado", MenuItemImageUrl = "VeggiePlatter.png"},
-            new MenuItem() { Id = 6, MenuItemName = "Caesar Salad", MenuItemBasePrice = 10.5m, MenuItemDescription = "Onion, lettuce, cheese", MenuItemImageUrl = "CaesarSalad.png" }
+            new MenuItem() { Id = 1, Name = "Egg Roll Platter", BasePrice = 14.95m, Description = "Carrots, Tomato, Lettuce", ImageUrl = "EggRollPlatter.png"},
+            new MenuItem() { Id = 2, Name = "Papaya Salad", BasePrice = 8.95m,   Description = "Green Papaya, snake beans, cherry tomato", ImageUrl = "PapayaSalad.png"},
+            new MenuItem() { Id = 3, Name = "Tofu Stir Fry", BasePrice = 10.95m, Description = "Tofu, bell peppers, green onion", ImageUrl = "TofuStirFry.png"},
+            new MenuItem() { Id = 4, Name = "Chopped Beef", BasePrice = 12.95m, Description = "Mushrooms, Carrots, Okra", ImageUrl =  "ChoppedBeef.png"},
+            new MenuItem() { Id = 5, Name = "Veggie Platter", BasePrice = 9.95m, Description = "Edamame, Carrots, Avocado", ImageUrl = "VeggiePlatter.png"},
+            new MenuItem() { Id = 6, Name = "Caesar Salad", BasePrice = 10.5m, Description = "Onion, lettuce, cheese", ImageUrl = "CaesarSalad.png" }
         );
 
     }

@@ -17,18 +17,18 @@ public class MiscController : Controller
     }
     
     [HttpPost("BookingInformation")]
-    public async Task<IActionResult> BookingInformation(BookingInformation bookingInformation)
+    public async Task<IActionResult> BookingInformation(Reservation bookingInformation)
     {
-        await _context.BookingInformation.AddAsync(bookingInformation);
+        await _context.Reservations.AddAsync(bookingInformation);
         await _context.SaveChangesAsync();
         return Ok(bookingInformation);
     }
     
         
     [HttpPost("CustomerInquiry")]
-    public async Task<IActionResult> PostContactAsync(CustomerInquiryInformation contact)
+    public async Task<IActionResult> PostContactAsync(CustomerInquiry contact)
     {
-        await _context.CustomerInquiryInformation.AddAsync(contact);
+        await _context.CustomerInquiries.AddAsync(contact);
         await _context.SaveChangesAsync();
         return Ok(contact);
     }

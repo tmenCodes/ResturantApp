@@ -14,8 +14,8 @@ public class OrderItem
     
     //relationship is needed because each item has a list of options, options can only be a get requests 
     //seed, shadow property is created no, even it not on menuItemsOptions
-    public List<OrderItemOptions> Options { get; set; } = new(); 
-    public Guid ShoppingCartItemsIdentity { get; set; }
-    public ShoppingCartItems? ShoppingCartItems { get; set; }
+    public List<OrderItemOption> Options { get; set; } = new(); 
+    public Guid ShoppingCartIdentity { get; set; }
+    public ShoppingCart? ShoppingCart { get; set; }
 
 }

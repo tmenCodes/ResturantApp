@@ -42,7 +42,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetShoppingCartItemsByGuid(string guid)
         { 
        
-           ShoppingCartItems? shoppingCartItems = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(guid);
+           ShoppingCart? shoppingCartItems = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(guid);
            
            if(shoppingCartItems == null) return NotFound();
            
@@ -128,7 +128,7 @@ namespace API.Controllers
          public async Task<IActionResult> GetMenuItems()
          {
              var x = from menuitems in _context.MenuItems
-                 select new { Id = menuitems.Id , MenuItemName = menuitems.MenuItemName, MenuItemBasePrice = menuitems.MenuItemBasePrice.ToString("0.00") , MenuItemDescription = menuitems.MenuItemDescription, MenuItemImageUrl = menuitems.MenuItemImageUrl };
+                 select new { Id = menuitems.Id , MenuItemName = menuitems.Name, MenuItemBasePrice = menuitems.BasePrice.ToString("0.00") , MenuItemDescription = menuitems.Description, MenuItemImageUrl = menuitems.ImageUrl };
              return Ok(x);
          }
          
@@ -145,15 +145,15 @@ namespace API.Controllers
              //TODO put taxrate in the menuItem domain model method
              const decimal taxRate = 0.06875m;
              decimal totalMenuItemOptionsPrice = 0m; 
-             ShoppingCartItems? shoppingCartItems = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(orderItemDto.GuidId.ToString());
+             ShoppingCart? shoppingCartItems = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(orderItemDto.GuidId.ToString());
              
         
            if (shoppingCartItems is null)
            {
-               var menuItem = await _context.MenuItems.SingleOrDefaultAsync(value => value.MenuItemName == orderItemDto.Name);
+               var menuItem = await _context.MenuItems.SingleOrDefaultAsync(value => value.Name == orderItemDto.Name);
                
                    var orderItem = new OrderItem(); 
-                   orderItem.Name = menuItem.MenuItemName!;
+                   orderItem.Name = menuItem.Name!;
                    orderItem.Status = "start";
                    //put valiation elsewhere 
                    if (orderItemDto.Quantity > 0)
@@ -170,27 +170,27 @@ namespace API.Controllers
                    {
               
                        MenuItemOption? menuItemOptions = new(); 
-                       menuItemOptions = await _context.MenuItemOptions.FirstOrDefaultAsync(value => value.MenuOptionName == menuitem!);
+                       menuItemOptions = await _context.MenuItemOptions.FirstOrDefaultAsync(value => value.Name == menuitem!);
                        
                        if (menuItemOptions != null)
                        {
-                           var orderItemOptions1 = new OrderItemOptions();
+                           var orderItemOptions1 = new OrderItemOption();
 
-                           orderItemOptions1.Name = menuItemOptions.MenuOptionName;
-                           orderItemOptions1.Price = menuItemOptions.MenuOptionPrice;
+                           orderItemOptions1.Name = menuItemOptions.Name;
+                           orderItemOptions1.Price = menuItemOptions.Price;
 
                            orderItem.Options.Add(orderItemOptions1);
 
-                           totalMenuItemOptionsPrice += menuItemOptions.MenuOptionPrice;
+                           totalMenuItemOptionsPrice += menuItemOptions.Price;
                            _logger.LogInformation("the total menuITem prices" + totalMenuItemOptionsPrice);
                        }
                     
                    } 
 
-                   orderItem.TotalItemPrice = (menuItem!.MenuItemBasePrice + totalMenuItemOptionsPrice) * orderItemDto.Quantity;
+                   orderItem.TotalItemPrice = (menuItem!.BasePrice + totalMenuItemOptionsPrice) * orderItemDto.Quantity;
                   
                    //TODO put this calculation elsewhere
-                   var shoppingcartitems = new ShoppingCartItems();
+                   var shoppingcartitems = new ShoppingCart();
                    shoppingcartitems.Identity = orderItemDto.GuidId;
                    shoppingcartitems.Created = DateTime.UtcNow;
                    shoppingcartitems.SubTotal = orderItem.TotalItemPrice; 
@@ -200,7 +200,7 @@ namespace API.Controllers
                    shoppingcartitems.OrderItems.Add(orderItem);
                    await _shoppingCartRepository.AddShoppingCartItem(shoppingcartitems);
                    await _shoppingCartRepository.SaveCartItemsAsync();
-                   return Ok(new { Name = orderItemDto.Name!, Price = menuItem.MenuItemBasePrice });
+                   return Ok(new { Name = orderItemDto.Name!, Price = menuItem.BasePrice });
       
            }
            //continue to add items to existing shopping cart
@@ -208,12 +208,12 @@ namespace API.Controllers
            {
                string name = orderItemDto.Name!;
 
-               var menuItem = await _context.MenuItems.FirstOrDefaultAsync(value => value.MenuItemName == orderItemDto.Name); 
+               var menuItem = await _context.MenuItems.FirstOrDefaultAsync(value => value.Name == orderItemDto.Name); 
      
                var orderItem = new OrderItem();
                orderItem.Name = name;
                orderItem.Status = "start";
-               orderItem.TotalItemPrice = menuItem!.MenuItemBasePrice;
+               orderItem.TotalItemPrice = menuItem!.BasePrice;
                if (orderItemDto.Quantity > 0)
                {
                    orderItem.Quantity = orderItemDto.Quantity;
@@ -227,24 +227,24 @@ namespace API.Controllers
                //if there is a valid menu options 
                foreach (var x in orderItemDto.Options)
                {
-                   var menuItemOptions = await _context.MenuItemOptions.FirstOrDefaultAsync(value => value.MenuOptionName == x!);
+                   var menuItemOptions = await _context.MenuItemOptions.FirstOrDefaultAsync(value => value.Name == x!);
 
                    if (menuItemOptions != null)
                    {
-                       var orderItemOptions1 = new OrderItemOptions(); // create new object each loop
+                       var orderItemOptions1 = new OrderItemOption(); // create new object each loop
 
-                       orderItemOptions1.Name = menuItemOptions.MenuOptionName;
-                       orderItemOptions1.Price = menuItemOptions.MenuOptionPrice;
+                       orderItemOptions1.Name = menuItemOptions.Name;
+                       orderItemOptions1.Price = menuItemOptions.Price;
 
                        orderItem.Options.Add(orderItemOptions1);
 
-                       totalMenuItemOptionsPrice += menuItemOptions.MenuOptionPrice;
+                       totalMenuItemOptionsPrice += menuItemOptions.Price;
                        _logger.LogCritical(totalMenuItemOptionsPrice.ToString());
                    }
                    
                } 
                
-               orderItem.TotalItemPrice = (menuItem!.MenuItemBasePrice + totalMenuItemOptionsPrice) * orderItemDto.Quantity;
+               orderItem.TotalItemPrice = (menuItem!.BasePrice + totalMenuItemOptionsPrice) * orderItemDto.Quantity;
                
                shoppingCartItems.OrderItems.Add(orderItem);
                
@@ -271,7 +271,7 @@ namespace API.Controllers
          [HttpGet("ImagePath")]
          public async Task<IActionResult> GetImagePath()
          {
-             var urlPath = _context.MenuItems.Select(value => value.MenuItemImageUrl).ToList(); 
+             var urlPath = _context.MenuItems.Select(value => value.ImageUrl).ToList(); 
             return Ok(urlPath);
          }
          

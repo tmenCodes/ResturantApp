@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Resturant.Domain.Entity;
 
-public class ShoppingCartItems
+public class ShoppingCart
 {
     public int Id{ get; set; }
     public Guid Identity { get; set; }
@@ -18,9 +18,9 @@ public class ShoppingCartItems
 
     public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
-    public int? CustomerInformationId { get; set; }
+    public int? CheckoutId { get; set; }
 
-    public CustomerPaymentInformation? CustomerInformation { get; set; } 
+    public Checkout? Checkout { get; set; } 
 
 }
 

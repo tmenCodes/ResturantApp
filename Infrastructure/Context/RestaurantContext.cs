@@ -38,19 +38,19 @@ namespace Resturant.Infrastructure.Context
         }
 
         
-        public DbSet<CustomerPaymentInformation> CustomerPaymentInformation { get; set; }
+        public DbSet<Checkout> Checkouts { get; set; }
    
         public DbSet<Event> Events { get; set; } 
-        public DbSet<ShoppingCartItems> ShoppingCartItems { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
-        public DbSet<CustomerInquiryInformation> CustomerInquiryInformation { get; set; }
-        public DbSet<BookingInformation> BookingInformation { get; set; }
+        public DbSet<CustomerInquiry> CustomerInquiries { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
         
-        public DbSet<UserPaymentInformation> UserPaymentInformation { get; set; }
+        public DbSet<SavedPaymentMethod> SavedPaymentMethods { get; set; }
         
         public DbSet<OrderItem> OrderItem { get; set; }
         
-        public DbSet<OrderItemOptions> OrderItemOptions { get; set; }
+        public DbSet<OrderItemOption> OrderItemOptions { get; set; }
         
         public DbSet<MenuItemOption> MenuItemOptions { get; set; }
         
@@ -60,7 +60,7 @@ namespace Resturant.Infrastructure.Context
         // public override async Task<int> SaveChangesAsync(CancellationToken cancellation = default)
         // {
         //     // track changes in List<INotification> DomainEvents 
-        //     var domainEvents = ChangeTracker.Entries<Aggregateroot>()
+        //     var domainEvents = ChangeTracker.Entries<AggregateRoot>()
         //                        .Where(x => x.Entity.DomainEvents != null)
         //                        .SelectMany(x => x.Entity.DomainEvents)
         //                        .ToList();
@@ -105,14 +105,14 @@ namespace Resturant.Infrastructure.Context
         {
              base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<ShoppingCartItems>()
+            modelBuilder.Entity<ShoppingCart>()
                 .HasMany(e => e.OrderItems)
-                .WithOne(e => e.ShoppingCartItems)
-                .HasForeignKey(e => e.ShoppingCartItemsIdentity)
+                .WithOne(e => e.ShoppingCart)
+                .HasForeignKey(e => e.ShoppingCartIdentity)
                 .HasPrincipalKey(e => e.Identity);
 
      
-        //     modelBuilder.ApplyConfiguration(new SeedShoppingCartItems()); 
+        //     modelBuilder.ApplyConfiguration(new SeedShoppingCart()); 
              modelBuilder.ApplyConfiguration(new SeedMenuItems()); 
              modelBuilder.ApplyConfiguration(new SeedMenuItemOptions());
                  

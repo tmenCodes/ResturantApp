@@ -11,11 +11,11 @@ public class SeedMenuItemOptions :IEntityTypeConfiguration<MenuItemOption>
     {
         builder.HasData(
           
-            new MenuItemOption() { Id = 1, MenuOptionName = "Extra Chicken", MenuOptionPrice = 1m},
-            new MenuItemOption() { Id = 2, MenuOptionName = "Extra Beef", MenuOptionPrice = 1m},
-            new MenuItemOption() { Id = 3, MenuOptionName = "Extra Pork", MenuOptionPrice = 1m}, 
-            new MenuItemOption() { Id = 4, MenuOptionName = "Extra Tofu", MenuOptionPrice = 1m},
-            new MenuItemOption() { Id = 5, MenuOptionName = "Soy Sauce", MenuOptionPrice = .25m}
+            new MenuItemOption() { Id = 1, Name = "Extra Chicken", Price = 1m},
+            new MenuItemOption() { Id = 2, Name = "Extra Beef", Price = 1m},
+            new MenuItemOption() { Id = 3, Name = "Extra Pork", Price = 1m}, 
+            new MenuItemOption() { Id = 4, Name = "Extra Tofu", Price = 1m},
+            new MenuItemOption() { Id = 5, Name = "Soy Sauce", Price = .25m}
         ); 
         
     }

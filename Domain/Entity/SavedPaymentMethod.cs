@@ -1,7 +1,7 @@
 
 namespace Resturant.Domain.Entity;
 
-public class UserPaymentInformation
+public class SavedPaymentMethod
 {
     
     public int Id { get; init;  }
@@ -12,12 +12,12 @@ public class UserPaymentInformation
     public string? CVV { get; set;  }
     public string? UserName { get; set;  }
 
-    public UserPaymentInformation()
+    public SavedPaymentMethod()
     {
         
     }
 
-    public UserPaymentInformation(string credit, string nameonCard, string creditCardNumber, string expiration, string cvv, string userName)
+    public SavedPaymentMethod(string credit, string nameonCard, string creditCardNumber, string expiration, string cvv, string userName)
     {
         Credit  = credit;
         NameonCard  = nameonCard;

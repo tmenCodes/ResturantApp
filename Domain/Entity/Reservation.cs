@@ -1,6 +1,6 @@
 ﻿namespace Resturant.Domain.Entity
 {
-    public class BookingInformation
+    public class Reservation
     {
         public int Id { get; set; }
         public string? Name { get; set; }

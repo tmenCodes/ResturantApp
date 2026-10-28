@@ -30,10 +30,10 @@ namespace API.Controllers
         
  
         [HttpGet("GetAllOrders")]
-        public async Task<ActionResult<IEnumerable<CustomerPaymentInformation>>> GetAllOrders()
+        public async Task<ActionResult<IEnumerable<Checkout>>> GetAllOrders()
         {
             //use a dto to get menu items also 
-            var orders = await _context.CustomerPaymentInformation.ToListAsync();
+            var orders = await _context.Checkouts.ToListAsync();
             
             if (orders.Any())
             {
@@ -51,8 +51,8 @@ namespace API.Controllers
         public async Task<ActionResult<ViewsDto>> GetAllOrdersWith([FromQuery] string orderGuid = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
         {
             //possibly use group by 
-                var orderList = await _context.CustomerPaymentInformation.ToListAsync();
-                var tempList = await _context.ShoppingCartItems.Include("MenuItems").ToListAsync();
+                var orderList = await _context.Checkouts.ToListAsync();
+                var tempList = await _context.ShoppingCarts.Include("MenuItems").ToListAsync();
                 
               
             //join to the two tables above 
@@ -83,12 +83,12 @@ namespace API.Controllers
 
 
         [HttpPost("PaymentInformation")]
-        public async Task<ActionResult<CustomerPaymentInformation>> PostOrderInformation(
+        public async Task<ActionResult<Checkout>> PostOrderInformation(
             CustomerInformationDTO customerInformationDto)
         {
 
             //we assume all the guids are unique
-            var orders = await _context.CustomerPaymentInformation.FirstOrDefaultAsync(x =>
+            var orders = await _context.Checkouts.FirstOrDefaultAsync(x =>
                 x.ShoppingCartIdentity.ToString() == customerInformationDto.CartsIdentity);
             
             if (orders != null)
@@ -102,12 +102,12 @@ namespace API.Controllers
 
             
             //check to make sure the guid must exist in the other table 
-            var checkingShoppingCart = await _context.ShoppingCartItems.FirstOrDefaultAsync(x=> x.Identity.ToString() == customerInformationDto.CartsIdentity);
+            var checkingShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(x=> x.Identity.ToString() == customerInformationDto.CartsIdentity);
             
             
             if (convertGuid && checkingShoppingCart!= null)
             {
-                CustomerPaymentInformation customerPayment = new CustomerPaymentInformation()
+                Checkout customerPayment = new Checkout()
                 {
                     Credit = customerInformationDto.Credit,
                     NameonCard = customerInformationDto.NameonCard,
@@ -120,7 +120,7 @@ namespace API.Controllers
                     Paid = true
                 };
 
-                await _context.CustomerPaymentInformation.AddAsync(customerPayment);
+                await _context.Checkouts.AddAsync(customerPayment);
                 await _context.SaveChangesAsync();
 
                 return Ok(customerPayment);

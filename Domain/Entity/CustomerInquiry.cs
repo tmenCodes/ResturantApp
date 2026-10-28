@@ -2,7 +2,7 @@
 
 namespace Resturant.Domain.Entity
 {
-    public class CustomerInquiryInformation
+    public class CustomerInquiry
     {
         public int Id { get; set; }
 

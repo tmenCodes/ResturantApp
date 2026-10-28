@@ -5,8 +5,8 @@ namespace Resturant.Domain.SeedWork
 
     public interface IRepository
     {
-        Task<List<ShoppingCartItems>> ReturnListItemsAsync();
-        Task<ShoppingCartItems?> ReturnCartItemsByGuidAsync(string guid);
+        Task<List<ShoppingCart>> ReturnListItemsAsync();
+        Task<ShoppingCart?> ReturnCartItemsByGuidAsync(string guid);
 
         Task<int> SaveCartItemsAsync();
 
@@ -16,7 +16,7 @@ namespace Resturant.Domain.SeedWork
         
         Task<List<OrderItem>> ReturnMenuItemListByGuid(string guidId);
 
-        Task AddShoppingCartItem(ShoppingCartItems shoppingCartItem);
+        Task AddShoppingCartItem(ShoppingCart shoppingCartItem);
 
         decimal SubTotalMenuPrice(Guid menuGuid);
 
