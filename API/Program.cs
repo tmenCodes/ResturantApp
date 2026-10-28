@@ -105,7 +105,6 @@ builder.Services.AddAuthentication(options =>
 
 
 
-//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 //builder.AddServices();
 //builder.Services.AddHangfire(configuration =>
 //{
