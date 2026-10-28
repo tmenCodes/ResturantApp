@@ -29,7 +29,6 @@ namespace Resturant.Data.Context
         
         public DbSet<Checkout> Checkouts { get; set; }
    
-        public DbSet<Event> Events { get; set; } 
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<CustomerInquiry> CustomerInquiries { get; set; }

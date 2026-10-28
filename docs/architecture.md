@@ -47,7 +47,7 @@ Business/
   Services/             I<Name>Service + <Name>Service
   BusinessServiceCollectionExtensions.cs   AddBusinessLayer()
 Data/
-  Entities/             MenuItem, ShoppingCart, Checkout, ... (from Domain/Entity), Event (Events table)
+  Entities/             MenuItem, ShoppingCart, Checkout, ... (from Domain/Entity)
   Identity/WebUser.cs
   Context/RestaurantContext.cs
   Repositories/         I<Name>Repository + <Name>Repository
@@ -70,7 +70,7 @@ Business.Tests/         xUnit + EF Core InMemory
 
 ## What is removed
 
-These are Domain-Driven Design / MediatR pieces with no active use: `AggregateRoot`, the `Entity` base class, `DomainEvents/*`, `PriceUpdatedHandlerDomainEvent`, `PostCartItems`/`TempDto`, the MediatR registration and package, and the unregistered `DatabaseBackGround` service. `EventSourcing/Event` is **kept** (moved to `Data/Entities`) because it maps to the `Events` table.
+These are Domain-Driven Design / MediatR pieces with no active use: `AggregateRoot`, the `Entity` base class, `DomainEvents/*`, `PriceUpdatedHandlerDomainEvent`, `PostCartItems`/`TempDto`, the MediatR registration and package, and the unregistered `DatabaseBackGround` service. `EventSourcing/Event` was first kept (moved to `Data/Entities`) because it maps to the `Events` table; it was later removed along with that table in the `RemoveEventsTable` migration.
 
 ## Unchanged contracts
 
