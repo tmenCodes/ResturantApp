@@ -65,7 +65,7 @@
 //         var mockRepo = new Mock<IShoppingCartRepository>();
 //         var dbContext = new Mock<RestaurantContext>();
 //         
-//         mockRepo.Setup(x => x.ReturnCartItemsByGuidAsync(It.IsAny<string>()))
+//         mockRepo.Setup(x => x.GetCartAsync(It.IsAny<string>()))
 //             .ReturnsAsync(new TemporaryCartItems());
 //
 //         var controller = new OrderController(dbContext.Object, mockRepo.Object);
@@ -102,8 +102,8 @@
 //         var mockRepo = new Mock<IShoppingCartRepository>();
 //         var menuItems= new MenuItems() { Name = "Egg Rolls" };
 //         
-//         mockRepo.Setup(m => m.FindByPrimaryKey(It.IsAny<int>())).ReturnsAsync(menuItems);
-//         mockRepo.Setup(m => m.SaveCartItemsAsync()).ReturnsAsync(0);
+//         mockRepo.Setup(m => m.GetOrderItemAsync(It.IsAny<int>())).ReturnsAsync(menuItems);
+//         mockRepo.Setup(m => m.SaveChangesAsync()).ReturnsAsync(0);
 //  
 //         OrderController orderController = new OrderController(null, mockRepo.Object);
 //         var result = orderController.RemoveMenuItem(1, Guid.Empty);

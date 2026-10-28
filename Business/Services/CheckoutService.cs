@@ -19,13 +19,13 @@ public class CheckoutService : ICheckoutService
         _timeProvider = timeProvider;
     }
 
-    public async Task<IReadOnlyList<CheckoutDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<CheckoutDto>> GetAllCheckoutsAsync(CancellationToken cancellationToken = default)
     {
         var checkouts = await _checkoutRepository.GetAllAsync(cancellationToken);
         return checkouts.Select(x => x.ToDto()).ToList();
     }
 
-    public async Task<CheckoutResult> CreateAsync(CustomerInformationDTO request, CancellationToken cancellationToken = default)
+    public async Task<CheckoutResult> CheckoutCartAsync(CheckoutRequestDto request, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(request.CartsIdentity, out var cartIdentity))
         {
@@ -37,7 +37,7 @@ public class CheckoutService : ICheckoutService
             return new CheckoutResult(CheckoutStatus.CartAlreadyCheckedOut);
         }
 
-        if (await _shoppingCartRepository.ReturnCartItemsByGuidAsync(cartIdentity.ToString()) is null)
+        if (await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString()) is null)
         {
             return new CheckoutResult(CheckoutStatus.CartNotFound);
         }

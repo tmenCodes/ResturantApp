@@ -16,20 +16,20 @@ public class ShoppingCartRepository : IShoppingCartRepository
 
     }
     
-    public async Task<ShoppingCart?> ReturnCartItemsByGuidAsync(string guid)
+    public async Task<ShoppingCart?> GetCartAsync(string cartIdentity)
     {
         ShoppingCart? tempItemPrice = await _context.
-            ShoppingCarts.FirstOrDefaultAsync(x=>x.Identity.ToString() == guid);
+            ShoppingCarts.FirstOrDefaultAsync(x=>x.Identity.ToString() == cartIdentity);
         return tempItemPrice ?? null; 
     }
     
-    public async Task<OrderItem?> FindByPrimaryKey(int id)
+    public async Task<OrderItem?> GetOrderItemAsync(int orderItemId)
     {     
-        var menuItem =  await _context.OrderItem.FindAsync(id); 
+        var menuItem =  await _context.OrderItem.FindAsync(orderItemId); 
         return menuItem;
     }
     
-    public async Task<List<OrderItem>> ReturnMenuItemsListAsync()
+    public async Task<List<OrderItem>> GetAllOrderItemsAsync()
     {
         //respository pattern should only return primitives---not any dtos
         return await _context.ShoppingCarts
@@ -39,11 +39,11 @@ public class ShoppingCartRepository : IShoppingCartRepository
             
     }
 
-    public async Task<List<OrderItem>>  ReturnMenuItemListByGuid(string guidId)
+    public async Task<List<OrderItem>> GetCartOrderItemsAsync(string cartIdentity)
     {
 
         var shoppingCart = await _context.ShoppingCarts
-            .Where(x => x.Identity.ToString() == guidId)
+            .Where(x => x.Identity.ToString() == cartIdentity)
             .SelectMany(x => x.OrderItems
             ).Include(x=>x.Options).ToListAsync();
 
@@ -57,22 +57,22 @@ public class ShoppingCartRepository : IShoppingCartRepository
         _context.OrderItem.Remove(orderItem);
     }
 
-    public async Task AddShoppingCartItem(ShoppingCart shoppingCartItem)
+    public async Task AddCartAsync(ShoppingCart cart)
     {
-        await _context.AddAsync(shoppingCartItem);
+        await _context.AddAsync(cart);
     }
     
     
     //calculates all menu time prices
-    public decimal SubTotalMenuPrice(Guid menuGuid)
+    public decimal GetCartSubTotal(Guid cartIdentity)
     {
-        return _context.ShoppingCarts.Where(x => x.Identity == menuGuid).
+        return _context.ShoppingCarts.Where(x => x.Identity == cartIdentity).
             SelectMany(x=>x.OrderItems).
             Sum(x => x.TotalItemPrice);
         
     }
     
-    public async Task<int> SaveCartItemsAsync()
+    public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();
     }

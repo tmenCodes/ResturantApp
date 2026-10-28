@@ -1,7 +1,7 @@
 namespace Resturant.Business.Dtos;
 
 /// <summary>Payment details submitted for a shopping cart at checkout.</summary>
-public class CustomerInformationDTO
+public class CheckoutRequestDto
 {
     public string? Credit { get; set; }
     public string? NameonCard { get; set; }

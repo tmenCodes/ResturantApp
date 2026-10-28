@@ -24,7 +24,7 @@ namespace API.Controllers
         [HttpGet("GetAllOrders")]
         public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetAllOrders(CancellationToken cancellationToken)
         {
-            var orders = await _checkoutService.GetAllAsync(cancellationToken);
+            var orders = await _checkoutService.GetAllCheckoutsAsync(cancellationToken);
 
             if (orders.Any())
             {
@@ -44,11 +44,11 @@ namespace API.Controllers
 
         [HttpPost("PaymentInformation")]
         public async Task<ActionResult<CheckoutDto>> PostOrderInformation(
-            CustomerInformationDTO customerInformationDto, CancellationToken cancellationToken)
+            CheckoutRequestDto customerInformationDto, CancellationToken cancellationToken)
         {
             _logger.LogCritical(customerInformationDto.CartsIdentity);
 
-            var result = await _checkoutService.CreateAsync(customerInformationDto, cancellationToken);
+            var result = await _checkoutService.CheckoutCartAsync(customerInformationDto, cancellationToken);
 
             return result.Status switch
             {

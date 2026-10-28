@@ -23,7 +23,7 @@ public class CartService : ICartService
 
     public async Task<ShoppingCartItemDTO?> GetTotalsAsync(string cartIdentity)
     {
-        var cart = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(cartIdentity);
+        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity);
         if (cart is null)
         {
             return null;
@@ -39,14 +39,14 @@ public class CartService : ICartService
 
     public async Task<IReadOnlyList<MenuDTO>> GetAllOrderItemsAsync()
     {
-        var orderItems = await _shoppingCartRepository.ReturnMenuItemsListAsync();
+        var orderItems = await _shoppingCartRepository.GetAllOrderItemsAsync();
         return orderItems.Select(x => new MenuDTO { Id = x.Id, Name = x.Name, Price = x.TotalItemPrice }).ToList();
     }
 
     public async Task<IReadOnlyList<CartOrderItemDto>> GetCartItemsAsync(string cartIdentity)
     {
         Guid.TryParse(cartIdentity, out var identity);
-        var orderItems = await _shoppingCartRepository.ReturnMenuItemListByGuid(identity.ToString());
+        var orderItems = await _shoppingCartRepository.GetCartOrderItemsAsync(identity.ToString());
         return orderItems.Select(x => x.ToCartDto()).ToList();
     }
 
@@ -57,25 +57,25 @@ public class CartService : ICartService
 
     public async Task<bool> RemoveOrderItemAsync(int orderItemId, Guid cartIdentity)
     {
-        var orderItem = await _shoppingCartRepository.FindByPrimaryKey(orderItemId);
+        var orderItem = await _shoppingCartRepository.GetOrderItemAsync(orderItemId);
         if (orderItem is null)
         {
             return false;
         }
 
         _shoppingCartRepository.RemoveOrderItem(orderItem);
-        await _shoppingCartRepository.SaveCartItemsAsync();
+        await _shoppingCartRepository.SaveChangesAsync();
 
-        var cart = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(cartIdentity.ToString())
+        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString())
                    ?? throw new InvalidOperationException($"Shopping cart {cartIdentity} was not found.");
-        ApplyTotals(cart, _shoppingCartRepository.SubTotalMenuPrice(cartIdentity));
-        await _shoppingCartRepository.SaveCartItemsAsync();
+        ApplyTotals(cart, _shoppingCartRepository.GetCartSubTotal(cartIdentity));
+        await _shoppingCartRepository.SaveChangesAsync();
         return true;
     }
 
     public async Task<AddToCartResultDto> AddItemAsync(OrderItemDto request, CancellationToken cancellationToken = default)
     {
-        var cart = await _shoppingCartRepository.ReturnCartItemsByGuidAsync(request.GuidId.ToString());
+        var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId.ToString());
         var (orderItem, menuItem) = await BuildOrderItemAsync(request, cancellationToken);
 
         if (cart is null)
@@ -84,10 +84,10 @@ public class CartService : ICartService
             return new AddToCartResultDto { Name = menuItem.Name, Price = menuItem.BasePrice };
         }
 
-        var existingSubTotal = _shoppingCartRepository.SubTotalMenuPrice(request.GuidId);
+        var existingSubTotal = _shoppingCartRepository.GetCartSubTotal(request.GuidId);
         cart.OrderItems.Add(orderItem);
         ApplyTotals(cart, existingSubTotal + orderItem.TotalItemPrice);
-        await _shoppingCartRepository.SaveCartItemsAsync();
+        await _shoppingCartRepository.SaveChangesAsync();
         return new AddToCartResultDto { Name = menuItem.Name, Price = orderItem.TotalItemPrice };
     }
 
@@ -119,8 +119,8 @@ public class CartService : ICartService
         var cart = new ShoppingCart { Identity = identity, Created = _timeProvider.GetUtcNow().UtcDateTime };
         cart.OrderItems.Add(firstItem);
         ApplyTotals(cart, firstItem.TotalItemPrice);
-        await _shoppingCartRepository.AddShoppingCartItem(cart);
-        await _shoppingCartRepository.SaveCartItemsAsync();
+        await _shoppingCartRepository.AddCartAsync(cart);
+        await _shoppingCartRepository.SaveChangesAsync();
     }
 
     private static void ApplyTotals(ShoppingCart cart, decimal subTotal)
