@@ -10,7 +10,9 @@ public static class BusinessServiceCollectionExtensions
     /// <summary>Adds every Business service. Safe to call more than once.</summary>
     public static IServiceCollection AddBusinessLayer(this IServiceCollection services)
     {
+        services.TryAddSingleton(TimeProvider.System);
         services.TryAddScoped<IContactService, ContactService>();
+        services.TryAddScoped<ICheckoutService, CheckoutService>();
         return services;
     }
 }

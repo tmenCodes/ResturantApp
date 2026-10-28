@@ -9,6 +9,7 @@ public static class ExtensionServiceMethods
     {
         services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
         services.AddScoped<IContactRepository, ContactRepository>();
+        services.AddScoped<ICheckoutRepository, CheckoutRepository>();
 
     }
 }

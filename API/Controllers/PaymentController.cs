@@ -1,15 +1,7 @@
-﻿using System.Collections.Immutable;
-using Hangfire.Dashboard;
-using Hangfire.Logging.LogProviders;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Resturant.Data.Context;
+﻿using Microsoft.AspNetCore.Mvc;
 using Resturant.Business.Dtos;
-using Resturant.Data.Entities;
+using Resturant.Business.Services;
 using API.Contracts;
-using Microsoft.EntityFrameworkCore;
-using MenuItem = Resturant.Data.Entities.MenuItem;
 
 namespace API.Controllers
 {
@@ -19,22 +11,21 @@ namespace API.Controllers
     public class PaymentController : Controller
     {
 
-        private readonly RestaurantContext _context;  
+        private readonly ICheckoutService _checkoutService;
         private readonly ILogger _logger;
 
-        public PaymentController(RestaurantContext context, ILogger<PaymentController> logger)
+        public PaymentController(ICheckoutService checkoutService, ILogger<PaymentController> logger)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context)); 
+            _checkoutService = checkoutService ?? throw new ArgumentNullException(nameof(checkoutService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
- 
+
+
         [HttpGet("GetAllOrders")]
-        public async Task<ActionResult<IEnumerable<Checkout>>> GetAllOrders()
+        public async Task<ActionResult<IEnumerable<CheckoutDto>>> GetAllOrders(CancellationToken cancellationToken)
         {
-            //use a dto to get menu items also 
-            var orders = await _context.Checkouts.ToListAsync();
-            
+            var orders = await _checkoutService.GetAllAsync(cancellationToken);
+
             if (orders.Any())
             {
                 return Ok(orders);
@@ -43,90 +34,28 @@ namespace API.Controllers
         }
 
 
-        
-        
-        
         //TODO work on this controller in the near future-possibly use GroupBy
         [HttpGet("GetAllOrdersWithMenu")]
-        public async Task<ActionResult<ViewsDto>> GetAllOrdersWith([FromQuery] string orderGuid = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        public ActionResult<ViewsDto> GetAllOrdersWith([FromQuery] string orderGuid = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
         {
-            //possibly use group by 
-                var orderList = await _context.Checkouts.ToListAsync();
-                var tempList = await _context.ShoppingCarts.Include("MenuItems").ToListAsync();
-                
-              
-            //join to the two tables above 
-               //  var joining = from x in orderList
-               //      join temp in tempList on x.ShoppingCartIdentity equals temp.Identity
-               //      select new ViewsDto() { Name = x.UserProfileName, OrderId = temp.Identity,  Menus  = temp.UserItems, };
-               //
-               //
-               // var finalValue =  
-               //     from x in joining 
-               //     where x.OrderId.ToString() == orderGuid
-               //     select new { UserName = x.Name, Items = x.Menus.Select(p => p.Name + ", " + p.Price), GuidId = x.OrderId.ToString() }; 
-               //
-               //  
-               //  if (!finalValue.Any())
-               //  { 
-               //   return NotFound("The order does not exist or the order has not ben created yet");
-               //  }
-               //  return Ok(finalValue);
-
-               return Ok("completed for now");
-
+            return Ok("completed for now");
         }
-        
-        
-
-
 
 
         [HttpPost("PaymentInformation")]
-        public async Task<ActionResult<Checkout>> PostOrderInformation(
-            CustomerInformationDTO customerInformationDto)
+        public async Task<ActionResult<CheckoutDto>> PostOrderInformation(
+            CustomerInformationDTO customerInformationDto, CancellationToken cancellationToken)
         {
-
-            //we assume all the guids are unique
-            var orders = await _context.Checkouts.FirstOrDefaultAsync(x =>
-                x.ShoppingCartIdentity.ToString() == customerInformationDto.CartsIdentity);
-            
-            if (orders != null)
-            {
-                return BadRequest("Another pre-existing user has that guid");
-            }
-            
-            var convertGuid = Guid.TryParse(customerInformationDto.CartsIdentity, out var tempGuid);
-
             _logger.LogCritical(customerInformationDto.CartsIdentity);
 
-            
-            //check to make sure the guid must exist in the other table 
-            var checkingShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(x=> x.Identity.ToString() == customerInformationDto.CartsIdentity);
-            
-            
-            if (convertGuid && checkingShoppingCart!= null)
+            var result = await _checkoutService.CreateAsync(customerInformationDto, cancellationToken);
+
+            return result.Status switch
             {
-                Checkout customerPayment = new Checkout()
-                {
-                    Credit = customerInformationDto.Credit,
-                    NameonCard = customerInformationDto.NameonCard,
-                    CreditCardNumber = customerInformationDto.CreditCardNumber,
-                    Expiration = customerInformationDto.Expiration,
-                    CVV = customerInformationDto.CVV,
-                    UserProfileName = customerInformationDto.UserName,
-                    ShoppingCartIdentity = tempGuid,
-                    CheckoutTime = DateTime.UtcNow,
-                    Paid = true
-                };
-
-                await _context.Checkouts.AddAsync(customerPayment);
-                await _context.SaveChangesAsync();
-
-                return Ok(customerPayment);
-            }
-
-            return BadRequest("Invalid guid");
+                CheckoutStatus.Created => Ok(result.Checkout),
+                CheckoutStatus.CartAlreadyCheckedOut => BadRequest("Another pre-existing user has that guid"),
+                _ => BadRequest("Invalid guid")
+            };
         }
     }
     }

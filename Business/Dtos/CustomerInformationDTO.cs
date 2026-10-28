@@ -1,4 +1,4 @@
-namespace API.Contracts;
+namespace Resturant.Business.Dtos;
 
 /// <summary>Payment details submitted for a shopping cart at checkout.</summary>
 public class CustomerInformationDTO
