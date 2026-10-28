@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Resturant.Domain.Entity;
+namespace Resturant.Infrastructure.Identity;
 
 public class WebUser : IdentityUser
 {

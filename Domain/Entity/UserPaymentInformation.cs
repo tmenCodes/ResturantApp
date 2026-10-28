@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Resturant.Domain.Entity;
 

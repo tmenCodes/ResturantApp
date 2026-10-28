@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Resturant.Domain.Entity;
 
 using System.ComponentModel;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 
 namespace Restuarant.Application.BackgrouondServices

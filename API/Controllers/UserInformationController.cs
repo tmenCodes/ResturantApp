@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Resturant.Domain.Entity;
+using Resturant.Infrastructure.Identity;
 using Resturant.Infrastructure.Context;
 using Resturant.Application.DTO;
 

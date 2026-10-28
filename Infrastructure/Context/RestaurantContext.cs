@@ -3,6 +3,7 @@
 using System.Reflection.Metadata;
 
 using Resturant.Domain.Entity;
+using Resturant.Infrastructure.Identity;
 using Resturant.Domain.DomainEvents;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using MediatR;
