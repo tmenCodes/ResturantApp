@@ -1,4 +1,4 @@
-using Resturant.Data.Entities;
+using Resturant.Business.Dtos;
 
 namespace API.Contracts;
 
@@ -7,5 +7,5 @@ public class ViewsDto
 {
     public required string Name { get; set; }
     public Guid OrderId { get; set; }
-    public required List<MenuItem> Menus { get; set; }
+    public required List<MenuItemDto> Menus { get; set; }
 }

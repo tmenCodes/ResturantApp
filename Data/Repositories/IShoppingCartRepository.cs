@@ -18,6 +18,9 @@ namespace Resturant.Data.Repositories
 
         Task AddShoppingCartItem(ShoppingCart shoppingCartItem);
 
+        /// <summary>Marks an order item for deletion; call <see cref="SaveCartItemsAsync"/> to persist.</summary>
+        void RemoveOrderItem(OrderItem orderItem);
+
         decimal SubTotalMenuPrice(Guid menuGuid);
 
 

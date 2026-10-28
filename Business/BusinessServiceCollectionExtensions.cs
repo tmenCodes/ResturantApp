@@ -13,6 +13,8 @@ public static class BusinessServiceCollectionExtensions
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddScoped<IContactService, ContactService>();
         services.TryAddScoped<ICheckoutService, CheckoutService>();
+        services.TryAddScoped<IMenuService, MenuService>();
+        services.TryAddScoped<ICartService, CartService>();
         return services;
     }
 }

@@ -52,6 +52,11 @@ public class ShoppingCartRepository : IShoppingCartRepository
         
     }
 
+    public void RemoveOrderItem(OrderItem orderItem)
+    {
+        _context.OrderItem.Remove(orderItem);
+    }
+
     public async Task AddShoppingCartItem(ShoppingCart shoppingCartItem)
     {
         await _context.AddAsync(shoppingCartItem);
