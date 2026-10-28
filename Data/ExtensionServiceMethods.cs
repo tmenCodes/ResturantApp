@@ -11,6 +11,7 @@ public static class ExtensionServiceMethods
         services.AddScoped<IContactRepository, ContactRepository>();
         services.AddScoped<ICheckoutRepository, CheckoutRepository>();
         services.AddScoped<IMenuRepository, MenuRepository>();
+        services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
     }
 }

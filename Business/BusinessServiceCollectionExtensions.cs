@@ -15,6 +15,7 @@ public static class BusinessServiceCollectionExtensions
         services.TryAddScoped<ICheckoutService, CheckoutService>();
         services.TryAddScoped<IMenuService, MenuService>();
         services.TryAddScoped<ICartService, CartService>();
+        services.TryAddScoped<IUserProfileService, UserProfileService>();
         return services;
     }
 }
