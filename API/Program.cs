@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Resturant.Data;
+using Resturant.Business;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,7 @@ builder.Services.AddControllers()
 
 
 builder.Services.AddRepositoryService();
+builder.Services.AddBusinessLayer();
 
 
 

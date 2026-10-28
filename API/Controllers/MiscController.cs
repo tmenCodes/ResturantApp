@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Resturant.Data.Entities;
-using Resturant.Data.Context;
+using Resturant.Business.Dtos;
+using Resturant.Business.Services;
 
 namespace API.Controllers;
 
@@ -8,32 +8,30 @@ namespace API.Controllers;
 [ApiController]
 public class MiscController : Controller
 {
-    
-    private readonly RestaurantContext _context;
-    
-    public MiscController(RestaurantContext context)
+
+    private readonly IContactService _contactService;
+
+    public MiscController(IContactService contactService)
     {
-        _context = context;
+        _contactService = contactService;
     }
-    
+
     [HttpPost("BookingInformation")]
-    public async Task<IActionResult> BookingInformation(Reservation bookingInformation)
+    public async Task<IActionResult> BookingInformation(ReservationDto bookingInformation, CancellationToken cancellationToken)
     {
-        await _context.Reservations.AddAsync(bookingInformation);
-        await _context.SaveChangesAsync();
-        return Ok(bookingInformation);
+        var reservation = await _contactService.CreateReservationAsync(bookingInformation, cancellationToken);
+        return Ok(reservation);
     }
-    
-        
+
+
     [HttpPost("CustomerInquiry")]
-    public async Task<IActionResult> PostContactAsync(CustomerInquiry contact)
+    public async Task<IActionResult> PostContactAsync(CustomerInquiryDto contact, CancellationToken cancellationToken)
     {
-        await _context.CustomerInquiries.AddAsync(contact);
-        await _context.SaveChangesAsync();
-        return Ok(contact);
+        var inquiry = await _contactService.CreateInquiryAsync(contact, cancellationToken);
+        return Ok(inquiry);
     }
-    
-    
+
+
     [HttpGet("CreateGuideForFrontend")]
     public IActionResult MakeGuid()
     {
@@ -47,5 +45,5 @@ public class MiscController : Controller
         return "Test";
     }
 
-    
+
 }
