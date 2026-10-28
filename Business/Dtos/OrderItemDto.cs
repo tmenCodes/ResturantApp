@@ -1,5 +1,3 @@
-using Resturant.Data.Entities;
-
 namespace Resturant.Business.Dtos;
 
 public class OrderItemDto

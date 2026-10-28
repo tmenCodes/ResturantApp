@@ -41,7 +41,7 @@ builder.Services.AddControllers()
 
 
 
-builder.Services.AddRepositoryService();
+builder.Services.AddDataLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddBusinessLayer();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
@@ -103,12 +103,6 @@ builder.Services.AddAuthentication(options =>
      //options.User.RequireUniqueEmail = true;
 //});
 
-builder.Services.AddDbContext<RestaurantContext>(options
-      => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), 
-          optionsBuilder => optionsBuilder.MigrationsAssembly("Resturant.Data"))
-      
- //  => options.UseInMemoryDatabase("TestDB").ConfigureWarnings(warning => warning.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-);
 
 
 //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
