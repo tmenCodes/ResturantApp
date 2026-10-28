@@ -20,7 +20,7 @@ public class RegisterUser : Controller
     }
 
     [HttpPost("SignOut")]
-    public IActionResult SignOut()
+    public IActionResult Logout()
     {
         // JWT is stateless — nothing to invalidate server-side. The client discards the token.
         return Ok(new { message = "Signed out." });
