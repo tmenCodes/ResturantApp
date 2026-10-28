@@ -7,7 +7,6 @@ A restaurant management API built with ASP.NET Core. It is the middle tier of a 
 - **.NET 9** (ASP.NET Core Web API)
 - **Entity Framework Core** with **PostgreSQL** (Npgsql)
 - **ASP.NET Core Identity** + **JWT Bearer** authentication
-- **Hangfire** for background jobs
 - **Swagger / Swashbuckle** for API documentation
 
 ## Project Structure

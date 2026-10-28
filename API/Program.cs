@@ -1,4 +1,3 @@
-using Hangfire;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -106,20 +105,6 @@ builder.Services.AddAuthentication(options =>
 
 
 //builder.AddServices();
-//builder.Services.AddHangfire(configuration =>
-//{
-//    configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-//           .UseColouredConsoleLogProvider()
-//           .UseSimpleAssemblyNameTypeSerializer()
-//           .UseRecommendedSerializerSettings()
-//           .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"));
-
-
-
-//}
-//);
-//builder.Services.AddHangfireServer(); 
-
 //builder.Services.AddDbContext<ToDoContext>(opt =>
 //   opt.UseInMemoryDatabase("TodoList"));
 
@@ -196,7 +181,6 @@ app.UseCors(MyAllowSpecificOrigins);
 //app.UseCors("AllowAllHeaders");
 
 //app.UseMiddleware<ExceptionHandlingMIddleware>();
-//app.UseHangfireDashboard(); 
 app.UseAuthentication();
 app.UseAuthorization();
 //app.MapIdentityApi<WebUser>();
