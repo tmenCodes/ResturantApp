@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Resturant.Domain.Entity;
 using Resturant.Infrastructure.Identity;
+using API.Contracts;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace API.Controllers;
@@ -52,11 +53,6 @@ public class RegisterUser : Controller
 
 
 
-    public class LoginDTO
-    {
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-    }
     
     
     [HttpPost("Login")]
@@ -160,13 +156,6 @@ public class RegisterUser : Controller
     // }
     
     
-    public class WebUserDto
-    {
-        public string? FullName { get; set; }
-        public string? Username { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-    }
     
     
     

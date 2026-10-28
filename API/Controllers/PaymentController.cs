@@ -8,6 +8,7 @@ using Restuarant.Application.DTOConversions;
 using Resturant.Infrastructure.Context;
 using Resturant.Application.DTO;
 using Resturant.Domain.Entity;
+using API.Contracts;
 using Microsoft.EntityFrameworkCore;
 using MenuItem = Resturant.Domain.Entity.MenuItem;
 
@@ -44,12 +45,6 @@ namespace API.Controllers
 
 
         
-        public class ViewsDto
-        {
-            public required string Name { get; set; } 
-            public Guid OrderId { get; set; }
-            public required List<MenuItem>  Menus { get; set; }
-        }
         
         
         //TODO work on this controller in the near future-possibly use GroupBy
@@ -84,19 +79,6 @@ namespace API.Controllers
         }
         
         
-        public class CustomerInformationDTO
-        {
-            public string? Credit { get; set; }
-            public string? NameonCard { get; set; }
-            public string? CreditCardNumber { get; set; }
-            public string? Expiration { get; set; }
-            public string? CVV { get; set; }
-            public string? UserName { get; set; }
-        
-            public bool Paid { get; set; } = false;
-            public string CartsIdentity { get; set; }
-        
-        }
 
 
 
