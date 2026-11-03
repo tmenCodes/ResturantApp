@@ -1,7 +1,7 @@
+using Resturant.Application.Abstractions;
 using Resturant.Application.Dtos;
 using Resturant.Domain.Customers;
-using Resturant.Domain.Ordering;
-using Resturant.Domain.Repositories;
+
 namespace Resturant.Application.Mappings;
 
 internal static class UserProfileMappings
@@ -26,7 +26,7 @@ internal static class UserProfileMappings
         target.CVV = source.CVV;
     }
 
-    public static UserOrderHistoryDto ToHistoryDto(this ShoppingCart cart) =>
+    public static UserOrderHistoryDto ToHistoryDto(this CheckedOutCart cart) =>
         new(cart.TotalPrice, cart.Created.ToString("d"));
 
     public static UserOrderedItemDto ToDto(this CheckedOutOrderItem item) =>

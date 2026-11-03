@@ -1,3 +1,4 @@
+using Resturant.Application.Abstractions;
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Domain.Customers;
@@ -12,11 +13,13 @@ public class UserProfileService : IUserProfileService
     private const int RecentOrderLimit = 5;
 
     private readonly IUserProfileRepository _userProfileRepository;
+    private readonly IOrderHistoryQueries _orderHistoryQueries;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UserProfileService(IUserProfileRepository userProfileRepository, IUnitOfWork unitOfWork)
+    public UserProfileService(IUserProfileRepository userProfileRepository, IOrderHistoryQueries orderHistoryQueries, IUnitOfWork unitOfWork)
     {
         _userProfileRepository = userProfileRepository;
+        _orderHistoryQueries = orderHistoryQueries;
         _unitOfWork = unitOfWork;
     }
 
@@ -50,7 +53,7 @@ public class UserProfileService : IUserProfileService
 
     public async Task<IReadOnlyList<UserOrderHistoryDto>> GetRecentOrderTotalsAsync(string userName, CancellationToken cancellationToken = default)
     {
-        var carts = await _userProfileRepository.GetCheckedOutCartsAsync(userName, cancellationToken);
+        var carts = await _orderHistoryQueries.GetCheckedOutCartsAsync(userName, cancellationToken);
         return carts
             .Select(cart => cart.ToHistoryDto())
             .OrderBy(history => history.Date)
@@ -60,7 +63,7 @@ public class UserProfileService : IUserProfileService
 
     public async Task<IReadOnlyList<UserOrderedItemDto>> GetOrderedItemsAsync(string userName, CancellationToken cancellationToken = default)
     {
-        var items = await _userProfileRepository.GetCheckedOutOrderItemsAsync(userName, cancellationToken);
+        var items = await _orderHistoryQueries.GetCheckedOutOrderItemsAsync(userName, cancellationToken);
         return items.Select(item => item.ToDto()).ToList();
     }
 }

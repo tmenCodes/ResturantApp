@@ -6,6 +6,7 @@ using Resturant.Domain.Repositories;
 using Resturant.Infrastructure.Auth;
 using Resturant.Infrastructure.Identity;
 using Resturant.Infrastructure.Persistence;
+using Resturant.Infrastructure.Persistence.Queries;
 using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace Resturant.Infrastructure;
@@ -38,5 +39,6 @@ public static class InfrastructureServiceCollectionExtensions
         services.TryAddScoped<ICheckoutRepository, CheckoutRepository>();
         services.TryAddScoped<IMenuRepository, MenuRepository>();
         services.TryAddScoped<IUserProfileRepository, UserProfileRepository>();
+        services.TryAddScoped<IOrderHistoryQueries, OrderHistoryQueries>();
     }
 }

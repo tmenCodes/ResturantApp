@@ -55,18 +55,21 @@ providers. The outer ring plugs technology in by implementing interfaces that th
 4. **Rules live as far inward as possible.** A rule about one entity is a method on that entity. A rule that needs
    several entities or a repository is a Domain Service. Application Services only orchestrate: load, call the
    domain, save, map to DTOs.
-5. **Non-domain concerns are Application abstractions.** `IUserAccountStore` and `ITokenIssuer` live in
+5. **Reports are queries, not repositories.** Read-only views that join several tables (order history) are
+   Application query interfaces returning read models, implemented in `Infrastructure/Persistence/Queries`.
+   Domain repositories return entities only.
+6. **Non-domain concerns are Application abstractions.** `IUserAccountStore` and `ITokenIssuer` live in
    `Resturant.Application.Abstractions`; `UserManager`, `WebUser`, `IdentityError` and `JwtSecurityTokenHandler`
    exist only in Infrastructure.
-6. **Controllers depend only on `Resturant.Application.Interfaces`** and translate results into HTTP responses.
-7. **Entities never leave the Application ring.** Application interfaces take and return DTOs whose property
+7. **Controllers depend only on `Resturant.Application.Interfaces`** and translate results into HTTP responses.
+8. **Entities never leave the Application ring.** Application interfaces take and return DTOs whose property
    names match the entities, so **the JSON the Angular app receives does not change**.
-8. **Composition is idempotent.** `AddApplication()` (which also registers Domain Services) and
+9. **Composition is idempotent.** `AddApplication()` (which also registers Domain Services) and
    `AddInfrastructure(...)` register with `TryAdd*`.
-9. **Domain Services share the Domain project.** They are a separate ring by convention, in `Domain/Services`,
+10. **Domain Services share the Domain project.** They are a separate ring by convention, in `Domain/Services`,
    rather than a separate project. They must not depend on the Application or outer rings, and entities must not
    depend on them.
-10. **Rings are tested.** `Application.Tests/ArchitectureTests` fails if an inner ring gains a reference to an outer
+11. **Rings are tested.** `Application.Tests/ArchitectureTests` fails if an inner ring gains a reference to an outer
    ring or to a framework.
 
 ## Project layout
@@ -78,17 +81,18 @@ Domain/
   Customers/            SavedPaymentMethod
   Contact/              Reservation, CustomerInquiry
   Repositories/         IUnitOfWork, IMenuRepository, IShoppingCartRepository, ICheckoutRepository,
-                        IContactRepository, IUserProfileRepository, CheckedOutOrderItem
+                        IContactRepository, IUserProfileRepository
   Services/Ordering/    Domain Services: IOrderItemFactory, OrderItemFactory, ICheckoutEligibility, CheckoutEligibility
 Application/
   Interfaces/           IMenuService, ICartService, ICheckoutService, IContactService,
                         IUserProfileService, IAccountService
   Services/             one implementation per interface
-  Abstractions/         IUserAccountStore, ITokenIssuer, UserAccount, ...
+  Abstractions/         IUserAccountStore, ITokenIssuer, UserAccount, ...; read-side queries
+                        IOrderHistoryQueries with read models CheckedOutCart, CheckedOutOrderItem
   Dtos/, Mappings/
   ApplicationServiceCollectionExtensions.cs      AddApplication()
 Infrastructure/
-  Persistence/          RestaurantContext, EfUnitOfWork, Configurations/, Repositories/, Migrations/
+  Persistence/          RestaurantContext, EfUnitOfWork, Configurations/, Repositories/, Queries/, Migrations/
   Identity/             WebUser, IdentityUserAccountStore, IdentityServiceCollectionExtensions
   Auth/                 JwtSettings, JwtTokenIssuer
   InfrastructureServiceCollectionExtensions.cs   AddInfrastructure()
@@ -105,7 +109,7 @@ Application.Tests/      application services and Infrastructure (xUnit + EF Core
 | `OrderController`, menu endpoints | `MenuService` | | `IMenuRepository` |
 | `OrderController`, cart endpoints | `CartService` | `IOrderItemFactory` | `IShoppingCartRepository` |
 | `PaymentController` | `CheckoutService` | `ICheckoutEligibility` | `ICheckoutRepository` |
-| `UserInformationController` | `UserProfileService` | | `IUserProfileRepository` |
+| `UserInformationController` | `UserProfileService` | | `IUserProfileRepository`, `IOrderHistoryQueries` |
 | `RegisterUser` | `AccountService` | | `IUserAccountStore`, `ITokenIssuer` |
 | `MiscController` | `ContactService` | | `IContactRepository` |
 

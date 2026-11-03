@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Customers;
-using Resturant.Domain.Ordering;
 using Resturant.Domain.Repositories;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;
@@ -26,25 +25,5 @@ public class UserProfileRepository : IUserProfileRepository
     public async Task AddPaymentMethodAsync(SavedPaymentMethod paymentMethod, CancellationToken cancellationToken = default)
     {
         await _context.SavedPaymentMethods.AddAsync(paymentMethod, cancellationToken);
-    }
-
-    public Task<List<ShoppingCart>> GetCheckedOutCartsAsync(string userName, CancellationToken cancellationToken = default)
-    {
-        var carts =
-            from checkout in _context.Checkouts
-            where checkout.UserProfileName == userName
-            join cart in _context.ShoppingCarts on checkout.ShoppingCartIdentity equals cart.Identity
-            select cart;
-        return carts.ToListAsync(cancellationToken);
-    }
-
-    public Task<List<CheckedOutOrderItem>> GetCheckedOutOrderItemsAsync(string userName, CancellationToken cancellationToken = default)
-    {
-        var items =
-            from checkout in _context.Checkouts
-            where checkout.UserProfileName == userName
-            join item in _context.OrderItem on checkout.ShoppingCartIdentity equals item.ShoppingCartIdentity
-            select new CheckedOutOrderItem(checkout.CheckoutTime, checkout.ShoppingCartIdentity, item.Name, item.TotalItemPrice);
-        return items.ToListAsync(cancellationToken);
     }
 }

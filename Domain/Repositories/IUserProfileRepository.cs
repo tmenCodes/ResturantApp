@@ -1,8 +1,8 @@
 using Resturant.Domain.Customers;
-using Resturant.Domain.Ordering;
+
 namespace Resturant.Domain.Repositories;
 
-/// <summary>Reads and writes a user's saved payment method and order history.</summary>
+/// <summary>Reads and writes a user's saved payment method.</summary>
 public interface IUserProfileRepository
 {
     /// <summary>
@@ -13,10 +13,4 @@ public interface IUserProfileRepository
 
     /// <summary>Stages a new payment method; <see cref="IUnitOfWork.SaveChangesAsync"/> persists it and assigns its <see cref="SavedPaymentMethod.Id"/>.</summary>
     Task AddPaymentMethodAsync(SavedPaymentMethod paymentMethod, CancellationToken cancellationToken = default);
-
-    /// <summary>Returns the shopping carts the user has checked out, one per checkout.</summary>
-    Task<List<ShoppingCart>> GetCheckedOutCartsAsync(string userName, CancellationToken cancellationToken = default);
-
-    /// <summary>Returns every item in the shopping carts the user has checked out.</summary>
-    Task<List<CheckedOutOrderItem>> GetCheckedOutOrderItemsAsync(string userName, CancellationToken cancellationToken = default);
 }
