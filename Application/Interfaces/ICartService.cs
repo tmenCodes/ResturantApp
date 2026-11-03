@@ -26,7 +26,7 @@ public interface ICartService
     /// Adds a menu item, with its options, to the cart named by <see cref="OrderItemDto.GuidId"/>, creating the cart
     /// when it does not exist yet. Unknown option names are ignored.
     /// </summary>
-    /// <exception cref="InvalidOperationException">No menu item has the requested name.</exception>
+    /// <exception cref="Resturant.Domain.Exceptions.MenuItemNotFoundException">No menu item has the requested name.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The quantity is not greater than zero.</exception>
     Task<AddToCartResultDto> AddItemAsync(OrderItemDto request, CancellationToken cancellationToken = default);
 }

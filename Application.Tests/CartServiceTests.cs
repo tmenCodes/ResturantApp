@@ -3,6 +3,7 @@ using Resturant.Application.Dtos;
 using Resturant.Application.Interfaces;
 using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
+using Resturant.Domain.Exceptions;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 using Resturant.Infrastructure.Persistence.Repositories;
@@ -109,7 +110,7 @@ public class CartServiceTests
         var request = Request(Guid.NewGuid());
         request.Name = "Not On The Menu";
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => CreateService(context).AddItemAsync(request));
+        await Assert.ThrowsAsync<MenuItemNotFoundException>(() => CreateService(context).AddItemAsync(request));
 
         Assert.Empty(context.ShoppingCarts);
     }

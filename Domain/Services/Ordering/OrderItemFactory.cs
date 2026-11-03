@@ -1,3 +1,4 @@
+using Resturant.Domain.Exceptions;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Repositories;
@@ -17,7 +18,7 @@ public class OrderItemFactory : IOrderItemFactory
     public async Task<OrderItemFromMenu> CreateAsync(string? menuItemName, IEnumerable<string> optionNames, int quantity, CancellationToken cancellationToken = default)
     {
         var menuItem = await _menuRepository.GetMenuItemByNameAsync(menuItemName, cancellationToken)
-                       ?? throw new InvalidOperationException($"Menu item '{menuItemName}' was not found.");
+                       ?? throw new MenuItemNotFoundException(menuItemName);
         var options = await FindOptionsAsync(optionNames, cancellationToken);
         return new OrderItemFromMenu(menuItem, OrderItem.Create(menuItem, options, quantity));
     }

@@ -1,4 +1,5 @@
 using Domain.Tests.Fakes;
+using Resturant.Domain.Exceptions;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Services.Ordering;
 
@@ -38,7 +39,7 @@ public class OrderItemFactoryTests
     [Fact]
     public async Task CreateAsync_UnknownMenuItem_Throws()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _factory.CreateAsync("Not On The Menu", [], 1));
+        await Assert.ThrowsAsync<MenuItemNotFoundException>(() => _factory.CreateAsync("Not On The Menu", [], 1));
     }
 
     [Fact]

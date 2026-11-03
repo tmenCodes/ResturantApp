@@ -17,6 +17,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using API.Filters;
 using Resturant.Infrastructure;
 using Resturant.Application;
 using Resturant.Infrastructure.Auth;
@@ -27,7 +28,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options => options.Filters.Add<DomainExceptionFilter>())
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
