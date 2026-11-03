@@ -20,9 +20,6 @@ ResturantApp/
 ├── Application.Tests/    # Application service, infrastructure and architecture tests
 ├── Domain.Tests/         # Domain Model and Domain Services unit tests
 ├── docs/                 # Architecture documentation
-├── OrderControllerTest/  # Integration tests
-├── TestProject1/         # Unit tests
-├── UnitTesting1/         # Unit tests
 └── Resturant.sln         # Solution file
 ```
 
