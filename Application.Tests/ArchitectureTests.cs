@@ -19,7 +19,6 @@ public class ArchitectureTests
     ];
 
     private static readonly Assembly DomainModel = typeof(ShoppingCart).Assembly;
-    private static readonly Assembly DomainServices = typeof(OrderItemFactory).Assembly;
     private static readonly Assembly ApplicationServices = typeof(ApplicationServiceCollectionExtensions).Assembly;
 
     private static IReadOnlyList<string> ProjectReferences(Assembly assembly) =>
@@ -36,16 +35,17 @@ public class ArchitectureTests
     }
 
     [Fact]
-    public void DomainServices_DependOnlyOnDomainModel()
+    public void DomainServices_BelongToDomainProject()
     {
-        Assert.Equal(["Resturant.Domain"], ProjectReferences(DomainServices));
-        Assert.Empty(FrameworkReferences(DomainServices));
+        Assert.Same(DomainModel, typeof(OrderItemFactory).Assembly);
+        Assert.Same(DomainModel, typeof(CheckoutEligibility).Assembly);
+        Assert.Contains(DomainModel.GetTypes(), t => t.Namespace?.StartsWith("Resturant.Domain.Services") == true);
     }
 
     [Fact]
-    public void ApplicationServices_DependOnlyOnDomainRings()
+    public void ApplicationServices_DependOnlyOnDomain()
     {
-        Assert.Equal(["Resturant.Domain", "Resturant.Domain.Services"], ProjectReferences(ApplicationServices));
+        Assert.Equal(["Resturant.Domain"], ProjectReferences(ApplicationServices));
         Assert.Empty(FrameworkReferences(ApplicationServices));
     }
 

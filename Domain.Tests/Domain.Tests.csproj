@@ -18,7 +18,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Domain\Resturant.Domain.csproj"/>
-        <ProjectReference Include="..\Domain.Services\Resturant.Domain.Services.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

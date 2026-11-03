@@ -1,6 +1,6 @@
 # ResturantApp
 
-A restaurant management API built with ASP.NET Core. It is the middle tier of a 3-tier application (Angular → API → PostgreSQL) and follows onion architecture: Domain, Domain.Services and Application are the inner rings, and Infrastructure and API form the outer ring. Every dependency points inward. See [docs/architecture.md](docs/architecture.md).
+A restaurant management API built with ASP.NET Core. It is the middle tier of a 3-tier application (Angular → API → PostgreSQL) and follows onion architecture: Domain (Domain Model and Domain Services) and Application are the inner rings, and Infrastructure and API form the outer ring. Every dependency points inward. See [docs/architecture.md](docs/architecture.md).
 
 ## Tech Stack
 
@@ -15,8 +15,7 @@ A restaurant management API built with ASP.NET Core. It is the middle tier of a 
 ResturantApp/
 ├── API/                  # Outer ring: controllers, contracts, composition root
 ├── Application/          # Application Services: services, interfaces, DTOs, abstractions
-├── Domain/               # Domain Model: entities, their rules, repository interfaces
-├── Domain.Services/      # Domain Services: rules spanning entities or repositories
+├── Domain/               # Domain Model (entities, repository interfaces) and Domain Services (Services/)
 ├── Infrastructure/       # Outer ring: EF Core/PostgreSQL, Identity, JWT, migrations
 ├── Application.Tests/    # Application service, infrastructure and architecture tests
 ├── Domain.Tests/         # Domain Model and Domain Services unit tests

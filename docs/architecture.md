@@ -39,8 +39,8 @@ providers. The outer ring plugs technology in by implementing interfaces that th
 | Ring | Project | Namespace root | Responsibility | May reference |
 |---|---|---|---|---|
 | Domain Model | `Domain` | `Resturant.Domain` | Entities and their own rules (cart totals, item pricing, checkout creation); repository interfaces in `Repositories/` | nothing |
-| Domain Services | `Domain.Services` | `Resturant.Domain.Services` | Domain rules that span entities or need a repository: building an order item from the menu, checkout eligibility | `Domain` |
-| Application Services | `Application` | `Resturant.Application` | Use cases (`Services/`) behind interfaces (`Interfaces/`), DTOs, mappings, and abstractions for non-domain concerns (`Abstractions/`: user accounts, tokens) | `Domain`, `Domain.Services`, `Microsoft.Extensions.DependencyInjection.Abstractions` (for `AddApplication()`) |
+| Domain Services | `Domain` (`Services/` folder) | `Resturant.Domain.Services` | Domain rules that span entities or need a repository: building an order item from the menu, checkout eligibility. May use only entities and repository interfaces | nothing outside `Domain` |
+| Application Services | `Application` | `Resturant.Application` | Use cases (`Services/`) behind interfaces (`Interfaces/`), DTOs, mappings, and abstractions for non-domain concerns (`Abstractions/`: user accounts, tokens) | `Domain`, `Microsoft.Extensions.DependencyInjection.Abstractions` (for `AddApplication()`) |
 | Outer | `Infrastructure` | `Resturant.Infrastructure` | EF Core context, entity configurations, migrations, seed data, repository implementations, ASP.NET Identity account store, JWT issuer | `Application`, `Domain`, EF Core, Npgsql, Identity |
 | Outer | `API` | `API` | HTTP: routing, model binding, auth attributes, status codes. `Program.cs` is the composition root | `Application`; `Infrastructure` only from `Program.cs` |
 
@@ -61,7 +61,10 @@ providers. The outer ring plugs technology in by implementing interfaces that th
    names match the entities, so **the JSON the Angular app receives does not change**.
 8. **Composition is idempotent.** `AddApplication()` (which also registers Domain Services) and
    `AddInfrastructure(...)` register with `TryAdd*`.
-9. **Rings are tested.** `Application.Tests/ArchitectureTests` fails if an inner ring gains a reference to an outer
+9. **Domain Services share the Domain project.** They are a separate ring by convention, in `Domain/Services`,
+   rather than a separate project. They must not depend on the Application or outer rings, and entities must not
+   depend on them.
+10. **Rings are tested.** `Application.Tests/ArchitectureTests` fails if an inner ring gains a reference to an outer
    ring or to a framework.
 
 ## Project layout
@@ -74,8 +77,7 @@ Domain/
   Contact/              Reservation, CustomerInquiry
   Repositories/         IMenuRepository, IShoppingCartRepository, ICheckoutRepository,
                         IContactRepository, IUserProfileRepository, CheckedOutOrderItem
-Domain.Services/
-  Ordering/             IOrderItemFactory, OrderItemFactory, ICheckoutEligibility, CheckoutEligibility
+  Services/Ordering/    Domain Services: IOrderItemFactory, OrderItemFactory, ICheckoutEligibility, CheckoutEligibility
 Application/
   Interfaces/           IMenuService, ICartService, ICheckoutService, IContactService,
                         IUserProfileService, IAccountService
