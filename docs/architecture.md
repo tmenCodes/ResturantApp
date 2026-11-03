@@ -73,7 +73,8 @@ providers. The outer ring plugs technology in by implementing interfaces that th
    rather than a separate project. They must not depend on the Application or outer rings, and entities must not
    depend on them.
 11. **Rings are tested.** `Application.Tests/ArchitectureTests` fails if an inner ring gains a reference to an outer
-   ring or to a framework.
+   ring or to a framework, if a controller injects anything but Application interfaces and loggers or exposes a
+   Domain or Infrastructure type, or if an entity depends on a Domain Service.
 
 ## Project layout
 
