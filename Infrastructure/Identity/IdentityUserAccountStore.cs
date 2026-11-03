@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Resturant.Application.Dtos;
 using Resturant.Application.Abstractions;
 
 namespace Resturant.Infrastructure.Identity;

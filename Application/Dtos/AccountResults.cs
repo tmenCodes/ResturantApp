@@ -1,3 +1,5 @@
+using Resturant.Application.Abstractions;
+
 namespace Resturant.Application.Dtos;
 
 /// <summary>Why an account creation attempt succeeded or was rejected.</summary>
@@ -7,9 +9,6 @@ public enum CreateAccountStatus
     EmailInUse,
     Rejected
 }
-
-/// <summary>A reason the identity provider rejected an account, serialized as <c>{ code, description }</c>.</summary>
-public record AccountError(string Code, string Description);
 
 /// <summary>
 /// The outcome of an account creation attempt. <see cref="UserName"/> and <see cref="Email"/> are set when
