@@ -22,7 +22,7 @@ public class CheckoutServiceTests
     private static async Task<Guid> AddCartAsync(RestaurantContext context)
     {
         var identity = Guid.NewGuid();
-        context.ShoppingCarts.Add(new ShoppingCart { Identity = identity, Created = Now.UtcDateTime });
+        context.ShoppingCarts.Add(ShoppingCart.Create(identity, Now.UtcDateTime));
         await context.SaveChangesAsync();
         return identity;
     }

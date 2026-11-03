@@ -5,12 +5,12 @@ namespace Domain.Tests;
 
 public class OrderItemTests
 {
-    private static readonly MenuItem TofuStirFry = new() { Name = "Tofu Stir Fry", Description = "Tofu", BasePrice = 10m };
+    private static readonly MenuItem TofuStirFry = new("Tofu Stir Fry", "Tofu", 10m);
 
     private static readonly MenuItemOption[] Options =
     [
-        new() { Name = "Extra Tofu", Price = 1m },
-        new() { Name = "Soy Sauce", Price = 0.5m }
+        new("Extra Tofu", 1m),
+        new("Soy Sauce", 0.5m)
     ];
 
     [Fact]

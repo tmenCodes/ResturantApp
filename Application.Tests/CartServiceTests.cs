@@ -21,10 +21,10 @@ public class CartServiceTests
 
     private static async Task SeedMenuAsync(RestaurantContext context)
     {
-        context.MenuItems.Add(new MenuItem { Name = "Tofu Stir Fry", Description = "Tofu", ImageUrl = "Tofu.png", BasePrice = 10m });
+        context.MenuItems.Add(new MenuItem("Tofu Stir Fry", "Tofu", 10m, "Tofu.png"));
         context.MenuItemOptions.AddRange(
-            new MenuItemOption { Name = "Extra Tofu", Price = 1m },
-            new MenuItemOption { Name = "Soy Sauce", Price = 0.5m });
+            new MenuItemOption("Extra Tofu", 1m),
+            new MenuItemOption("Soy Sauce", 0.5m));
         await context.SaveChangesAsync();
     }
 

@@ -1,19 +1,17 @@
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 
+using Domain.Tests.Fakes;
+
 namespace Domain.Tests;
 
 public class ShoppingCartTests
 {
     private static readonly DateTime Now = new(2026, 10, 28, 12, 0, 0, DateTimeKind.Utc);
-    private static readonly MenuItem TofuStirFry = new() { Name = "Tofu Stir Fry", Description = "Tofu", BasePrice = 10m };
+    private static readonly MenuItem TofuStirFry = new("Tofu Stir Fry", "Tofu", 10m);
 
-    private static OrderItem Item(int id, int quantity)
-    {
-        var item = OrderItem.Create(TofuStirFry, [], quantity);
-        item.Id = id;
-        return item;
-    }
+    private static OrderItem Item(int id, int quantity) =>
+        OrderItem.Create(TofuStirFry, [], quantity).WithId(id);
 
     [Fact]
     public void Create_StartsEmptyWithDefaultTaxRate()

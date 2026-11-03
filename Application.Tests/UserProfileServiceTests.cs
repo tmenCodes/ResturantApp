@@ -6,6 +6,8 @@ using Resturant.Domain.Ordering;
 using Resturant.Infrastructure.Persistence.Repositories;
 using Resturant.Infrastructure.Persistence.Queries;
 
+using Resturant.Domain.Menu;
+
 namespace Application.Tests;
 
 public class UserProfileServiceTests
@@ -22,16 +24,16 @@ public class UserProfileServiceTests
         var cart = ShoppingCart.Create(identity, created);
         context.ShoppingCarts.Add(cart);
         context.Entry(cart).Property(x => x.TotalPrice).CurrentValue = total;
-        context.Checkouts.Add(new Checkout { UserProfileName = userName, ShoppingCartIdentity = identity, CheckoutTime = created, Paid = true });
+        context.Checkouts.Add(Checkout.PayFor(identity, new PaymentCard("Visa", null, null, null, null), userName, created));
         await context.SaveChangesAsync();
         return identity;
     }
 
     private static void AddOrderItem(RestaurantContext context, string name, decimal totalItemPrice, Guid cart)
     {
-        var item = new OrderItem { Name = name, ShoppingCartIdentity = cart };
+        var item = OrderItem.Create(new MenuItem(name, string.Empty, totalItemPrice), [], quantity: 1);
         context.OrderItem.Add(item);
-        context.Entry(item).Property(x => x.TotalItemPrice).CurrentValue = totalItemPrice;
+        context.Entry(item).Property(x => x.ShoppingCartIdentity).CurrentValue = cart;
     }
 
     [Fact]

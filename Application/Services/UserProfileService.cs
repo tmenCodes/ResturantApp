@@ -25,8 +25,7 @@ public class UserProfileService : IUserProfileService
 
     public async Task<SavedPaymentMethodDto> AddPaymentMethodAsync(string userName, UserPaymentInformationDto paymentInformation, CancellationToken cancellationToken = default)
     {
-        var paymentMethod = new SavedPaymentMethod { UserName = userName };
-        paymentInformation.ApplyTo(paymentMethod);
+        var paymentMethod = SavedPaymentMethod.Create(userName, paymentInformation.ToPaymentCard());
         await _userProfileRepository.AddPaymentMethodAsync(paymentMethod, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return paymentMethod.ToDto();
@@ -46,7 +45,7 @@ public class UserProfileService : IUserProfileService
             return null;
         }
 
-        paymentInformation.ApplyTo(paymentMethod);
+        paymentMethod.UpdateCard(paymentInformation.ToPaymentCard());
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return paymentMethod.ToDto();
     }

@@ -12,8 +12,8 @@ public class OrderItemFactoryTests
 
     public OrderItemFactoryTests()
     {
-        _menu.MenuItems.Add(new MenuItem { Name = "Tofu Stir Fry", Description = "Tofu", BasePrice = 10m });
-        _menu.Options.Add(new MenuItemOption { Name = "Extra Tofu", Price = 1m });
+        _menu.MenuItems.Add(new MenuItem("Tofu Stir Fry", "Tofu", 10m));
+        _menu.Options.Add(new MenuItemOption("Extra Tofu", 1m));
         _factory = new OrderItemFactory(_menu);
     }
 

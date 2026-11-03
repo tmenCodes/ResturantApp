@@ -49,6 +49,9 @@ providers. The outer ring plugs technology in by implementing interfaces that th
 1. **Dependencies point inward only.** A ring may use the rings inside it, never the ones outside it.
 2. **The Domain Model is plain C#.** It has no EF Core, ASP.NET, JSON or data-annotation attributes. EF maps the
    entities through `IEntityTypeConfiguration<T>` classes in `Infrastructure/Persistence/Configurations`.
+   Entities have no public setters and expose collections as read-only; they change only through their own
+   constructors and methods (`ShoppingCart.AddItem`, `SavedPaymentMethod.UpdateCard`, ...), so rules like cart totals
+   can't be bypassed. EF uses their private setters and backing fields. `Domain.Tests/EncapsulationTests` guards this.
 3. **Repository interfaces belong to the Domain Model** (`Resturant.Domain.Repositories`). Infrastructure implements them.
    Repositories only read and stage changes. Application Services commit once per request through `IUnitOfWork`,
    so related changes are saved together.

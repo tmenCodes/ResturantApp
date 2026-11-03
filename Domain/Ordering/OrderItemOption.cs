@@ -1,17 +1,23 @@
 namespace Resturant.Domain.Ordering;
 
+/// <summary>An option chosen for an order item, with the price it had when it was chosen.</summary>
 public class OrderItemOption
 {
-    public int Id { get; set; }
-    
-    //name and order can be checked 
-    public string Name { get; set; }
-    public decimal Price { get; set; }
-    //public string Type { get; set; }
-     
-    // Foreign key to the parent OrderItem--
-        
-      public OrderItem OrderItem { get; set; }  
-      public int OrderItemId { get; set; }
+    private OrderItemOption()
+    {
+        Name = string.Empty;
+    }
 
+    internal OrderItemOption(string name, decimal price)
+    {
+        Name = name;
+        Price = price;
+    }
+
+    public int Id { get; private set; }
+    public string Name { get; private set; }
+    public decimal Price { get; private set; }
+
+    public OrderItem OrderItem { get; private set; } = null!;
+    public int OrderItemId { get; private set; }
 }

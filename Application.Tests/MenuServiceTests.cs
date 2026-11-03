@@ -10,9 +10,9 @@ public class MenuServiceTests
     private static async Task SeedAsync(RestaurantContext context)
     {
         context.MenuItems.AddRange(
-            new MenuItem { Name = "Papaya Salad", Description = "Green papaya", ImageUrl = "PapayaSalad.png", BasePrice = 8.5m },
-            new MenuItem { Name = "Tofu Stir Fry", Description = "Tofu, peppers", ImageUrl = "TofuStirFry.png", BasePrice = 10m });
-        context.MenuItemOptions.Add(new MenuItemOption { Name = "Extra Tofu", Price = 1m });
+            new MenuItem("Papaya Salad", "Green papaya", 8.5m, "PapayaSalad.png"),
+            new MenuItem("Tofu Stir Fry", "Tofu, peppers", 10m, "TofuStirFry.png"));
+        context.MenuItemOptions.Add(new MenuItemOption("Extra Tofu", 1m));
         await context.SaveChangesAsync();
     }
 

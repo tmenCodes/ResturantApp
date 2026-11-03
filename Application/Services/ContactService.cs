@@ -19,16 +19,9 @@ public class ContactService : IContactService
 
     public async Task<ReservationDto> CreateReservationAsync(ReservationDto reservation, CancellationToken cancellationToken = default)
     {
-        var entity = new Reservation
-        {
-            Name = reservation.Name,
-            Email = reservation.Email,
-            Phone = reservation.Phone,
-            Date = reservation.Date,
-            Time = reservation.Time,
-            People = reservation.People,
-            Message = reservation.Message
-        };
+        var entity = new Reservation(
+            reservation.Name, reservation.Email, reservation.Phone, reservation.Date, reservation.Time,
+            reservation.People, reservation.Message);
         await _contactRepository.AddReservationAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(entity);
@@ -36,13 +29,7 @@ public class ContactService : IContactService
 
     public async Task<CustomerInquiryDto> CreateInquiryAsync(CustomerInquiryDto inquiry, CancellationToken cancellationToken = default)
     {
-        var entity = new CustomerInquiry
-        {
-            Name = inquiry.Name,
-            Email = inquiry.Email,
-            Subject = inquiry.Subject,
-            Message = inquiry.Message
-        };
+        var entity = new CustomerInquiry(inquiry.Name, inquiry.Email, inquiry.Subject, inquiry.Message);
         await _contactRepository.AddInquiryAsync(entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(entity);
