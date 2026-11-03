@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.In;
-using Resturant.Application.UseCases;
+using Resturant.Application.Interfaces;
+using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;

@@ -1,5 +1,5 @@
 using Resturant.Application.Dtos;
-namespace Resturant.Application.Ports.In;
+namespace Resturant.Application.Interfaces;
 
 /// <summary>Handles reservations and contact inquiries submitted by customers.</summary>
 public interface IContactService

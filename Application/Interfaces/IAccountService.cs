@@ -1,6 +1,6 @@
 using Resturant.Application.Dtos;
 
-namespace Resturant.Application.Ports.In;
+namespace Resturant.Application.Interfaces;
 
 /// <summary>Registers users, checks credentials and looks up registered accounts.</summary>
 public interface IAccountService

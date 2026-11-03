@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.In;
+using Resturant.Application.Interfaces;
 using API.Contracts;
 
 namespace API.Controllers;

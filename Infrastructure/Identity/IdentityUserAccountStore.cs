@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Abstractions;
 
 namespace Resturant.Infrastructure.Identity;
 
-/// <summary>ASP.NET Core Identity adapter for <see cref="IUserAccountStore"/>.</summary>
+/// <summary>ASP.NET Core Identity implementation of <see cref="IUserAccountStore"/>.</summary>
 public class IdentityUserAccountStore : IUserAccountStore
 {
     private readonly UserManager<WebUser> _userManager;

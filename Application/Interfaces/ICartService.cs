@@ -1,5 +1,5 @@
 using Resturant.Application.Dtos;
-namespace Resturant.Application.Ports.In;
+namespace Resturant.Application.Interfaces;
 
 /// <summary>Manages shopping carts: adding and removing items and keeping subtotal, tax and total up to date.</summary>
 public interface ICartService

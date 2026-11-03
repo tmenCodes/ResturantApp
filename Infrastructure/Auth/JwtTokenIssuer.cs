@@ -3,10 +3,10 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Abstractions;
 namespace Resturant.Infrastructure.Auth;
 
-/// <summary>HMAC-SHA256 JWT adapter for <see cref="ITokenIssuer"/>.</summary>
+/// <summary>HMAC-SHA256 JWT implementation of <see cref="ITokenIssuer"/>.</summary>
 public class JwtTokenIssuer : ITokenIssuer
 {
     private readonly JwtSettings _settings;

@@ -1,5 +1,5 @@
 using Resturant.Application.Dtos;
-namespace Resturant.Application.Ports.In;
+namespace Resturant.Application.Interfaces;
 
 /// <summary>Records payment for shopping carts and lists past checkouts.</summary>
 public interface ICheckoutService

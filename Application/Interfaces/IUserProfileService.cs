@@ -1,5 +1,5 @@
 using Resturant.Application.Dtos;
-namespace Resturant.Application.Ports.In;
+namespace Resturant.Application.Interfaces;
 
 /// <summary>Manages a signed-in user's saved payment method and reads their order history.</summary>
 public interface IUserProfileService

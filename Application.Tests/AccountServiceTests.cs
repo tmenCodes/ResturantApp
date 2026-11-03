@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Abstractions;
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.In;
-using Resturant.Application.UseCases;
+using Resturant.Application.Interfaces;
+using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Infrastructure.Identity;
 namespace Application.Tests;

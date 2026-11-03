@@ -1,9 +1,9 @@
 using Resturant.Application.Dtos;
 using Resturant.Domain.Contact;
 using Resturant.Domain.Repositories;
-using Resturant.Application.Ports.In;
+using Resturant.Application.Interfaces;
 
-namespace Resturant.Application.UseCases;
+namespace Resturant.Application.Services;
 
 /// <summary>Default <see cref="IContactService"/> backed by <see cref="IContactRepository"/>.</summary>
 public class ContactService : IContactService

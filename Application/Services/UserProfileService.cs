@@ -2,9 +2,9 @@ using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Domain.Customers;
 using Resturant.Domain.Repositories;
-using Resturant.Application.Ports.In;
+using Resturant.Application.Interfaces;
 
-namespace Resturant.Application.UseCases;
+namespace Resturant.Application.Services;
 
 /// <summary>Default <see cref="IUserProfileService"/>.</summary>
 public class UserProfileService : IUserProfileService

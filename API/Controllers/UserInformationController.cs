@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.In;
+using Resturant.Application.Interfaces;
 namespace API.Controllers;
 
 [Route("api/[controller]")]

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Abstractions;
 using Resturant.Domain.Repositories;
 using Resturant.Infrastructure.Auth;
 using Resturant.Infrastructure.Identity;
@@ -10,7 +10,7 @@ using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace Resturant.Infrastructure;
 
-/// <summary>Registers the adapters that implement the application core's outbound ports.</summary>
+/// <summary>Registers the outer-ring implementations of the Domain repositories and Application abstractions.</summary>
 public static class InfrastructureServiceCollectionExtensions
 {
     private const string MigrationsAssembly = "Resturant.Infrastructure";

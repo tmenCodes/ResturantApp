@@ -4,7 +4,7 @@ using Resturant.Domain.Ordering;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;
 
-/// <summary>EF Core adapter for <see cref="IShoppingCartRepository"/>.</summary>
+/// <summary>EF Core implementation of <see cref="IShoppingCartRepository"/>.</summary>
 public class ShoppingCartRepository : IShoppingCartRepository
 {
     private readonly RestaurantContext _context;

@@ -1,4 +1,4 @@
-namespace Resturant.Application.Ports.Out;
+namespace Resturant.Application.Abstractions;
 
 /// <summary>Issues signed access tokens that identify a user.</summary>
 public interface ITokenIssuer

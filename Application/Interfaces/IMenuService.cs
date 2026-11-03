@@ -1,5 +1,5 @@
 using Resturant.Application.Dtos;
-namespace Resturant.Application.Ports.In;
+namespace Resturant.Application.Interfaces;
 
 /// <summary>Provides the restaurant menu to the presentation layer.</summary>
 public interface IMenuService

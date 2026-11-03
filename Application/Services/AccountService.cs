@@ -1,9 +1,9 @@
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
-using Resturant.Application.Ports.In;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Interfaces;
+using Resturant.Application.Abstractions;
 
-namespace Resturant.Application.UseCases;
+namespace Resturant.Application.Services;
 
 /// <summary>Default <see cref="IAccountService"/>, backed by an <see cref="IUserAccountStore"/>.</summary>
 public class AccountService : IAccountService

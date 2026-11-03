@@ -1,11 +1,11 @@
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
-using Resturant.Application.Ports.In;
+using Resturant.Application.Interfaces;
 using Resturant.Domain.Repositories;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 
-namespace Resturant.Application.UseCases;
+namespace Resturant.Application.Services;
 
 /// <summary>Default <see cref="ICartService"/>. Pricing and totals are computed by the domain.</summary>
 public class CartService : ICartService

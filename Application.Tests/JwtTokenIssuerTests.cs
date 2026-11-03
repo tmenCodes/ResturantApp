@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Resturant.Infrastructure.Auth;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Abstractions;
 namespace Application.Tests;
 
 public class JwtTokenIssuerTests

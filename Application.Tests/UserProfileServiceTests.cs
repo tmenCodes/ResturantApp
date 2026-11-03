@@ -1,6 +1,6 @@
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.In;
-using Resturant.Application.UseCases;
+using Resturant.Application.Interfaces;
+using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Ordering;
 using Resturant.Infrastructure.Persistence.Repositories;

@@ -1,5 +1,5 @@
-using Resturant.Application.Ports.In;
-using Resturant.Application.UseCases;
+using Resturant.Application.Interfaces;
+using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Menu;
 using Resturant.Infrastructure.Persistence.Repositories;

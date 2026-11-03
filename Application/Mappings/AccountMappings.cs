@@ -1,5 +1,5 @@
 using Resturant.Application.Dtos;
-using Resturant.Application.Ports.Out;
+using Resturant.Application.Abstractions;
 
 namespace Resturant.Application.Mappings;
 
