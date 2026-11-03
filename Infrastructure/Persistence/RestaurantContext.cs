@@ -59,19 +59,7 @@ namespace Resturant.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
              base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<ShoppingCart>()
-                .HasMany(e => e.OrderItems)
-                .WithOne(e => e.ShoppingCart)
-                .HasForeignKey(e => e.ShoppingCartIdentity)
-                .HasPrincipalKey(e => e.Identity);
-
-     
-        //     modelBuilder.ApplyConfiguration(new SeedShoppingCart()); 
-             modelBuilder.ApplyConfiguration(new SeedMenuItems()); 
-             modelBuilder.ApplyConfiguration(new SeedMenuItemOptions());
-                 
-                 
+             modelBuilder.ApplyConfigurationsFromAssembly(typeof(RestaurantContext).Assembly);
         }
         
     }

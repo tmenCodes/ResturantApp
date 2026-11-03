@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Resturant.Domain.Menu;
 
 

@@ -18,10 +18,19 @@ public class UserProfileServiceTests
     private static async Task<Guid> AddCheckedOutCartAsync(RestaurantContext context, string userName, DateTime created, decimal total)
     {
         var identity = Guid.NewGuid();
-        context.ShoppingCarts.Add(new ShoppingCart { Identity = identity, Created = created, TotalPrice = total });
+        var cart = ShoppingCart.Create(identity, created);
+        context.ShoppingCarts.Add(cart);
+        context.Entry(cart).Property(x => x.TotalPrice).CurrentValue = total;
         context.Checkouts.Add(new Checkout { UserProfileName = userName, ShoppingCartIdentity = identity, CheckoutTime = created, Paid = true });
         await context.SaveChangesAsync();
         return identity;
+    }
+
+    private static void AddOrderItem(RestaurantContext context, string name, decimal totalItemPrice, Guid cart)
+    {
+        var item = new OrderItem { Name = name, ShoppingCartIdentity = cart };
+        context.OrderItem.Add(item);
+        context.Entry(item).Property(x => x.TotalItemPrice).CurrentValue = totalItemPrice;
     }
 
     [Fact]
@@ -108,8 +117,8 @@ public class UserProfileServiceTests
         var checkoutTime = new DateTime(2026, 10, 28, 12, 0, 0);
         var cart = await AddCheckedOutCartAsync(context, "ada", checkoutTime, 10m);
         var otherCart = await AddCheckedOutCartAsync(context, "grace", checkoutTime, 10m);
-        context.OrderItem.Add(new OrderItem { Name = "Papaya Salad", TotalItemPrice = 8.5m, ShoppingCartIdentity = cart });
-        context.OrderItem.Add(new OrderItem { Name = "Tofu Stir Fry", TotalItemPrice = 12.95m, ShoppingCartIdentity = otherCart });
+        AddOrderItem(context, "Papaya Salad", 8.5m, cart);
+        AddOrderItem(context, "Tofu Stir Fry", 12.95m, otherCart);
         await context.SaveChangesAsync();
 
         var result = await CreateService(context).GetOrderedItemsAsync("ada");

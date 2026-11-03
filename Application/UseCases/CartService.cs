@@ -1,17 +1,15 @@
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
+using Resturant.Application.Ports.In;
+using Resturant.Application.Ports.Out;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
-using Resturant.Application.Ports.Out;
-using Resturant.Application.Ports.In;
 
 namespace Resturant.Application.UseCases;
 
-/// <summary>Default <see cref="ICartService"/>.</summary>
+/// <summary>Default <see cref="ICartService"/>. Pricing and totals are computed by the domain.</summary>
 public class CartService : ICartService
 {
-    private const string NewOrderItemStatus = "start";
-
     private readonly IShoppingCartRepository _shoppingCartRepository;
     private readonly IMenuRepository _menuRepository;
     private readonly TimeProvider _timeProvider;
@@ -59,76 +57,49 @@ public class CartService : ICartService
 
     public async Task<bool> RemoveOrderItemAsync(int orderItemId, Guid cartIdentity)
     {
-        var orderItem = await _shoppingCartRepository.GetOrderItemAsync(orderItemId);
-        if (orderItem is null)
+        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString());
+        if (cart is null || !cart.RemoveItem(orderItemId))
         {
             return false;
         }
 
-        _shoppingCartRepository.RemoveOrderItem(orderItem);
-        await _shoppingCartRepository.SaveChangesAsync();
-
-        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString())
-                   ?? throw new InvalidOperationException($"Shopping cart {cartIdentity} was not found.");
-        ApplyTotals(cart, _shoppingCartRepository.GetCartSubTotal(cartIdentity));
         await _shoppingCartRepository.SaveChangesAsync();
         return true;
     }
 
     public async Task<AddToCartResultDto> AddItemAsync(OrderItemDto request, CancellationToken cancellationToken = default)
     {
-        var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId.ToString());
-        var (orderItem, menuItem) = await BuildOrderItemAsync(request, cancellationToken);
-
-        if (cart is null)
-        {
-            await CreateCartAsync(request.GuidId, orderItem);
-            return new AddToCartResultDto { Name = menuItem.Name, Price = menuItem.BasePrice };
-        }
-
-        var existingSubTotal = _shoppingCartRepository.GetCartSubTotal(request.GuidId);
-        cart.OrderItems.Add(orderItem);
-        ApplyTotals(cart, existingSubTotal + orderItem.TotalItemPrice);
-        await _shoppingCartRepository.SaveChangesAsync();
-        return new AddToCartResultDto { Name = menuItem.Name, Price = orderItem.TotalItemPrice };
-    }
-
-    private async Task<(OrderItem OrderItem, MenuItem MenuItem)> BuildOrderItemAsync(OrderItemDto request, CancellationToken cancellationToken)
-    {
         var menuItem = await _menuRepository.GetMenuItemByNameAsync(request.Name, cancellationToken)
                        ?? throw new InvalidOperationException($"Menu item '{request.Name}' was not found.");
-        if (request.Quantity <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(request), "value must be greater than 0");
-        }
+        var options = await FindOptionsAsync(request.Options, cancellationToken);
+        var orderItem = OrderItem.Create(menuItem, options, request.Quantity);
 
-        var orderItem = new OrderItem { Name = menuItem.Name, Status = NewOrderItemStatus, Quantity = request.Quantity };
-        foreach (var optionName in request.Options)
+        var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId.ToString());
+        var isNewCart = cart is null;
+        cart ??= ShoppingCart.Create(request.GuidId, _timeProvider.GetUtcNow().UtcDateTime);
+        cart.AddItem(orderItem);
+
+        if (isNewCart)
+        {
+            await _shoppingCartRepository.AddCartAsync(cart);
+        }
+        await _shoppingCartRepository.SaveChangesAsync();
+
+        var price = isNewCart ? menuItem.BasePrice : orderItem.TotalItemPrice;
+        return new AddToCartResultDto { Name = menuItem.Name, Price = price };
+    }
+
+    private async Task<List<MenuItemOption>> FindOptionsAsync(IEnumerable<string> optionNames, CancellationToken cancellationToken)
+    {
+        var options = new List<MenuItemOption>();
+        foreach (var optionName in optionNames)
         {
             var option = await _menuRepository.GetOptionByNameAsync(optionName, cancellationToken);
             if (option is not null)
             {
-                orderItem.Options.Add(new OrderItemOption { Name = option.Name, Price = option.Price });
+                options.Add(option);
             }
         }
-
-        orderItem.TotalItemPrice = (menuItem.BasePrice + orderItem.Options.Sum(x => x.Price)) * request.Quantity;
-        return (orderItem, menuItem);
-    }
-
-    private async Task CreateCartAsync(Guid identity, OrderItem firstItem)
-    {
-        var cart = new ShoppingCart { Identity = identity, Created = _timeProvider.GetUtcNow().UtcDateTime };
-        cart.OrderItems.Add(firstItem);
-        ApplyTotals(cart, firstItem.TotalItemPrice);
-        await _shoppingCartRepository.AddCartAsync(cart);
-        await _shoppingCartRepository.SaveChangesAsync();
-    }
-
-    private static void ApplyTotals(ShoppingCart cart, decimal subTotal)
-    {
-        cart.SubTotal = subTotal;
-        cart.TaxAmount = subTotal * cart.TaxRate;
-        cart.TotalPrice = subTotal + cart.TaxAmount;
+        return options;
     }
 }

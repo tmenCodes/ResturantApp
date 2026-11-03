@@ -43,18 +43,8 @@ public class CheckoutService : ICheckoutService
             return new CheckoutResult(CheckoutStatus.CartNotFound);
         }
 
-        var checkout = new Checkout
-        {
-            Credit = request.Credit,
-            NameonCard = request.NameonCard,
-            CreditCardNumber = request.CreditCardNumber,
-            Expiration = request.Expiration,
-            CVV = request.CVV,
-            UserProfileName = request.UserName,
-            ShoppingCartIdentity = cartIdentity,
-            CheckoutTime = _timeProvider.GetUtcNow().UtcDateTime,
-            Paid = true
-        };
+        var card = new PaymentCard(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
+        var checkout = Checkout.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
         await _checkoutRepository.AddAsync(checkout, cancellationToken);
         return new CheckoutResult(CheckoutStatus.Created, checkout.ToDto());
     }

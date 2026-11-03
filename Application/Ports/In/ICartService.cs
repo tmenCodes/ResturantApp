@@ -17,10 +17,9 @@ public interface ICartService
     Task<int> GetCartItemCountAsync(string cartIdentity);
 
     /// <summary>
-    /// Removes an order item and recalculates the totals of the cart named by <paramref name="cartIdentity"/>.
-    /// Returns false when the order item does not exist.
+    /// Removes an order item from the cart named by <paramref name="cartIdentity"/> and recalculates its totals.
+    /// Returns false when the cart does not exist or does not contain the order item.
     /// </summary>
-    /// <exception cref="InvalidOperationException">The item was removed but the cart does not exist.</exception>
     Task<bool> RemoveOrderItemAsync(int orderItemId, Guid cartIdentity);
 
     /// <summary>

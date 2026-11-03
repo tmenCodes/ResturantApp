@@ -142,6 +142,24 @@ public class CartServiceTests
     }
 
     [Fact]
+    public async Task RemoveOrderItemAsync_ItemInAnotherCart_ReturnsFalseAndKeepsItem()
+    {
+        await using var context = TestDatabase.Create();
+        await SeedMenuAsync(context);
+        var cartId = Guid.NewGuid();
+        var otherCartId = Guid.NewGuid();
+        var service = CreateService(context);
+        await service.AddItemAsync(Request(cartId));
+        await service.AddItemAsync(Request(otherCartId));
+        var otherLine = await context.OrderItem.SingleAsync(x => x.ShoppingCartIdentity == otherCartId);
+
+        var removed = await service.RemoveOrderItemAsync(otherLine.Id, cartId);
+
+        Assert.False(removed);
+        Assert.Equal(2, await context.OrderItem.CountAsync());
+    }
+
+    [Fact]
     public async Task GetTotalsAsync_FormatsAmountsWithTwoDecimals()
     {
         await using var context = TestDatabase.Create();
