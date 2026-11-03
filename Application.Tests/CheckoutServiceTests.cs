@@ -4,14 +4,20 @@ using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Ordering;
 using Resturant.Infrastructure.Persistence.Repositories;
+using Resturant.Domain.Services.Ordering;
+
 namespace Application.Tests;
 
 public class CheckoutServiceTests
 {
     private static readonly DateTimeOffset Now = new(2026, 10, 28, 12, 0, 0, TimeSpan.Zero);
 
-    private static CheckoutService CreateService(RestaurantContext context) =>
-        new(new CheckoutRepository(context), new ShoppingCartRepository(context), new FixedTimeProvider(Now));
+    private static CheckoutService CreateService(RestaurantContext context)
+    {
+        var checkoutRepository = new CheckoutRepository(context);
+        var eligibility = new CheckoutEligibility(checkoutRepository, new ShoppingCartRepository(context));
+        return new CheckoutService(checkoutRepository, eligibility, new FixedTimeProvider(Now));
+    }
 
     private static async Task<Guid> AddCartAsync(RestaurantContext context)
     {

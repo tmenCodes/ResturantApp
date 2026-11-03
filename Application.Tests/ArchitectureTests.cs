@@ -1,10 +1,11 @@
 using System.Reflection;
 using Resturant.Application;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Services.Ordering;
 
 namespace Application.Tests;
 
-/// <summary>Guards the hexagonal boundaries: the core must not depend on adapters or frameworks.</summary>
+/// <summary>Guards the onion rings: every dependency points inward, and no inner ring depends on a framework.</summary>
 public class ArchitectureTests
 {
     private static readonly string[] FrameworkPrefixes =
@@ -17,27 +18,44 @@ public class ArchitectureTests
         "Npgsql"
     ];
 
-    private static IReadOnlyList<string> ReferencedNames(Assembly assembly) =>
-        assembly.GetReferencedAssemblies().Select(x => x.Name!).ToList();
+    private static readonly Assembly DomainModel = typeof(ShoppingCart).Assembly;
+    private static readonly Assembly DomainServices = typeof(OrderItemFactory).Assembly;
+    private static readonly Assembly ApplicationServices = typeof(ApplicationServiceCollectionExtensions).Assembly;
+
+    private static IReadOnlyList<string> ProjectReferences(Assembly assembly) =>
+        assembly.GetReferencedAssemblies().Select(x => x.Name!).Where(name => name.StartsWith("Resturant.")).Order().ToList();
 
     private static IEnumerable<string> FrameworkReferences(Assembly assembly) =>
-        ReferencedNames(assembly).Where(name => FrameworkPrefixes.Any(name.StartsWith));
+        assembly.GetReferencedAssemblies().Select(x => x.Name!).Where(name => FrameworkPrefixes.Any(name.StartsWith));
 
     [Fact]
-    public void Domain_DependsOnNoOtherProjectOrFramework()
+    public void DomainModel_DependsOnNoOtherRingOrFramework()
     {
-        var domain = typeof(ShoppingCart).Assembly;
-
-        Assert.Empty(ReferencedNames(domain).Where(name => name.StartsWith("Resturant.")));
-        Assert.Empty(FrameworkReferences(domain));
+        Assert.Empty(ProjectReferences(DomainModel));
+        Assert.Empty(FrameworkReferences(DomainModel));
     }
 
     [Fact]
-    public void Application_DependsOnlyOnDomainAndNoFramework()
+    public void DomainServices_DependOnlyOnDomainModel()
     {
-        var application = typeof(ApplicationServiceCollectionExtensions).Assembly;
+        Assert.Equal(["Resturant.Domain"], ProjectReferences(DomainServices));
+        Assert.Empty(FrameworkReferences(DomainServices));
+    }
 
-        Assert.Equal(["Resturant.Domain"], ReferencedNames(application).Where(name => name.StartsWith("Resturant.")));
-        Assert.Empty(FrameworkReferences(application));
+    [Fact]
+    public void ApplicationServices_DependOnlyOnDomainRings()
+    {
+        Assert.Equal(["Resturant.Domain", "Resturant.Domain.Services"], ProjectReferences(ApplicationServices));
+        Assert.Empty(FrameworkReferences(ApplicationServices));
+    }
+
+    [Fact]
+    public void RepositoryInterfaces_BelongToDomainModel()
+    {
+        var repositories = DomainModel.GetTypes().Where(t => t.IsInterface && t.Name.EndsWith("Repository")).ToList();
+
+        Assert.NotEmpty(repositories);
+        Assert.All(repositories, t => Assert.Equal("Resturant.Domain.Repositories", t.Namespace));
+        Assert.DoesNotContain(ApplicationServices.GetTypes(), t => t.IsInterface && t.Name.EndsWith("Repository"));
     }
 }

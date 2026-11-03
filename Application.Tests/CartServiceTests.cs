@@ -6,6 +6,8 @@ using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 using Resturant.Infrastructure.Persistence.Repositories;
+using Resturant.Domain.Services.Ordering;
+
 namespace Application.Tests;
 
 public class CartServiceTests
@@ -14,7 +16,7 @@ public class CartServiceTests
     private static readonly DateTimeOffset Now = new(2026, 10, 28, 12, 0, 0, TimeSpan.Zero);
 
     private static CartService CreateService(RestaurantContext context) =>
-        new(new ShoppingCartRepository(context), new MenuRepository(context), new FixedTimeProvider(Now));
+        new(new ShoppingCartRepository(context), new OrderItemFactory(new MenuRepository(context)), new FixedTimeProvider(Now));
 
     private static async Task SeedMenuAsync(RestaurantContext context)
     {

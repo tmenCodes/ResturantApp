@@ -2,6 +2,7 @@ using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Repositories;
+using Resturant.Domain.Services.Ordering;
 using Resturant.Application.Interfaces;
 
 namespace Resturant.Application.Services;
@@ -10,13 +11,13 @@ namespace Resturant.Application.Services;
 public class CheckoutService : ICheckoutService
 {
     private readonly ICheckoutRepository _checkoutRepository;
-    private readonly IShoppingCartRepository _shoppingCartRepository;
+    private readonly ICheckoutEligibility _checkoutEligibility;
     private readonly TimeProvider _timeProvider;
 
-    public CheckoutService(ICheckoutRepository checkoutRepository, IShoppingCartRepository shoppingCartRepository, TimeProvider timeProvider)
+    public CheckoutService(ICheckoutRepository checkoutRepository, ICheckoutEligibility checkoutEligibility, TimeProvider timeProvider)
     {
         _checkoutRepository = checkoutRepository;
-        _shoppingCartRepository = shoppingCartRepository;
+        _checkoutEligibility = checkoutEligibility;
         _timeProvider = timeProvider;
     }
 
@@ -33,14 +34,12 @@ public class CheckoutService : ICheckoutService
             return new CheckoutResult(CheckoutStatus.CartNotFound);
         }
 
-        if (await _checkoutRepository.ExistsForCartAsync(cartIdentity, cancellationToken))
+        switch (await _checkoutEligibility.CheckAsync(cartIdentity, cancellationToken))
         {
-            return new CheckoutResult(CheckoutStatus.CartAlreadyCheckedOut);
-        }
-
-        if (await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString()) is null)
-        {
-            return new CheckoutResult(CheckoutStatus.CartNotFound);
+            case CheckoutEligibilityResult.CartAlreadyCheckedOut:
+                return new CheckoutResult(CheckoutStatus.CartAlreadyCheckedOut);
+            case CheckoutEligibilityResult.CartNotFound:
+                return new CheckoutResult(CheckoutStatus.CartNotFound);
         }
 
         var card = new PaymentCard(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);

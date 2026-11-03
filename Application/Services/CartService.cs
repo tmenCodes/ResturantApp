@@ -2,22 +2,22 @@ using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Application.Interfaces;
 using Resturant.Domain.Repositories;
-using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Services.Ordering;
 
 namespace Resturant.Application.Services;
 
-/// <summary>Default <see cref="ICartService"/>. Pricing and totals are computed by the domain.</summary>
+/// <summary>Default <see cref="ICartService"/>. Order items are built by <see cref="IOrderItemFactory"/>; totals by <see cref="ShoppingCart"/>.</summary>
 public class CartService : ICartService
 {
     private readonly IShoppingCartRepository _shoppingCartRepository;
-    private readonly IMenuRepository _menuRepository;
+    private readonly IOrderItemFactory _orderItemFactory;
     private readonly TimeProvider _timeProvider;
 
-    public CartService(IShoppingCartRepository shoppingCartRepository, IMenuRepository menuRepository, TimeProvider timeProvider)
+    public CartService(IShoppingCartRepository shoppingCartRepository, IOrderItemFactory orderItemFactory, TimeProvider timeProvider)
     {
         _shoppingCartRepository = shoppingCartRepository;
-        _menuRepository = menuRepository;
+        _orderItemFactory = orderItemFactory;
         _timeProvider = timeProvider;
     }
 
@@ -69,10 +69,7 @@ public class CartService : ICartService
 
     public async Task<AddToCartResultDto> AddItemAsync(OrderItemDto request, CancellationToken cancellationToken = default)
     {
-        var menuItem = await _menuRepository.GetMenuItemByNameAsync(request.Name, cancellationToken)
-                       ?? throw new InvalidOperationException($"Menu item '{request.Name}' was not found.");
-        var options = await FindOptionsAsync(request.Options, cancellationToken);
-        var orderItem = OrderItem.Create(menuItem, options, request.Quantity);
+        var (menuItem, orderItem) = await _orderItemFactory.CreateAsync(request.Name, request.Options, request.Quantity, cancellationToken);
 
         var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId.ToString());
         var isNewCart = cart is null;
@@ -87,19 +84,5 @@ public class CartService : ICartService
 
         var price = isNewCart ? menuItem.BasePrice : orderItem.TotalItemPrice;
         return new AddToCartResultDto { Name = menuItem.Name, Price = price };
-    }
-
-    private async Task<List<MenuItemOption>> FindOptionsAsync(IEnumerable<string> optionNames, CancellationToken cancellationToken)
-    {
-        var options = new List<MenuItemOption>();
-        foreach (var optionName in optionNames)
-        {
-            var option = await _menuRepository.GetOptionByNameAsync(optionName, cancellationToken);
-            if (option is not null)
-            {
-                options.Add(option);
-            }
-        }
-        return options;
     }
 }
