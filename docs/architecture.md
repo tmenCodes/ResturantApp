@@ -35,7 +35,7 @@ business rule and depends on nothing technical. It talks to the outside world on
 | Project | Namespace root | Responsibility | May reference |
 |---|---|---|---|
 | `Domain` | `Resturant.Domain` | Entities and their rules (cart totals, item pricing, checkout creation) | nothing |
-| `Application` | `Resturant.Application` | Use cases, inbound ports (`Ports/In`), outbound ports (`Ports/Out`), DTOs | `Domain` |
+| `Application` | `Resturant.Application` | Use cases, inbound ports (`Ports/In`), outbound ports (`Ports/Out`), DTOs | `Domain`, `Microsoft.Extensions.DependencyInjection.Abstractions` (for `AddApplication()`) |
 | `Infrastructure` | `Resturant.Infrastructure` | Adapters for the outbound ports: EF Core context, entity configurations, migrations, seed data, repositories, ASP.NET Identity store, JWT issuer | `Application`, `Domain`, EF Core, Npgsql, Identity |
 | `API` | `API` | Inbound HTTP adapter: routing, model binding, auth attributes, status codes. `Program.cs` is the composition root | `Application`; `Infrastructure` only from `Program.cs` |
 
