@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Resturant.Application.Abstractions;
@@ -20,8 +19,7 @@ public class JwtTokenIssuer : ITokenIssuer
 
     public string Issue(UserAccount account)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(_settings.CreateSigningKey(), SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {

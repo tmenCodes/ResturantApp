@@ -1,13 +1,10 @@
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
-using System.Text;
 //using WebApplication2.BackgroundServices;
 
 //using Restuarant.Infrastucture.Repository; 
@@ -38,7 +35,6 @@ builder.Services.AddControllers()
 
 builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddApplication();
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
 
 
@@ -50,28 +46,7 @@ builder.Services.AddIdentityAccounts();
 
 
 
-// 3. Configure JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
-
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
-    });
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 
 //builder.Services.Configure<IdentityOptions>(options =>

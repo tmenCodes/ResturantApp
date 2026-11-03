@@ -53,4 +53,29 @@ public class JwtTokenIssuerTests
 
         Assert.Equal(SecurityAlgorithms.HmacSha256, ((JwtSecurityToken)validated).Header.Alg);
     }
+
+    [Fact]
+    public void Issue_TokenPassesTheSharedValidationParameters()
+    {
+        var token = new JwtTokenIssuer(Options.Create(Settings), new FixedTimeProvider(DateTimeOffset.UtcNow)).Issue(Ada);
+
+        var principal = new JwtSecurityTokenHandler().ValidateToken(token, Settings.CreateValidationParameters(), out _);
+
+        Assert.Equal("user-1", principal.FindFirstValue(ClaimTypes.NameIdentifier));
+    }
+
+    [Fact]
+    public void CreateValidationParameters_RejectsTokenSignedWithAnotherSecret()
+    {
+        var otherSettings = new JwtSettings
+        {
+            Secret = "another-secret-that-is-also-at-least-32-characters",
+            Issuer = Settings.Issuer,
+            Audience = Settings.Audience
+        };
+        var token = new JwtTokenIssuer(Options.Create(otherSettings), new FixedTimeProvider(DateTimeOffset.UtcNow)).Issue(Ada);
+
+        Assert.ThrowsAny<SecurityTokenException>(() =>
+            new JwtSecurityTokenHandler().ValidateToken(token, Settings.CreateValidationParameters(), out _));
+    }
 }
