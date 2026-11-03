@@ -21,7 +21,7 @@ public class CheckoutEligibility : ICheckoutEligibility
             return CheckoutEligibilityResult.CartAlreadyCheckedOut;
         }
 
-        return await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString()) is null
+        return await _shoppingCartRepository.GetCartAsync(cartIdentity) is null
             ? CheckoutEligibilityResult.CartNotFound
             : CheckoutEligibilityResult.Eligible;
     }

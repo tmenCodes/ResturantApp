@@ -178,6 +178,25 @@ public class CartServiceTests
     }
 
     [Fact]
+    public async Task GetTotalsAsync_MalformedIdentity_ReturnsNull()
+    {
+        await using var context = TestDatabase.Create();
+
+        Assert.Null(await CreateService(context).GetTotalsAsync("not-a-guid"));
+    }
+
+    [Fact]
+    public async Task GetTotalsAsync_UpperCaseIdentity_FindsCart()
+    {
+        await using var context = TestDatabase.Create();
+        await SeedMenuAsync(context);
+        var cartId = Guid.NewGuid();
+        await CreateService(context).AddItemAsync(Request(cartId));
+
+        Assert.NotNull(await CreateService(context).GetTotalsAsync(cartId.ToString().ToUpperInvariant()));
+    }
+
+    [Fact]
     public async Task GetTotalsAsync_UnknownCart_ReturnsNull()
     {
         await using var context = TestDatabase.Create();

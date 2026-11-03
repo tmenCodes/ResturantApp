@@ -8,16 +8,16 @@ public class FakeShoppingCartRepository : IShoppingCartRepository
 {
     public List<ShoppingCart> Carts { get; } = new();
 
-    public Task<ShoppingCart?> GetCartAsync(string cartIdentity) =>
-        Task.FromResult(Carts.FirstOrDefault(x => x.Identity.ToString() == cartIdentity));
+    public Task<ShoppingCart?> GetCartAsync(Guid cartIdentity) =>
+        Task.FromResult(Carts.FirstOrDefault(x => x.Identity == cartIdentity));
 
     public Task<int> SaveChangesAsync() => Task.FromResult(0);
 
     public Task<List<OrderItem>> GetAllOrderItemsAsync() =>
         Task.FromResult(Carts.SelectMany(x => x.OrderItems).ToList());
 
-    public Task<List<OrderItem>> GetCartOrderItemsAsync(string cartIdentity) =>
-        Task.FromResult(Carts.Where(x => x.Identity.ToString() == cartIdentity).SelectMany(x => x.OrderItems).ToList());
+    public Task<List<OrderItem>> GetCartOrderItemsAsync(Guid cartIdentity) =>
+        Task.FromResult(Carts.Where(x => x.Identity == cartIdentity).SelectMany(x => x.OrderItems).ToList());
 
     public Task AddCartAsync(ShoppingCart cart)
     {

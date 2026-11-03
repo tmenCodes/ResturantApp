@@ -14,11 +14,11 @@ public class ShoppingCartRepository : IShoppingCartRepository
         _context = context;
     }
 
-    public Task<ShoppingCart?> GetCartAsync(string cartIdentity)
+    public Task<ShoppingCart?> GetCartAsync(Guid cartIdentity)
     {
         return _context.ShoppingCarts
             .Include(x => x.OrderItems)
-            .FirstOrDefaultAsync(x => x.Identity.ToString() == cartIdentity);
+            .FirstOrDefaultAsync(x => x.Identity == cartIdentity);
     }
 
     public Task<List<OrderItem>> GetAllOrderItemsAsync()
@@ -29,10 +29,10 @@ public class ShoppingCartRepository : IShoppingCartRepository
             .ToListAsync();
     }
 
-    public Task<List<OrderItem>> GetCartOrderItemsAsync(string cartIdentity)
+    public Task<List<OrderItem>> GetCartOrderItemsAsync(Guid cartIdentity)
     {
         return _context.ShoppingCarts
-            .Where(x => x.Identity.ToString() == cartIdentity)
+            .Where(x => x.Identity == cartIdentity)
             .SelectMany(x => x.OrderItems)
             .Include(x => x.Options)
             .ToListAsync();

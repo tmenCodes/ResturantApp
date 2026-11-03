@@ -23,7 +23,12 @@ public class CartService : ICartService
 
     public async Task<ShoppingCartItemDTO?> GetTotalsAsync(string cartIdentity)
     {
-        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity);
+        if (!Guid.TryParse(cartIdentity, out var identity))
+        {
+            return null;
+        }
+
+        var cart = await _shoppingCartRepository.GetCartAsync(identity);
         if (cart is null)
         {
             return null;
@@ -46,7 +51,7 @@ public class CartService : ICartService
     public async Task<IReadOnlyList<CartOrderItemDto>> GetCartItemsAsync(string cartIdentity)
     {
         Guid.TryParse(cartIdentity, out var identity);
-        var orderItems = await _shoppingCartRepository.GetCartOrderItemsAsync(identity.ToString());
+        var orderItems = await _shoppingCartRepository.GetCartOrderItemsAsync(identity);
         return orderItems.Select(x => x.ToCartDto()).ToList();
     }
 
@@ -57,7 +62,7 @@ public class CartService : ICartService
 
     public async Task<bool> RemoveOrderItemAsync(int orderItemId, Guid cartIdentity)
     {
-        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity.ToString());
+        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity);
         if (cart is null || !cart.RemoveItem(orderItemId))
         {
             return false;
@@ -71,7 +76,7 @@ public class CartService : ICartService
     {
         var (menuItem, orderItem) = await _orderItemFactory.CreateAsync(request.Name, request.Options, request.Quantity, cancellationToken);
 
-        var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId.ToString());
+        var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId);
         var isNewCart = cart is null;
         cart ??= ShoppingCart.Create(request.GuidId, _timeProvider.GetUtcNow().UtcDateTime);
         cart.AddItem(orderItem);
