@@ -9,7 +9,7 @@ namespace Application.Tests;
 public class UserProfileServiceTests
 {
     private static UserProfileService CreateService(RestaurantContext context) =>
-        new(new UserProfileRepository(context));
+        new(new UserProfileRepository(context), new EfUnitOfWork(context));
 
     private static UserPaymentInformationDto Payment(string nameOnCard) =>
         new("Visa", nameOnCard, "4111", "12/30", "123");

@@ -2,6 +2,8 @@ using Resturant.Application.Dtos;
 using Resturant.Application.Interfaces;
 using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence.Repositories;
+using Resturant.Infrastructure.Persistence;
+
 namespace Application.Tests;
 
 public class ContactServiceTests
@@ -10,7 +12,7 @@ public class ContactServiceTests
     public async Task CreateReservationAsync_SavesReservationAndReturnsGeneratedId()
     {
         await using var context = TestDatabase.Create();
-        var service = new ContactService(new ContactRepository(context));
+        var service = new ContactService(new ContactRepository(context), new EfUnitOfWork(context));
 
         var result = await service.CreateReservationAsync(new ReservationDto
         {
@@ -35,7 +37,7 @@ public class ContactServiceTests
     public async Task CreateReservationAsync_IgnoresClientSuppliedId()
     {
         await using var context = TestDatabase.Create();
-        var service = new ContactService(new ContactRepository(context));
+        var service = new ContactService(new ContactRepository(context), new EfUnitOfWork(context));
 
         var first = await service.CreateReservationAsync(new ReservationDto { Id = 999, Name = "First" });
         var second = await service.CreateReservationAsync(new ReservationDto { Id = 999, Name = "Second" });
@@ -49,7 +51,7 @@ public class ContactServiceTests
     public async Task CreateInquiryAsync_SavesInquiryAndReturnsGeneratedId()
     {
         await using var context = TestDatabase.Create();
-        var service = new ContactService(new ContactRepository(context));
+        var service = new ContactService(new ContactRepository(context), new EfUnitOfWork(context));
 
         var result = await service.CreateInquiryAsync(new CustomerInquiryDto
         {

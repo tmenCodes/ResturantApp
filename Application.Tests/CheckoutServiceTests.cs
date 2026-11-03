@@ -16,7 +16,7 @@ public class CheckoutServiceTests
     {
         var checkoutRepository = new CheckoutRepository(context);
         var eligibility = new CheckoutEligibility(checkoutRepository, new ShoppingCartRepository(context));
-        return new CheckoutService(checkoutRepository, eligibility, new FixedTimeProvider(Now));
+        return new CheckoutService(checkoutRepository, eligibility, new EfUnitOfWork(context), new FixedTimeProvider(Now));
     }
 
     private static async Task<Guid> AddCartAsync(RestaurantContext context)

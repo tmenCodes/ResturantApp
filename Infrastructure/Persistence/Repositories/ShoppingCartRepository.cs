@@ -42,9 +42,4 @@ public class ShoppingCartRepository : IShoppingCartRepository
     {
         await _context.AddAsync(cart);
     }
-
-    public Task<int> SaveChangesAsync()
-    {
-        return _context.SaveChangesAsync();
-    }
 }

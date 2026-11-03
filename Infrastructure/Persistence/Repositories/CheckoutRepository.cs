@@ -28,6 +28,5 @@ public class CheckoutRepository : ICheckoutRepository
     public async Task AddAsync(Checkout checkout, CancellationToken cancellationToken = default)
     {
         await _context.Checkouts.AddAsync(checkout, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 }

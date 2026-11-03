@@ -17,12 +17,10 @@ public class ContactRepository : IContactRepository
     public async Task AddReservationAsync(Reservation reservation, CancellationToken cancellationToken = default)
     {
         await _context.Reservations.AddAsync(reservation, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AddInquiryAsync(CustomerInquiry inquiry, CancellationToken cancellationToken = default)
     {
         await _context.CustomerInquiries.AddAsync(inquiry, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -10,6 +10,6 @@ public interface ICheckoutRepository
     /// <summary>Returns true when the shopping cart with this identity has already been checked out.</summary>
     Task<bool> ExistsForCartAsync(Guid shoppingCartIdentity, CancellationToken cancellationToken = default);
 
-    /// <summary>Saves a new checkout and assigns its <see cref="Checkout.Id"/>.</summary>
+    /// <summary>Stages a new checkout; <see cref="IUnitOfWork.SaveChangesAsync"/> persists it and assigns its <see cref="Checkout.Id"/>.</summary>
     Task AddAsync(Checkout checkout, CancellationToken cancellationToken = default);
 }

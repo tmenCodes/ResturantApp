@@ -12,12 +12,14 @@ public class CartService : ICartService
 {
     private readonly IShoppingCartRepository _shoppingCartRepository;
     private readonly IOrderItemFactory _orderItemFactory;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly TimeProvider _timeProvider;
 
-    public CartService(IShoppingCartRepository shoppingCartRepository, IOrderItemFactory orderItemFactory, TimeProvider timeProvider)
+    public CartService(IShoppingCartRepository shoppingCartRepository, IOrderItemFactory orderItemFactory, IUnitOfWork unitOfWork, TimeProvider timeProvider)
     {
         _shoppingCartRepository = shoppingCartRepository;
         _orderItemFactory = orderItemFactory;
+        _unitOfWork = unitOfWork;
         _timeProvider = timeProvider;
     }
 
@@ -68,7 +70,7 @@ public class CartService : ICartService
             return false;
         }
 
-        await _shoppingCartRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return true;
     }
 
@@ -85,7 +87,7 @@ public class CartService : ICartService
         {
             await _shoppingCartRepository.AddCartAsync(cart);
         }
-        await _shoppingCartRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var price = isNewCart ? menuItem.BasePrice : orderItem.TotalItemPrice;
         return new AddToCartResultDto { Name = menuItem.Name, Price = price };

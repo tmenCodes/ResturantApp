@@ -26,13 +26,6 @@ public class UserProfileRepository : IUserProfileRepository
     public async Task AddPaymentMethodAsync(SavedPaymentMethod paymentMethod, CancellationToken cancellationToken = default)
     {
         await _context.SavedPaymentMethods.AddAsync(paymentMethod, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task UpdatePaymentMethodAsync(SavedPaymentMethod paymentMethod, CancellationToken cancellationToken = default)
-    {
-        _context.SavedPaymentMethods.Update(paymentMethod);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public Task<List<ShoppingCart>> GetCheckedOutCartsAsync(string userName, CancellationToken cancellationToken = default)

@@ -12,10 +12,12 @@ public class UserProfileService : IUserProfileService
     private const int RecentOrderLimit = 5;
 
     private readonly IUserProfileRepository _userProfileRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserProfileService(IUserProfileRepository userProfileRepository)
+    public UserProfileService(IUserProfileRepository userProfileRepository, IUnitOfWork unitOfWork)
     {
         _userProfileRepository = userProfileRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<SavedPaymentMethodDto> AddPaymentMethodAsync(string userName, UserPaymentInformationDto paymentInformation, CancellationToken cancellationToken = default)
@@ -23,6 +25,7 @@ public class UserProfileService : IUserProfileService
         var paymentMethod = new SavedPaymentMethod { UserName = userName };
         paymentInformation.ApplyTo(paymentMethod);
         await _userProfileRepository.AddPaymentMethodAsync(paymentMethod, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return paymentMethod.ToDto();
     }
 
@@ -41,7 +44,7 @@ public class UserProfileService : IUserProfileService
         }
 
         paymentInformation.ApplyTo(paymentMethod);
-        await _userProfileRepository.UpdatePaymentMethodAsync(paymentMethod, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return paymentMethod.ToDto();
     }
 

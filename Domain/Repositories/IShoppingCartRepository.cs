@@ -8,15 +8,12 @@ public interface IShoppingCartRepository
     /// <summary>Returns the tracked cart, with its order items, that has this identity, or null.</summary>
     Task<ShoppingCart?> GetCartAsync(Guid cartIdentity);
 
-    /// <summary>Persists all pending changes made through this repository.</summary>
-    Task<int> SaveChangesAsync();
-
     /// <summary>Returns every order item across all carts.</summary>
     Task<List<OrderItem>> GetAllOrderItemsAsync();
 
     /// <summary>Returns the order items, with their options, of the cart with this identity.</summary>
     Task<List<OrderItem>> GetCartOrderItemsAsync(Guid cartIdentity);
 
-    /// <summary>Adds a new cart; call <see cref="SaveChangesAsync"/> to persist.</summary>
+    /// <summary>Stages a new cart; <see cref="IUnitOfWork.SaveChangesAsync"/> persists it.</summary>
     Task AddCartAsync(ShoppingCart cart);
 }

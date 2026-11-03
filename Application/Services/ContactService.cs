@@ -9,10 +9,12 @@ namespace Resturant.Application.Services;
 public class ContactService : IContactService
 {
     private readonly IContactRepository _contactRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ContactService(IContactRepository contactRepository)
+    public ContactService(IContactRepository contactRepository, IUnitOfWork unitOfWork)
     {
         _contactRepository = contactRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<ReservationDto> CreateReservationAsync(ReservationDto reservation, CancellationToken cancellationToken = default)
@@ -28,6 +30,7 @@ public class ContactService : IContactService
             Message = reservation.Message
         };
         await _contactRepository.AddReservationAsync(entity, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(entity);
     }
 
@@ -41,6 +44,7 @@ public class ContactService : IContactService
             Message = inquiry.Message
         };
         await _contactRepository.AddInquiryAsync(entity, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(entity);
     }
 

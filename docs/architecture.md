@@ -50,6 +50,8 @@ providers. The outer ring plugs technology in by implementing interfaces that th
 2. **The Domain Model is plain C#.** It has no EF Core, ASP.NET, JSON or data-annotation attributes. EF maps the
    entities through `IEntityTypeConfiguration<T>` classes in `Infrastructure/Persistence/Configurations`.
 3. **Repository interfaces belong to the Domain Model** (`Resturant.Domain.Repositories`). Infrastructure implements them.
+   Repositories only read and stage changes. Application Services commit once per request through `IUnitOfWork`,
+   so related changes are saved together.
 4. **Rules live as far inward as possible.** A rule about one entity is a method on that entity. A rule that needs
    several entities or a repository is a Domain Service. Application Services only orchestrate: load, call the
    domain, save, map to DTOs.
@@ -75,7 +77,7 @@ Domain/
   Ordering/             ShoppingCart, OrderItem, OrderItemOption, Checkout, PaymentCard
   Customers/            SavedPaymentMethod
   Contact/              Reservation, CustomerInquiry
-  Repositories/         IMenuRepository, IShoppingCartRepository, ICheckoutRepository,
+  Repositories/         IUnitOfWork, IMenuRepository, IShoppingCartRepository, ICheckoutRepository,
                         IContactRepository, IUserProfileRepository, CheckedOutOrderItem
   Services/Ordering/    Domain Services: IOrderItemFactory, OrderItemFactory, ICheckoutEligibility, CheckoutEligibility
 Application/
@@ -86,7 +88,7 @@ Application/
   Dtos/, Mappings/
   ApplicationServiceCollectionExtensions.cs      AddApplication()
 Infrastructure/
-  Persistence/          RestaurantContext, Configurations/, Repositories/, Migrations/
+  Persistence/          RestaurantContext, EfUnitOfWork, Configurations/, Repositories/, Migrations/
   Identity/             WebUser, IdentityUserAccountStore, IdentityServiceCollectionExtensions
   Auth/                 JwtSettings, JwtTokenIssuer
   InfrastructureServiceCollectionExtensions.cs   AddInfrastructure()

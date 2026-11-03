@@ -12,12 +12,14 @@ public class CheckoutService : ICheckoutService
 {
     private readonly ICheckoutRepository _checkoutRepository;
     private readonly ICheckoutEligibility _checkoutEligibility;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly TimeProvider _timeProvider;
 
-    public CheckoutService(ICheckoutRepository checkoutRepository, ICheckoutEligibility checkoutEligibility, TimeProvider timeProvider)
+    public CheckoutService(ICheckoutRepository checkoutRepository, ICheckoutEligibility checkoutEligibility, IUnitOfWork unitOfWork, TimeProvider timeProvider)
     {
         _checkoutRepository = checkoutRepository;
         _checkoutEligibility = checkoutEligibility;
+        _unitOfWork = unitOfWork;
         _timeProvider = timeProvider;
     }
 
@@ -45,6 +47,7 @@ public class CheckoutService : ICheckoutService
         var card = new PaymentCard(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
         var checkout = Checkout.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
         await _checkoutRepository.AddAsync(checkout, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new CheckoutResult(CheckoutStatus.Created, checkout.ToDto());
     }
 }
