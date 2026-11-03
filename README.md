@@ -1,6 +1,6 @@
 # ResturantApp
 
-A restaurant management API built with ASP.NET Core. It is the middle tier of a 3-tier application (Angular → API → PostgreSQL) and is organized in three layers: API → Business → Data. See [docs/architecture.md](docs/architecture.md).
+A restaurant management API built with ASP.NET Core. It is the middle tier of a 3-tier application (Angular → API → PostgreSQL) and follows hexagonal architecture (ports and adapters): Domain and Application form the core, Infrastructure and API are adapters. See [docs/architecture.md](docs/architecture.md).
 
 ## Tech Stack
 
@@ -13,9 +13,12 @@ A restaurant management API built with ASP.NET Core. It is the middle tier of a 
 
 ```
 ResturantApp/
-├── API/                  # Presentation layer: controllers, contracts, configuration
-├── Business/             # Business layer: services and DTOs
-├── Data/                 # Data layer: entities, EF Core context, repositories, migrations
+├── API/                  # Inbound HTTP adapter: controllers, contracts, composition root
+├── Application/          # Core: use cases, inbound/outbound ports, DTOs
+├── Domain/               # Core: entities and business rules
+├── Infrastructure/       # Outbound adapters: EF Core/PostgreSQL, Identity, JWT, migrations
+├── Application.Tests/    # Use case, adapter and architecture tests
+├── Domain.Tests/         # Domain rule unit tests
 ├── docs/                 # Architecture documentation
 ├── OrderControllerTest/  # Integration tests
 ├── TestProject1/         # Unit tests
@@ -47,7 +50,7 @@ ResturantApp/
 
 4. **Apply database migrations**
    ```bash
-   dotnet ef database update --project Data --startup-project API
+   dotnet ef database update --project Infrastructure --startup-project API
    ```
 
 5. **Run the API**

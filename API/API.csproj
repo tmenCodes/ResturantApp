@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Business\Resturant.Business.csproj" />
-    <ProjectReference Include="..\Data\Resturant.Data.csproj" />
+    <ProjectReference Include="..\Application\Resturant.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\Resturant.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

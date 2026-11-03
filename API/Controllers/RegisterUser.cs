@@ -1,7 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Resturant.Business.Dtos;
-using Resturant.Business.Services;
+using Resturant.Application.Dtos;
+using Resturant.Application.Ports.In;
 using API.Contracts;
 
 namespace API.Controllers;
@@ -94,7 +95,7 @@ public class RegisterUser : Controller
     public async Task<IActionResult> GetTheCurrentUser()
     {
         _logger.LogCritical(HttpContext.User.Identity?.Name);
-        var user = await _accountService.GetCurrentUserAsync(HttpContext.User);
+        var user = await _accountService.GetUserByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
         return user is not null ? Ok(user) : Unauthorized();
     }
 
@@ -106,7 +107,7 @@ public class RegisterUser : Controller
         _logger.LogCritical("from the httpcontext user identity");
         _logger.LogCritical(HttpContext.User.Identity?.Name);
 
-        var user = await _accountService.GetCurrentUserAsync(HttpContext.User);
+        var user = await _accountService.GetUserByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
         if (user is null)
         {
             return Unauthorized();

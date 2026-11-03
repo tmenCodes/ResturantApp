@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Resturant.Business.Dtos;
-using Resturant.Business.Services;
-
+using Resturant.Application.Dtos;
+using Resturant.Application.Ports.In;
 namespace API.Controllers;
 
 [Route("api/[controller]")]

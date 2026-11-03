@@ -13,10 +13,8 @@ using System.Text;
 
 //using Restuarant.Infrastucture.Repository; 
 using Newtonsoft.Json;
-using Resturant.Data.Context;
 
-using Resturant.Data.Entities;
-using Resturant.Data.Identity;
+using Resturant.Infrastructure.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -24,9 +22,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Resturant.Data;
-using Resturant.Business;
-using Resturant.Business.Auth;
+using Resturant.Infrastructure;
+using Resturant.Application;
+using Resturant.Infrastructure.Auth;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,8 +38,8 @@ builder.Services.AddControllers()
 
 
 
-builder.Services.AddDataLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddBusinessLayer();
+builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddApplication();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
 
@@ -50,9 +48,7 @@ builder.Services.AddAuthorization();
 
 
 
-builder.Services.AddIdentityApiEndpoints<WebUser>()
-    .AddEntityFrameworkStores<RestaurantContext>()
-    .AddApiEndpoints();
+builder.Services.AddIdentityAccounts();
 
 
 

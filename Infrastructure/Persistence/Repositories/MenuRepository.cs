@@ -1,0 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+using Resturant.Infrastructure.Persistence;
+using Resturant.Domain.Menu;
+using Resturant.Application.Ports.Out;
+
+namespace Resturant.Infrastructure.Persistence.Repositories;
+
+/// <summary>EF Core implementation of <see cref="IMenuRepository"/>.</summary>
+public class MenuRepository : IMenuRepository
+{
+    private readonly RestaurantContext _context;
+
+    public MenuRepository(RestaurantContext context)
+    {
+        _context = context;
+    }
+
+    public Task<List<MenuItem>> GetMenuItemsAsync(CancellationToken cancellationToken = default)
+    {
+        return _context.MenuItems.ToListAsync(cancellationToken);
+    }
+
+    public Task<MenuItem?> GetMenuItemByNameAsync(string? name, CancellationToken cancellationToken = default)
+    {
+        return _context.MenuItems.FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
+    }
+
+    public Task<List<MenuItemOption>> GetOptionsAsync(CancellationToken cancellationToken = default)
+    {
+        return _context.MenuItemOptions.ToListAsync(cancellationToken);
+    }
+
+    public Task<MenuItemOption?> GetOptionByNameAsync(string? name, CancellationToken cancellationToken = default)
+    {
+        return _context.MenuItemOptions.FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
+    }
+}
