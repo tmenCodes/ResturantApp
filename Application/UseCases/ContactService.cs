@@ -1,6 +1,6 @@
 using Resturant.Application.Dtos;
 using Resturant.Domain.Contact;
-using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 using Resturant.Application.Ports.In;
 
 namespace Resturant.Application.UseCases;

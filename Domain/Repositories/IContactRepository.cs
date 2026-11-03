@@ -1,5 +1,5 @@
 using Resturant.Domain.Contact;
-namespace Resturant.Application.Ports.Out;
+namespace Resturant.Domain.Repositories;
 
 /// <summary>Persists messages customers send to the restaurant: table reservations and contact inquiries.</summary>
 public interface IContactRepository

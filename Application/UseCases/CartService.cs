@@ -1,7 +1,7 @@
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Application.Ports.In;
-using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 

@@ -1,5 +1,5 @@
 using Resturant.Domain.Ordering;
-namespace Resturant.Application.Ports.Out;
+namespace Resturant.Domain.Repositories;
 
 /// <summary>Reads and writes checkouts (paid shopping carts).</summary>
 public interface ICheckoutRepository

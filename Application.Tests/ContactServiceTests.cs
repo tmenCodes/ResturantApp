@@ -1,7 +1,6 @@
 using Resturant.Application.Dtos;
 using Resturant.Application.Ports.In;
 using Resturant.Application.UseCases;
-using Resturant.Application.Ports.Out;
 using Resturant.Infrastructure.Persistence.Repositories;
 namespace Application.Tests;
 

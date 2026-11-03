@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 using Resturant.Infrastructure.Auth;
 using Resturant.Infrastructure.Identity;
 using Resturant.Infrastructure.Persistence;

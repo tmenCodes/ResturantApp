@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 using Resturant.Domain.Ordering;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;

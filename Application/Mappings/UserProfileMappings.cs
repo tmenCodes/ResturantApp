@@ -1,7 +1,7 @@
 using Resturant.Application.Dtos;
 using Resturant.Domain.Customers;
 using Resturant.Domain.Ordering;
-using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 namespace Resturant.Application.Mappings;
 
 internal static class UserProfileMappings

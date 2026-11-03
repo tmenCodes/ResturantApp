@@ -1,6 +1,6 @@
 using Resturant.Domain.Customers;
 using Resturant.Domain.Ordering;
-namespace Resturant.Application.Ports.Out;
+namespace Resturant.Domain.Repositories;
 
 /// <summary>Reads and writes a user's saved payment method and order history.</summary>
 public interface IUserProfileRepository

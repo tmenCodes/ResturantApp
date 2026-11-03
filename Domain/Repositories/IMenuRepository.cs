@@ -1,5 +1,5 @@
 using Resturant.Domain.Menu;
-namespace Resturant.Application.Ports.Out;
+namespace Resturant.Domain.Repositories;
 
 /// <summary>Reads the restaurant menu: menu items and the add-on options customers can choose.</summary>
 public interface IMenuRepository

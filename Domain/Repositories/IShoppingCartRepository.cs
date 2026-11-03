@@ -1,6 +1,6 @@
 using Resturant.Domain.Ordering;
 
-namespace Resturant.Application.Ports.Out;
+namespace Resturant.Domain.Repositories;
 
 /// <summary>Reads and writes shopping carts and their order items.</summary>
 public interface IShoppingCartRepository

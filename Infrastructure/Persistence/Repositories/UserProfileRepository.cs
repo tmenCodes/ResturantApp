@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Customers;
 using Resturant.Domain.Ordering;
-using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;
 

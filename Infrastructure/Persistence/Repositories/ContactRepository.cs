@@ -1,6 +1,6 @@
 using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Contact;
-using Resturant.Application.Ports.Out;
+using Resturant.Domain.Repositories;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;
 
