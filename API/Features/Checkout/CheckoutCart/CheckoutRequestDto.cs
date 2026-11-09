@@ -1,6 +1,8 @@
-namespace Resturant.Application.Dtos;
+using System.ComponentModel.DataAnnotations;
 
-/// <summary>Payment details submitted for a shopping cart at checkout.</summary>
+namespace API.Features.Checkout.CheckoutCart;
+
+/// <summary>Payment details submitted for the shopping cart named by <see cref="CartsIdentity"/>.</summary>
 public class CheckoutRequestDto
 {
     public string? Credit { get; set; }
@@ -11,5 +13,7 @@ public class CheckoutRequestDto
     public string? UserName { get; set; }
 
     public bool Paid { get; set; } = false;
-    public string CartsIdentity { get; set; }
+
+    [Required]
+    public string? CartsIdentity { get; set; }
 }

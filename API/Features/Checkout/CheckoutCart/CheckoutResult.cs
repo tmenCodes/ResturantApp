@@ -1,4 +1,6 @@
-namespace Resturant.Application.Dtos;
+using API.Features.Checkout.Shared;
+
+namespace API.Features.Checkout.CheckoutCart;
 
 /// <summary>Why a checkout attempt succeeded or was rejected.</summary>
 public enum CheckoutStatus

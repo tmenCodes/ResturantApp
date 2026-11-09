@@ -1,4 +1,5 @@
 using System.Reflection;
+using API.Common;
 using API.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Resturant.Application;
@@ -24,7 +25,7 @@ public class ArchitectureTests
     private static readonly Assembly DomainModel = typeof(ShoppingCart).Assembly;
     private static readonly Assembly ApplicationServices = typeof(ApplicationServiceCollectionExtensions).Assembly;
     private static readonly Assembly Infrastructure = typeof(RestaurantContext).Assembly;
-    private static readonly Assembly Api = typeof(PaymentController).Assembly;
+    private static readonly Assembly Api = typeof(FeatureRegistration).Assembly;
 
     private static readonly string[] EntityNamespaces =
     [

@@ -1,21 +1,21 @@
-using Resturant.Application.Dtos;
-using Resturant.Application.Mappings;
+using API.Common;
+using API.Features.Checkout.Shared;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Repositories;
 using Resturant.Domain.Services.Ordering;
-using Resturant.Application.Interfaces;
+using CheckoutEntity = Resturant.Domain.Ordering.Checkout;
 
-namespace Resturant.Application.Services;
+namespace API.Features.Checkout.CheckoutCart;
 
-/// <summary>Default <see cref="ICheckoutService"/>.</summary>
-public class CheckoutService : ICheckoutService
+/// <summary>Records payment for a shopping cart.</summary>
+public class CheckoutCartHandler : IHandler
 {
     private readonly ICheckoutRepository _checkoutRepository;
     private readonly ICheckoutEligibility _checkoutEligibility;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TimeProvider _timeProvider;
 
-    public CheckoutService(ICheckoutRepository checkoutRepository, ICheckoutEligibility checkoutEligibility, IUnitOfWork unitOfWork, TimeProvider timeProvider)
+    public CheckoutCartHandler(ICheckoutRepository checkoutRepository, ICheckoutEligibility checkoutEligibility, IUnitOfWork unitOfWork, TimeProvider timeProvider)
     {
         _checkoutRepository = checkoutRepository;
         _checkoutEligibility = checkoutEligibility;
@@ -23,13 +23,11 @@ public class CheckoutService : ICheckoutService
         _timeProvider = timeProvider;
     }
 
-    public async Task<IReadOnlyList<CheckoutDto>> GetAllCheckoutsAsync(CancellationToken cancellationToken = default)
-    {
-        var checkouts = await _checkoutRepository.GetAllAsync(cancellationToken);
-        return checkouts.Select(x => x.ToDto()).ToList();
-    }
-
-    public async Task<CheckoutResult> CheckoutCartAsync(CheckoutRequestDto request, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Checks out the cart named by <see cref="CheckoutRequestDto.CartsIdentity"/>. The cart must exist and must
+    /// not already be checked out. The checkout is recorded as paid at the current UTC time.
+    /// </summary>
+    public async Task<CheckoutResult> HandleAsync(CheckoutRequestDto request, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(request.CartsIdentity, out var cartIdentity))
         {
@@ -45,9 +43,9 @@ public class CheckoutService : ICheckoutService
         }
 
         var card = new PaymentCard(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
-        var checkout = Checkout.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
+        var checkout = CheckoutEntity.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
         await _checkoutRepository.AddAsync(checkout, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return new CheckoutResult(CheckoutStatus.Created, checkout.ToDto());
+        return new CheckoutResult(CheckoutStatus.Created, CheckoutDto.From(checkout));
     }
 }
