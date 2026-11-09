@@ -1,4 +1,4 @@
-namespace Resturant.Application.Dtos;
+namespace API.Features.Menu.GetMenuItems;
 
 /// <summary>A menu item as shown on the menu page. The price is preformatted with two decimals.</summary>
 public class MenuItemDto

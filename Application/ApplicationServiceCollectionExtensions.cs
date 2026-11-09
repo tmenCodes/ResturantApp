@@ -16,7 +16,6 @@ public static class ApplicationServiceCollectionExtensions
         services.TryAddScoped<IOrderItemFactory, OrderItemFactory>();
         services.TryAddScoped<ICheckoutEligibility, CheckoutEligibility>();
         services.TryAddScoped<ICheckoutService, CheckoutService>();
-        services.TryAddScoped<IMenuService, MenuService>();
         services.TryAddScoped<ICartService, CartService>();
         services.TryAddScoped<IUserProfileService, UserProfileService>();
         services.TryAddScoped<IAccountService, AccountService>();

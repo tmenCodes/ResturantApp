@@ -1,4 +1,4 @@
-namespace Resturant.Application.Dtos;
+namespace API.Features.Menu.GetMenuItemOptions;
 
 /// <summary>An add-on a customer can choose for a menu item, such as extra chicken.</summary>
 public class MenuItemOptionDto

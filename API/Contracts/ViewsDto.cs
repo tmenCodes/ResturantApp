@@ -1,4 +1,4 @@
-using Resturant.Application.Dtos;
+using API.Features.Menu.GetMenuItems;
 namespace API.Contracts;
 
 /// <summary>An order with the customer name and the menu items it contains.</summary>

@@ -8,13 +8,11 @@ namespace API.Controllers
     public class OrderController : Controller
     {
         private readonly ICartService _cartService;
-        private readonly IMenuService _menuService;
 
 
-        public OrderController(ICartService cartService, IMenuService menuService)
+        public OrderController(ICartService cartService)
         {
             _cartService = cartService;
-            _menuService = menuService;
         }
 
 
@@ -57,29 +55,10 @@ namespace API.Controllers
             return removed ? Ok() : NotFound("No menu item was found");
          }
 
-         [HttpGet("GetMenuItems")]
-         public async Task<IActionResult> GetMenuItems(CancellationToken cancellationToken)
-         {
-             return Ok(await _menuService.GetMenuItemsAsync(cancellationToken));
-         }
-
-         [HttpGet("GetMenuItemOptions")]
-         public async Task<IActionResult> GetMenuOptions(CancellationToken cancellationToken)
-         {
-             return Ok(await _menuService.GetMenuItemOptionsAsync(cancellationToken));
-         }
-
-
          [HttpPost("ShoppingCartItems")]
          public async Task<ActionResult<AddToCartResultDto>> AddMenuItems(OrderItemDto orderItemDto, CancellationToken cancellationToken)
          {
              return Ok(await _cartService.AddItemAsync(orderItemDto, cancellationToken));
-         }
-
-         [HttpGet("ImagePath")]
-         public async Task<IActionResult> GetImagePath(CancellationToken cancellationToken)
-         {
-            return Ok(await _menuService.GetImageUrlsAsync(cancellationToken));
          }
 
 
