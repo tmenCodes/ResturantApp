@@ -29,6 +29,16 @@ public sealed record HttpSnapshot(int Status, string? ContentType, string Body)
         Assert.NotNull(body["traceId"]);
         return body;
     }
+
+    /// <summary>Asserts this is a 400 validation problem whose errors are exactly <paramref name="errors"/>, in order.</summary>
+    public void AssertValidationProblem(params (string Key, string Message)[] errors)
+    {
+        var body = AssertProblem(400);
+        Assert.Equal("One or more validation errors occurred.", (string)body["title"]!);
+        var actual = body["errors"]!.AsObject()
+            .SelectMany(pair => pair.Value!.AsArray().Select(message => (pair.Key, (string)message!)));
+        Assert.Equal(errors, actual);
+    }
 }
 
 /// <summary>HTTP helpers that return <see cref="HttpSnapshot"/>s, plus the multi-step flows the contract tests share.</summary>
