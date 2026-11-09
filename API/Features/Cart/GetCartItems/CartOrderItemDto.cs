@@ -1,4 +1,4 @@
-namespace Resturant.Application.Dtos;
+namespace API.Features.Cart.GetCartItems;
 
 /// <summary>A line in a shopping cart: one menu item, its quantity, chosen options and total price.</summary>
 public class CartOrderItemDto

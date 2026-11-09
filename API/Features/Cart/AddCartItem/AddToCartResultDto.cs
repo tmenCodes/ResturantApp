@@ -1,4 +1,4 @@
-namespace Resturant.Application.Dtos;
+namespace API.Features.Cart.AddCartItem;
 
 /// <summary>
 /// Returned after adding an item to a cart. <see cref="Price"/> is the menu item's base price when the item started a
