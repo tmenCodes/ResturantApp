@@ -18,25 +18,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using API.Common;
-using API.Filters;
 using Resturant.Infrastructure;
-using Resturant.Application;
 using Resturant.Infrastructure.Auth;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
-
-builder.Services.AddControllers(options => options.Filters.Add<DomainExceptionFilter>())
-    .AddJsonOptions(options =>
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 
 
 builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddApplication();
 builder.Services.AddFeatures();
 
 
@@ -147,7 +138,6 @@ app.UseHttpsRedirection();
 
 app.UseForwardedHeaders();
 
-app.MapControllers();
 app.MapFeatureEndpoints();
 //app.UseCors(MyAllowSpecificOrigins);
 app.UseCors(MyAllowSpecificOrigins);
