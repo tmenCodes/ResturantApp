@@ -35,9 +35,7 @@ public class ContactContractTests : ContractTest
     {
         var response = await Client.PostSnapshotAsync("api/Misc/CustomerInquiry", new { email = "ada@example.com" });
 
-        var problem = response.AssertProblem(400);
-        Assert.Equal("One or more validation errors occurred.", (string)problem["title"]!);
-        Assert.Equal("The Name field is required.", (string)problem["errors"]!["Name"]![0]!);
+        response.AssertValidationProblem(("Name", "The Name field is required."));
     }
 
     [Fact]

@@ -17,24 +17,33 @@ public sealed record HttpSnapshot(int Status, string? ContentType, string Body)
     /// <summary>Parses the body as JSON.</summary>
     public JsonNode? JsonBody => JsonNode.Parse(Body);
 
-    /// <summary>Asserts this is an RFC 7807 problem response with the given status, and returns its body.</summary>
-    public JsonObject AssertProblem(int status)
+    private static readonly Dictionary<int, (string Type, string Title)> ClientErrors = new()
+    {
+        [400] = ("https://tools.ietf.org/html/rfc9110#section-15.5.1", "Bad Request"),
+        [401] = ("https://tools.ietf.org/html/rfc9110#section-15.5.2", "Unauthorized"),
+        [404] = ("https://tools.ietf.org/html/rfc9110#section-15.5.5", "Not Found")
+    };
+
+    /// <summary>
+    /// Asserts this is an RFC 7807 problem response with the given status and MVC's type and title for it, carrying a
+    /// trace id, and returns its body.
+    /// </summary>
+    public JsonObject AssertProblem(int status, string? title = null)
     {
         Assert.Equal(status, Status);
         Assert.Equal(Problem, ContentType);
         var body = JsonBody!.AsObject();
+        Assert.Equal(ClientErrors[status].Type, (string)body["type"]!);
+        Assert.Equal(title ?? ClientErrors[status].Title, (string)body["title"]!);
         Assert.Equal(status, (int)body["status"]!);
-        Assert.NotNull(body["type"]);
-        Assert.NotNull(body["title"]);
-        Assert.NotNull(body["traceId"]);
+        Assert.False(string.IsNullOrEmpty((string?)body["traceId"]));
         return body;
     }
 
     /// <summary>Asserts this is a 400 validation problem whose errors are exactly <paramref name="errors"/>, in order.</summary>
     public void AssertValidationProblem(params (string Key, string Message)[] errors)
     {
-        var body = AssertProblem(400);
-        Assert.Equal("One or more validation errors occurred.", (string)body["title"]!);
+        var body = AssertProblem(400, "One or more validation errors occurred.");
         var actual = body["errors"]!.AsObject()
             .SelectMany(pair => pair.Value!.AsArray().Select(message => (pair.Key, (string)message!)));
         Assert.Equal(errors, actual);
