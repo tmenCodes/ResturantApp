@@ -1,4 +1,4 @@
-namespace Resturant.Application.Abstractions;
+namespace Resturant.Infrastructure.Identity;
 
 /// <summary>Stores user accounts and verifies their credentials.</summary>
 public interface IUserAccountStore

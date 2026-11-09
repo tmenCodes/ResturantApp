@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Resturant.Application.Abstractions;
+using Resturant.Infrastructure.Identity;
 namespace Resturant.Infrastructure.Auth;
 
 /// <summary>HMAC-SHA256 JWT implementation of <see cref="ITokenIssuer"/>.</summary>

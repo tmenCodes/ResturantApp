@@ -1,4 +1,4 @@
-namespace Resturant.Application.Abstractions;
+namespace Resturant.Infrastructure.Persistence.Queries;
 
 /// <summary>Read-only queries over a user's past orders. Returns read models, not domain entities.</summary>
 public interface IOrderHistoryQueries

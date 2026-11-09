@@ -2,6 +2,7 @@ using System.Reflection;
 using API.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Resturant.Application;
+using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Services.Ordering;
 
@@ -22,6 +23,7 @@ public class ArchitectureTests
 
     private static readonly Assembly DomainModel = typeof(ShoppingCart).Assembly;
     private static readonly Assembly ApplicationServices = typeof(ApplicationServiceCollectionExtensions).Assembly;
+    private static readonly Assembly Infrastructure = typeof(RestaurantContext).Assembly;
     private static readonly Assembly Api = typeof(PaymentController).Assembly;
 
     private static readonly string[] EntityNamespaces =
@@ -54,10 +56,16 @@ public class ArchitectureTests
     }
 
     [Fact]
-    public void ApplicationServices_DependOnlyOnDomain()
+    public void ApplicationServices_DependOnlyOnDomainAndInfrastructureAbstractions()
     {
-        Assert.Equal(["Resturant.Domain"], ProjectReferences(ApplicationServices));
+        Assert.Equal(["Resturant.Domain", "Resturant.Infrastructure"], ProjectReferences(ApplicationServices));
         Assert.Empty(FrameworkReferences(ApplicationServices));
+    }
+
+    [Fact]
+    public void Infrastructure_DependsOnlyOnDomain()
+    {
+        Assert.Equal(["Resturant.Domain"], ProjectReferences(Infrastructure));
     }
 
     [Fact]

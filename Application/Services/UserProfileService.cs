@@ -1,4 +1,4 @@
-using Resturant.Application.Abstractions;
+using Resturant.Infrastructure.Persistence.Queries;
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Domain.Customers;

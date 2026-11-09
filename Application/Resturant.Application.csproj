@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Resturant.Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Resturant.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

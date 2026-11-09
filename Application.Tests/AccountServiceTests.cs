@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Resturant.Application.Abstractions;
+using Resturant.Infrastructure.Auth;
+using Resturant.Infrastructure.Identity;
 using Resturant.Application.Dtos;
 using Resturant.Application.Interfaces;
 using Resturant.Application.Services;

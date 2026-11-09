@@ -1,7 +1,8 @@
 using Resturant.Application.Dtos;
 using Resturant.Application.Mappings;
 using Resturant.Application.Interfaces;
-using Resturant.Application.Abstractions;
+using Resturant.Infrastructure.Auth;
+using Resturant.Infrastructure.Identity;
 
 namespace Resturant.Application.Services;
 

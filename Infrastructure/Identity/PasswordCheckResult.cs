@@ -1,4 +1,4 @@
-namespace Resturant.Application.Abstractions;
+namespace Resturant.Infrastructure.Identity;
 
 /// <summary>The outcome of checking a user's password.</summary>
 public enum PasswordCheckResult

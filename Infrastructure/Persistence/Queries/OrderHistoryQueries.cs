@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Resturant.Application.Abstractions;
 
 namespace Resturant.Infrastructure.Persistence.Queries;
 

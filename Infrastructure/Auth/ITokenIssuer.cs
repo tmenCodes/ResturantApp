@@ -1,4 +1,6 @@
-namespace Resturant.Application.Abstractions;
+using Resturant.Infrastructure.Identity;
+
+namespace Resturant.Infrastructure.Auth;
 
 /// <summary>Issues signed access tokens that identify a user.</summary>
 public interface ITokenIssuer
