@@ -15,7 +15,6 @@ public static class ApplicationServiceCollectionExtensions
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddScoped<IOrderItemFactory, OrderItemFactory>();
         services.TryAddScoped<ICheckoutEligibility, CheckoutEligibility>();
-        services.TryAddScoped<IContactService, ContactService>();
         services.TryAddScoped<ICheckoutService, CheckoutService>();
         services.TryAddScoped<IMenuService, MenuService>();
         services.TryAddScoped<ICartService, CartService>();
