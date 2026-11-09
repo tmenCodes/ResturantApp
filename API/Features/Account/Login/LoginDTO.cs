@@ -1,4 +1,4 @@
-namespace API.Contracts;
+namespace API.Features.Account.Login;
 
 /// <summary>Credentials submitted to the login endpoint.</summary>
 public class LoginDTO

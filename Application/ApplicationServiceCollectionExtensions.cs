@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Resturant.Application.Interfaces;
-using Resturant.Application.Services;
 using Resturant.Domain.Services.Ordering;
 
 namespace Resturant.Application;
@@ -15,7 +13,6 @@ public static class ApplicationServiceCollectionExtensions
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddScoped<IOrderItemFactory, OrderItemFactory>();
         services.TryAddScoped<ICheckoutEligibility, CheckoutEligibility>();
-        services.TryAddScoped<IAccountService, AccountService>();
         return services;
     }
 }

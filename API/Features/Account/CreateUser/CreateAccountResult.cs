@@ -1,6 +1,4 @@
-using Resturant.Infrastructure.Identity;
-
-namespace Resturant.Application.Dtos;
+namespace API.Features.Account.CreateUser;
 
 /// <summary>Why an account creation attempt succeeded or was rejected.</summary>
 public enum CreateAccountStatus
@@ -19,15 +17,4 @@ public record CreateAccountResult(
     CreateAccountStatus Status,
     string? UserName = null,
     string? Email = null,
-    IReadOnlyList<AccountError>? Errors = null);
-
-/// <summary>Why a login attempt succeeded or was rejected.</summary>
-public enum LoginStatus
-{
-    Succeeded,
-    InvalidCredentials,
-    LockedOut
-}
-
-/// <summary>The outcome of a login attempt. <see cref="Token"/> is set only when <see cref="Status"/> is <see cref="LoginStatus.Succeeded"/>.</summary>
-public record LoginResult(LoginStatus Status, string? Token = null);
+    IReadOnlyList<AccountErrorDto>? Errors = null);

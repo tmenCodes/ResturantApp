@@ -1,15 +1,11 @@
 using System.Reflection;
-using API.Common;
-using API.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Resturant.Application;
-using Resturant.Infrastructure.Persistence;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Services.Ordering;
+using Resturant.Infrastructure.Persistence;
 
 namespace Application.Tests;
 
-/// <summary>Guards the onion rings: every dependency points inward, and no inner ring depends on a framework.</summary>
+/// <summary>Guards the project boundaries: Domain depends on nothing, Infrastructure only on Domain.</summary>
 public class ArchitectureTests
 {
     private static readonly string[] FrameworkPrefixes =
@@ -23,9 +19,7 @@ public class ArchitectureTests
     ];
 
     private static readonly Assembly DomainModel = typeof(ShoppingCart).Assembly;
-    private static readonly Assembly ApplicationServices = typeof(ApplicationServiceCollectionExtensions).Assembly;
     private static readonly Assembly Infrastructure = typeof(RestaurantContext).Assembly;
-    private static readonly Assembly Api = typeof(FeatureRegistration).Assembly;
 
     private static readonly string[] EntityNamespaces =
     [
@@ -42,7 +36,7 @@ public class ArchitectureTests
         assembly.GetReferencedAssemblies().Select(x => x.Name!).Where(name => FrameworkPrefixes.Any(name.StartsWith));
 
     [Fact]
-    public void DomainModel_DependsOnNoOtherRingOrFramework()
+    public void DomainModel_DependsOnNoOtherProjectOrFramework()
     {
         Assert.Empty(ProjectReferences(DomainModel));
         Assert.Empty(FrameworkReferences(DomainModel));
@@ -54,13 +48,6 @@ public class ArchitectureTests
         Assert.Same(DomainModel, typeof(OrderItemFactory).Assembly);
         Assert.Same(DomainModel, typeof(CheckoutEligibility).Assembly);
         Assert.Contains(DomainModel.GetTypes(), t => t.Namespace?.StartsWith("Resturant.Domain.Services") == true);
-    }
-
-    [Fact]
-    public void ApplicationServices_DependOnlyOnDomainAndInfrastructureAbstractions()
-    {
-        Assert.Equal(["Resturant.Domain", "Resturant.Infrastructure"], ProjectReferences(ApplicationServices));
-        Assert.Empty(FrameworkReferences(ApplicationServices));
     }
 
     [Fact]
@@ -76,50 +63,6 @@ public class ArchitectureTests
 
         Assert.NotEmpty(repositories);
         Assert.All(repositories, t => Assert.Equal("Resturant.Domain.Repositories", t.Namespace));
-        Assert.DoesNotContain(ApplicationServices.GetTypes(), t => t.IsInterface && t.Name.EndsWith("Repository"));
-    }
-
-    private static IEnumerable<Type> Flatten(Type type)
-    {
-        yield return type;
-        var inner = type.HasElementType ? [type.GetElementType()!] : type.GetGenericArguments();
-        foreach (var argument in inner.SelectMany(Flatten))
-        {
-            yield return argument;
-        }
-    }
-
-    private static bool InNamespace(Type type, string root) =>
-        type.Namespace is { } ns && (ns == root || ns.StartsWith(root + "."));
-
-    private static List<Type> Controllers() =>
-        Api.GetTypes().Where(t => typeof(ControllerBase).IsAssignableFrom(t) && !t.IsAbstract).ToList();
-
-    [Fact]
-    public void Controllers_InjectOnlyApplicationInterfacesAndLoggers()
-    {
-        var controllers = Controllers();
-        var violations = controllers
-            .SelectMany(c => c.GetConstructors().SelectMany(ctor => ctor.GetParameters()).Select(p => (Controller: c, p.ParameterType)))
-            .Where(x => !InNamespace(x.ParameterType, "Resturant.Application.Interfaces")
-                        && !InNamespace(x.ParameterType, "Microsoft.Extensions.Logging"))
-            .Select(x => $"{x.Controller.Name} injects {x.ParameterType}");
-
-        Assert.NotEmpty(controllers);
-        Assert.Empty(violations);
-    }
-
-    [Fact]
-    public void Controllers_ExposeNoDomainOrInfrastructureTypes()
-    {
-        var actions = Controllers().SelectMany(c => c.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-        var violations = actions
-            .SelectMany(m => m.GetParameters().Select(p => p.ParameterType).Append(m.ReturnType).SelectMany(Flatten)
-                .Select(type => (Action: m, Type: type)))
-            .Where(x => InNamespace(x.Type, "Resturant.Domain") || InNamespace(x.Type, "Resturant.Infrastructure"))
-            .Select(x => $"{x.Action.DeclaringType!.Name}.{x.Action.Name} uses {x.Type}");
-
-        Assert.Empty(violations);
     }
 
     [Fact]
@@ -132,9 +75,9 @@ public class ArchitectureTests
                 .Concat(e.GetProperties(all).Select(p => p.PropertyType))
                 .Concat(e.GetMethods(all).SelectMany(m => m.GetParameters().Select(p => p.ParameterType).Append(m.ReturnType)))
                 .Concat(e.GetConstructors(all).SelectMany(c => c.GetParameters().Select(p => p.ParameterType)))
-                .SelectMany(Flatten)
+                .SelectMany(TypeGraph.Flatten)
                 .Select(type => (Entity: e, Type: type)))
-            .Where(x => InNamespace(x.Type, "Resturant.Domain.Services"))
+            .Where(x => TypeGraph.InNamespace(x.Type, "Resturant.Domain.Services"))
             .Select(x => $"{x.Entity.Name} uses {x.Type}");
 
         Assert.NotEmpty(entities);

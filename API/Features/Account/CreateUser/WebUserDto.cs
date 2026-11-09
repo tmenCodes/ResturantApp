@@ -1,4 +1,4 @@
-namespace API.Contracts;
+namespace API.Features.Account.CreateUser;
 
 /// <summary>Registration details submitted to the create-user endpoint.</summary>
 public class WebUserDto
