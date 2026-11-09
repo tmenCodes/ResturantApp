@@ -7,7 +7,6 @@ using Resturant.Application.Dtos;
 using Resturant.Application.Interfaces;
 using Resturant.Application.Services;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Identity;
 namespace Application.Tests;
 
 public class AccountServiceTests : IDisposable
