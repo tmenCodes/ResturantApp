@@ -1,5 +1,8 @@
-namespace Resturant.Application.Dtos;
+using Resturant.Domain.Ordering;
 
+namespace API.Features.UserProfile.Shared;
+
+/// <summary>Card details a signed-in user submits to save or replace their payment method.</summary>
 public record UserPaymentInformationDto
 {
     public string? CardType { get; init; }
@@ -7,14 +10,16 @@ public record UserPaymentInformationDto
     public string? CreditCardNumber { get; init; }
     public string? Expiration { get; init; }
     public string? CVV { get; init; }
-        
+
     public UserPaymentInformationDto(string cardType, string nameonCard, string creditCardNumber, string expiration, string cvv)
     {
-        CardType = cardType; 
+        CardType = cardType;
         NameonCard = nameonCard;
         CreditCardNumber = creditCardNumber;
         Expiration = expiration;
         CVV = cvv;
     }
-    //   public string?  UserProfileName { get; set; }
+
+    /// <summary>Returns the submitted details as a domain payment card.</summary>
+    public PaymentCard ToPaymentCard() => new(CardType, NameonCard, CreditCardNumber, Expiration, CVV);
 }
