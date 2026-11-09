@@ -10,7 +10,7 @@ public static class MvcResults
     public static IResult Message(int statusCode, string message) => Results.Text(message, statusCode: statusCode);
 
     /// <summary>A ProblemDetails body with the given status, as <c>[ApiController]</c> wrote <c>NotFound()</c> and similar.</summary>
-    public static IResult Problem(int statusCode) => Results.Problem(statusCode: statusCode);
+    public static IResult Problem(int statusCode) => MvcProblemResult.ForStatus(statusCode);
 
     /// <summary>200 with the value as JSON, or 204 when it is null, as MVC wrote <c>Ok(null)</c>.</summary>
     public static IResult OkOrNoContent<T>(T? value) => value is null ? Results.NoContent() : Results.Ok(value);

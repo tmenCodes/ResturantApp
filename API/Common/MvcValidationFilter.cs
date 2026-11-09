@@ -35,7 +35,7 @@ public static class MvcValidationFilter
         return async invocation =>
         {
             var errors = Validate(checks, invocation.Arguments);
-            return errors.Count > 0 ? Results.ValidationProblem(errors) : await next(invocation);
+            return errors.Count > 0 ? MvcProblemResult.ForValidation(errors) : await next(invocation);
         };
     }
 

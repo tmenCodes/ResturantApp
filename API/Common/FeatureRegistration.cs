@@ -18,7 +18,7 @@ public static class FeatureRegistration
     public static IEnumerable<Type> EndpointTypes => FeatureTypes.Where(typeof(IEndpoint).IsAssignableFrom);
 
     /// <summary>
-    /// Adds every handler (scoped) and endpoint, the Domain Services they use, ProblemDetails and the JSON settings
+    /// Adds every handler (scoped) and endpoint, the Domain Services they use and the JSON settings
     /// the controllers used. Safe to call more than once.
     /// </summary>
     public static IServiceCollection AddFeatures(this IServiceCollection services)
@@ -26,7 +26,6 @@ public static class FeatureRegistration
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddScoped<IOrderItemFactory, OrderItemFactory>();
         services.TryAddScoped<ICheckoutEligibility, CheckoutEligibility>();
-        services.AddProblemDetails();
         services.ConfigureHttpJsonOptions(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
         foreach (var handler in HandlerTypes)
