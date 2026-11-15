@@ -1,5 +1,4 @@
 using API.Features.UserProfile.GetOrderedItems;
-using Resturant.Infrastructure.Persistence.Queries;
 using static API.Tests.Features.UserProfile.UserProfileTestData;
 
 namespace API.Tests.Features.UserProfile;
@@ -17,7 +16,7 @@ public class GetOrderedItemsHandlerTests
         AddOrderItem(context, "Tofu Stir Fry", 12.95m, otherCart);
         await context.SaveChangesAsync();
 
-        var result = await new GetOrderedItemsHandler(new OrderHistoryQueries(context)).HandleAsync("ada");
+        var result = await new GetOrderedItemsHandler(context).HandleAsync("ada");
 
         var item = Assert.Single(result);
         Assert.Equal(new UserOrderedItemDto(checkoutTime.ToString(), cart.ToString(), "Papaya Salad", "8.50"), item);

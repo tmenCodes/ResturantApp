@@ -1,5 +1,6 @@
 using API.Common;
-using Resturant.Infrastructure.Persistence.Queries;
+using Microsoft.EntityFrameworkCore;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.UserProfile.GetRecentOrderTotals;
 
@@ -8,17 +9,21 @@ public class GetRecentOrderTotalsHandler : IHandler
 {
     private const int RecentOrderLimit = 5;
 
-    private readonly IOrderHistoryQueries _orderHistoryQueries;
+    private readonly RestaurantContext _context;
 
-    public GetRecentOrderTotalsHandler(IOrderHistoryQueries orderHistoryQueries)
+    public GetRecentOrderTotalsHandler(RestaurantContext context)
     {
-        _orderHistoryQueries = orderHistoryQueries;
+        _context = context;
     }
 
     /// <summary>Returns up to five of the user's past order totals, ordered by their short-date text.</summary>
     public async Task<IReadOnlyList<UserOrderHistoryDto>> HandleAsync(string userName, CancellationToken cancellationToken = default)
     {
-        var carts = await _orderHistoryQueries.GetCheckedOutCartsAsync(userName, cancellationToken);
+        var carts = await (
+            from checkout in _context.Checkouts
+            where checkout.UserProfileName == userName
+            join cart in _context.ShoppingCarts on checkout.ShoppingCartIdentity equals cart.Identity
+            select new { cart.Created, cart.TotalPrice }).ToListAsync(cancellationToken);
         return carts
             .Select(cart => new UserOrderHistoryDto(cart.TotalPrice, cart.Created.ToString("d")))
             .OrderBy(history => history.Date)

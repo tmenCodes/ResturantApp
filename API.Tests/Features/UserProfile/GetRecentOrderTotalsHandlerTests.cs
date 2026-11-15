@@ -1,5 +1,4 @@
 using API.Features.UserProfile.GetRecentOrderTotals;
-using Resturant.Infrastructure.Persistence.Queries;
 using static API.Tests.Features.UserProfile.UserProfileTestData;
 
 namespace API.Tests.Features.UserProfile;
@@ -16,7 +15,7 @@ public class GetRecentOrderTotalsHandlerTests
         }
         await AddCheckedOutCartAsync(context, "grace", new DateTime(2026, 1, 1), 99m);
 
-        var result = await new GetRecentOrderTotalsHandler(new OrderHistoryQueries(context)).HandleAsync("ada");
+        var result = await new GetRecentOrderTotalsHandler(context).HandleAsync("ada");
 
         Assert.Equal(5, result.Count);
         Assert.DoesNotContain(result, history => history.TotalPrice == 99m);

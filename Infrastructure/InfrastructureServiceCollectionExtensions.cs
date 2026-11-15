@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Resturant.Infrastructure.Auth;
 using Resturant.Infrastructure.Identity;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Queries;
 
 namespace Resturant.Infrastructure;
 
@@ -14,14 +13,12 @@ public static class InfrastructureServiceCollectionExtensions
     private const string MigrationsAssembly = "Resturant.Infrastructure";
 
     /// <summary>
-    /// Adds <see cref="RestaurantContext"/> on PostgreSQL, the order-history queries, the Identity account store and the JWT
-    /// issuer. Safe to call more than once.
+    /// Adds <see cref="RestaurantContext"/> on PostgreSQL, the Identity account store and the JWT issuer. Safe to call more than once.
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string? connectionString)
     {
         services.AddDbContext<RestaurantContext>(options =>
             options.UseNpgsql(connectionString, npgsql => npgsql.MigrationsAssembly(MigrationsAssembly)));
-        services.TryAddScoped<IOrderHistoryQueries, OrderHistoryQueries>();
         services.TryAddSingleton(TimeProvider.System);
         services.TryAddScoped<IUserAccountStore, IdentityUserAccountStore>();
         services.TryAddSingleton<ITokenIssuer, JwtTokenIssuer>();
