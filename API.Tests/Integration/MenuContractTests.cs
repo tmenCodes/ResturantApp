@@ -11,7 +11,7 @@ public class MenuContractTests : ContractTest
 
         Assert.Equal(200, response.Status);
         Assert.Equal(Json, response.ContentType);
-        Assert.Equal(6, response.JsonBody!.AsArray().Count);
+        Assert.Equal(8, response.JsonBody!.AsArray().Count);
         Assert.StartsWith(
             """[{"id":1,"menuItemName":"Egg Roll Platter","menuItemBasePrice":"14.95","menuItemDescription":"Carrots, Tomato, Lettuce","menuItemImageUrl":"EggRollPlatter.png"},""",
             response.Body);
@@ -35,7 +35,7 @@ public class MenuContractTests : ContractTest
 
         Assert.Equal(
             new HttpSnapshot(200, Json,
-                """["EggRollPlatter.png","PapayaSalad.png","TofuStirFry.png","ChoppedBeef.png","VeggiePlatter.png","CaesarSalad.png"]"""),
+                """["EggRollPlatter.png","PapayaSalad.png","TofuStirFry.png","ChoppedBeef.png","VeggiePlatter.png","CaesarSalad.png","PadThai.png","GreenCurry.png"]"""),
             response);
     }
 }

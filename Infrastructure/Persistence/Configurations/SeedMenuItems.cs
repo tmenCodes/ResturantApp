@@ -14,7 +14,9 @@ public class SeedMenuItems : IEntityTypeConfiguration<MenuItem>
             new { Id = 3, Name = "Tofu Stir Fry", BasePrice = 10.95m, Description = "Tofu, bell peppers, green onion", ImageUrl = "TofuStirFry.png"},
             new { Id = 4, Name = "Chopped Beef", BasePrice = 12.95m, Description = "Mushrooms, Carrots, Okra", ImageUrl =  "ChoppedBeef.png"},
             new { Id = 5, Name = "Veggie Platter", BasePrice = 9.95m, Description = "Edamame, Carrots, Avocado", ImageUrl = "VeggiePlatter.png"},
-            new { Id = 6, Name = "Caesar Salad", BasePrice = 10.5m, Description = "Onion, lettuce, cheese", ImageUrl = "CaesarSalad.png" }
+            new { Id = 6, Name = "Caesar Salad", BasePrice = 10.5m, Description = "Onion, lettuce, cheese", ImageUrl = "CaesarSalad.png" },
+            new { Id = 7, Name = "Pad Thai", BasePrice = 12.95m, Description = "Rice noodles, egg, peanuts, bean sprouts", ImageUrl = "PadThai.png" },
+            new { Id = 8, Name = "Green Curry", BasePrice = 13.95m, Description = "Coconut milk, Thai basil, bamboo shoots", ImageUrl = "GreenCurry.png" }
         );
 
     }
