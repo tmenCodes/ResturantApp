@@ -34,7 +34,7 @@ Slices sit on two shared projects that keep the business rules and the technolog
 | Project | Namespace root | Responsibility | References |
 |---|---|---|---|
 | `Domain` | `Resturant.Domain` | Entities and their rules (cart totals, item pricing, checkout creation) | nothing |
-| `Infrastructure` | `Resturant.Infrastructure` | EF Core context, configurations, migrations, seed data; Identity account store (`IUserAccountStore`), JWT issuer (`ITokenIssuer`), read-side queries (`IOrderHistoryQueries`), each interface next to its implementation | `Domain`, EF Core, Npgsql, Identity |
+| `Infrastructure` | `Resturant.Infrastructure` | EF Core context, configurations, migrations, seed data; Identity account store (`IUserAccountStore`), JWT issuer (`ITokenIssuer`), each interface next to its implementation | `Domain`, EF Core, Npgsql, Identity |
 | `API` | `API` | `Features/`: the slices. `Common/`: slice plumbing. `Program.cs`: composition root | `Domain`, `Infrastructure` |
 
 ### Anatomy of a slice
@@ -69,15 +69,14 @@ live in that feature's `Shared/` folder (`Cart/Shared/CartIdentity`, `Checkout/S
    have no public setters and expose collections as read-only; they change only through their own constructors and
    methods, so rules like cart totals can't be bypassed. `Domain.Tests/EncapsulationTests` guards this.
 5. **Handlers use `RestaurantContext` directly.** A handler takes the injected `RestaurantContext`, queries it
-   (read slices project straight to their DTO) and calls `SaveChangesAsync` once, so related changes are saved
-   together. There are no repositories or unit of work.
-6. **Reports are queries, not repositories.** Read-only views that join several tables (order history) are query
-   interfaces in `Infrastructure/Persistence/Queries` returning read models.
-7. **Composition is idempotent.** `AddFeatures()` discovers every `IHandler` (scoped) and `IEndpoint` and registers
+   (read slices project straight to their DTO, reports that join several tables included) and calls
+   `SaveChangesAsync` once, so related changes are saved together. There are no repositories, unit of work or
+   query interfaces.
+6. **Composition is idempotent.** `AddFeatures()` discovers every `IHandler` (scoped) and `IEndpoint` and registers
    them with `TryAdd*`; `AddInfrastructure(...)` does the same for the outer adapters.
-8. **Names are constants.** Route prefixes live in `ApiGroups`; each endpoint declares its own `Route` and message
+7. **Names are constants.** Route prefixes live in `ApiGroups`; each endpoint declares its own `Route` and message
    constants.
-9. **The architecture is tested.** `API.Tests/ArchitectureTests` checks project references (Domain references
+8. **The architecture is tested.** `API.Tests/ArchitectureTests` checks project references (Domain references
    nothing, Infrastructure only Domain).
    `API.Tests/SliceArchitectureTests` checks at IL level that no slice depends on another slice, that every handler
    and endpoint is registered, and that no endpoint, handler result or DTO exposes a Domain or Infrastructure type.
@@ -117,7 +116,7 @@ Domain/
   Payments/                                  CreditCardInformation: card details held by CheckoutInformation and
                                              SavedPaymentMethod, stored in their own columns as an EF owned type
 Infrastructure/
-  Persistence/          RestaurantContext, Configurations/, Queries/, Migrations/
+  Persistence/          RestaurantContext, Configurations/, Migrations/
   Identity/             WebUser, IUserAccountStore, IdentityUserAccountStore, UserAccount, ...
   Auth/                 JwtSettings, ITokenIssuer, JwtTokenIssuer
   InfrastructureServiceCollectionExtensions.cs   AddInfrastructure()
