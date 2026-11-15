@@ -1,5 +1,7 @@
 using API.Features.Checkout.CheckoutCart;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 using Resturant.Domain.Services.Ordering;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Infrastructure.Persistence.Repositories;

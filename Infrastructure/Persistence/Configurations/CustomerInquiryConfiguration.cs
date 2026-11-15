@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Resturant.Domain.Contact;
+using Resturant.Domain.ContactInfo;
 
 namespace Resturant.Infrastructure.Persistence.Configurations;
 

@@ -1,4 +1,4 @@
-using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 
 namespace Resturant.Domain.Customers;
 
@@ -10,28 +10,21 @@ public class SavedPaymentMethod
     }
 
     public int Id { get; private set; }
-    public string? Credit { get; private set; }
-    public string? NameonCard { get; private set; }
-    public string? CreditCardNumber { get; private set; }
-    public string? Expiration { get; private set; }
-    public string? CVV { get; private set; }
+    public CreditCardInformation Card { get; private set; } = null!;
     public string? UserName { get; private set; }
 
     /// <summary>Saves <paramref name="card"/> for the user named <paramref name="userName"/>.</summary>
-    public static SavedPaymentMethod Create(string userName, PaymentCard card)
+    public static SavedPaymentMethod Create(string userName, CreditCardInformation card)
     {
+        
         var paymentMethod = new SavedPaymentMethod { UserName = userName };
         paymentMethod.UpdateCard(card);
         return paymentMethod;
     }
 
     /// <summary>Replaces the saved card details with <paramref name="card"/>. The owner does not change.</summary>
-    public void UpdateCard(PaymentCard card)
+    public void UpdateCard(CreditCardInformation card)
     {
-        Credit = card.Credit;
-        NameonCard = card.NameOnCard;
-        CreditCardNumber = card.Number;
-        Expiration = card.Expiration;
-        CVV = card.Cvv;
+        Card = card;
     }
 }

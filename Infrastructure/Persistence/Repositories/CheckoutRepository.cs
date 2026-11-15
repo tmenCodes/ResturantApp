@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Resturant.Infrastructure.Persistence;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 using Resturant.Domain.Repositories;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;
@@ -15,7 +17,7 @@ public class CheckoutRepository : ICheckoutRepository
         _context = context;
     }
 
-    public Task<List<Checkout>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<List<CheckoutInformation>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return _context.Checkouts.ToListAsync(cancellationToken);
     }
@@ -25,7 +27,7 @@ public class CheckoutRepository : ICheckoutRepository
         return _context.Checkouts.AnyAsync(x => x.ShoppingCartIdentity == shoppingCartIdentity, cancellationToken);
     }
 
-    public async Task AddAsync(Checkout checkout, CancellationToken cancellationToken = default)
+    public async Task AddAsync(CheckoutInformation checkout, CancellationToken cancellationToken = default)
     {
         await _context.Checkouts.AddAsync(checkout, cancellationToken);
     }

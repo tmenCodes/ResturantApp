@@ -1,4 +1,4 @@
-namespace Resturant.Domain.Contact;
+namespace Resturant.Domain.ContactInfo;
 
 /// <summary>A customer's request to book a table.</summary>
 public class Reservation

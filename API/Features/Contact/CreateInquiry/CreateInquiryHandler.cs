@@ -1,5 +1,5 @@
 using API.Common;
-using Resturant.Domain.Contact;
+using Resturant.Domain.ContactInfo;
 using Resturant.Domain.Repositories;
 
 namespace API.Features.Contact.CreateInquiry;

@@ -17,11 +17,11 @@ public record SavedPaymentMethodDto
     public static SavedPaymentMethodDto From(SavedPaymentMethod paymentMethod) => new()
     {
         Id = paymentMethod.Id,
-        Credit = paymentMethod.Credit,
-        NameonCard = paymentMethod.NameonCard,
-        CreditCardNumber = paymentMethod.CreditCardNumber,
-        Expiration = paymentMethod.Expiration,
-        CVV = paymentMethod.CVV,
+        Credit = paymentMethod.Card.CardType,
+        NameonCard = paymentMethod.Card.NameOnCard,
+        CreditCardNumber = paymentMethod.Card.Number,
+        Expiration = paymentMethod.Card.Expiration,
+        CVV = paymentMethod.Card.Cvv,
         UserName = paymentMethod.UserName
     };
 }

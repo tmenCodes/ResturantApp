@@ -1,5 +1,5 @@
 using System.Reflection;
-using Resturant.Domain.Ordering;
+using Resturant.Domain.Cart;
 
 namespace Domain.Tests;
 
@@ -9,9 +9,10 @@ public class EncapsulationTests
     private static readonly string[] EntityNamespaces =
     [
         "Resturant.Domain.Menu",
+        "Resturant.Domain.Cart",
         "Resturant.Domain.Ordering",
         "Resturant.Domain.Customers",
-        "Resturant.Domain.Contact"
+        "Resturant.Domain.ContactInfo"
     ];
 
     public static TheoryData<Type> Entities()

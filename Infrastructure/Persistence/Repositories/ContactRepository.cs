@@ -1,5 +1,5 @@
 using Resturant.Infrastructure.Persistence;
-using Resturant.Domain.Contact;
+using Resturant.Domain.ContactInfo;
 using Resturant.Domain.Repositories;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;

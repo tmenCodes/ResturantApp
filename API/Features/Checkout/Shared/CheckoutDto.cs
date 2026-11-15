@@ -1,4 +1,4 @@
-using CheckoutEntity = Resturant.Domain.Ordering.Checkout;
+using Resturant.Domain.Ordering;
 
 namespace API.Features.Checkout.Shared;
 
@@ -17,14 +17,14 @@ public class CheckoutDto
     public Guid ShoppingCartIdentity { get; set; }
 
     /// <summary>Copies a checkout entity's recorded details.</summary>
-    public static CheckoutDto From(CheckoutEntity checkout) => new()
+    public static CheckoutDto From(CheckoutInformation checkout) => new()
     {
         Id = checkout.Id,
-        Credit = checkout.Credit,
-        NameonCard = checkout.NameonCard,
-        CreditCardNumber = checkout.CreditCardNumber,
-        Expiration = checkout.Expiration,
-        CVV = checkout.CVV,
+        Credit = checkout.Card.CardType,
+        NameonCard = checkout.Card.NameOnCard,
+        CreditCardNumber = checkout.Card.Number,
+        Expiration = checkout.Card.Expiration,
+        CVV = checkout.Card.Cvv,
         Paid = checkout.Paid,
         UserProfileName = checkout.UserProfileName,
         CheckoutTime = checkout.CheckoutTime,

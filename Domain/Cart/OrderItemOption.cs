@@ -1,4 +1,4 @@
-namespace Resturant.Domain.Ordering;
+namespace Resturant.Domain.Cart;
 
 /// <summary>An option chosen for an order item, with the price it had when it was chosen.</summary>
 public class OrderItemOption

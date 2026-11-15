@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Resturant.Domain.Ordering;
+using Resturant.Domain.Cart;
 
 namespace Resturant.Infrastructure.Persistence.Configurations;
 

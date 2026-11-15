@@ -19,7 +19,8 @@ public class UpdatePaymentMethodHandlerTests
         var result = await CreateHandler(context).HandleAsync("ada", Payment("New Name"));
 
         Assert.Equal("New Name", result!.NameonCard);
-        Assert.Equal("New Name", Assert.Single(context.SavedPaymentMethods).NameonCard);
+        context.ChangeTracker.Clear();
+        Assert.Equal("New Name", Assert.Single(context.SavedPaymentMethods).Card.NameOnCard);
     }
 
     [Fact]

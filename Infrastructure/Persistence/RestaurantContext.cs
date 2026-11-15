@@ -2,7 +2,8 @@ using Microsoft.EntityFrameworkCore;
 
 using System.Reflection.Metadata;
 
-using Resturant.Domain.Contact;
+using Resturant.Domain.Cart;
+using Resturant.Domain.ContactInfo;
 using Resturant.Domain.Customers;
 using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
@@ -30,7 +31,7 @@ namespace Resturant.Infrastructure.Persistence
         }
 
         
-        public DbSet<Checkout> Checkouts { get; set; }
+        public DbSet<CheckoutInformation> Checkouts { get; set; }
    
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }

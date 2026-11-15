@@ -1,15 +1,17 @@
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 namespace Resturant.Domain.Repositories;
 
 /// <summary>Reads and writes checkouts (paid shopping carts).</summary>
 public interface ICheckoutRepository
 {
     /// <summary>Returns every checkout.</summary>
-    Task<List<Checkout>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<List<CheckoutInformation>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>Returns true when the shopping cart with this identity has already been checked out.</summary>
     Task<bool> ExistsForCartAsync(Guid shoppingCartIdentity, CancellationToken cancellationToken = default);
 
     /// <summary>Stages a new checkout; <see cref="IUnitOfWork.SaveChangesAsync"/> persists it and assigns its <see cref="Checkout.Id"/>.</summary>
-    Task AddAsync(Checkout checkout, CancellationToken cancellationToken = default);
+    Task AddAsync(CheckoutInformation checkout, CancellationToken cancellationToken = default);
 }

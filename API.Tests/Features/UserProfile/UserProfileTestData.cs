@@ -1,8 +1,10 @@
 using API.Features.UserProfile.AddPaymentMethod;
 using API.Features.UserProfile.Shared;
 using Resturant.Domain.Menu;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
-using CheckoutEntity = Resturant.Domain.Ordering.Checkout;
+using Resturant.Domain.Payments;
+using CheckoutEntity = Resturant.Domain.Ordering.CheckoutInformation;
 using Resturant.Infrastructure.Persistence;
 using Resturant.Infrastructure.Persistence.Repositories;
 
@@ -22,7 +24,7 @@ public static class UserProfileTestData
         var cart = ShoppingCart.Create(identity, created);
         context.ShoppingCarts.Add(cart);
         context.Entry(cart).Property(x => x.TotalPrice).CurrentValue = total;
-        context.Checkouts.Add(CheckoutEntity.PayFor(identity, new PaymentCard("Visa", null, null, null, null), userName, created));
+        context.Checkouts.Add(CheckoutEntity.PayFor(identity, new CreditCardInformation("Visa", null, null, null, null), userName, created));
         await context.SaveChangesAsync();
         return identity;
     }

@@ -14,7 +14,7 @@ public class AddPaymentMethodHandlerTests
         var saved = Assert.Single(context.SavedPaymentMethods);
         Assert.Equal(saved.Id, result.Id);
         Assert.Equal("ada", saved.UserName);
-        Assert.Equal("Visa", saved.Credit);
+        Assert.Equal("Visa", saved.Card.CardType);
         Assert.Equal("Ada Lovelace", result.NameonCard);
     }
 }

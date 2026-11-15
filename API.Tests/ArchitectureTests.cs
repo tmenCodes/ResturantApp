@@ -1,5 +1,7 @@
 using System.Reflection;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 using Resturant.Domain.Services.Ordering;
 using Resturant.Infrastructure.Persistence;
 

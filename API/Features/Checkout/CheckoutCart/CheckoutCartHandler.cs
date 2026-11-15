@@ -1,9 +1,11 @@
 using API.Common;
 using API.Features.Checkout.Shared;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 using Resturant.Domain.Repositories;
 using Resturant.Domain.Services.Ordering;
-using CheckoutEntity = Resturant.Domain.Ordering.Checkout;
+using CheckoutEntity = Resturant.Domain.Ordering.CheckoutInformation;
 
 namespace API.Features.Checkout.CheckoutCart;
 
@@ -42,7 +44,7 @@ public class CheckoutCartHandler : IHandler
                 return new CheckoutResult(CheckoutStatus.CartNotFound);
         }
 
-        var card = new PaymentCard(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
+        var card = new CreditCardInformation(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
         var checkout = CheckoutEntity.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
         await _checkoutRepository.AddAsync(checkout, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

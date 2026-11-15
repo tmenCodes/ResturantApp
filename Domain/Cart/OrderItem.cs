@@ -1,6 +1,6 @@
 using Resturant.Domain.Menu;
 
-namespace Resturant.Domain.Ordering;
+namespace Resturant.Domain.Cart;
 
 /// <summary>A menu item in a cart, with the options chosen for it and its price for the ordered quantity.</summary>
 public class OrderItem

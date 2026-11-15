@@ -1,5 +1,7 @@
 using Domain.Tests.Fakes;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 using Resturant.Domain.Services.Ordering;
 
 namespace Domain.Tests;
@@ -7,7 +9,7 @@ namespace Domain.Tests;
 public class CheckoutEligibilityTests
 {
     private static readonly DateTime Now = new(2026, 10, 28, 12, 0, 0, DateTimeKind.Utc);
-    private static readonly PaymentCard Card = new("Visa", "Ada", "4111", "12/30", "123");
+    private static readonly CreditCardInformation Card = new("Visa", "Ada", "4111", "12/30", "123");
 
     private readonly FakeCheckoutRepository _checkouts = new();
     private readonly FakeShoppingCartRepository _carts = new();
@@ -41,7 +43,7 @@ public class CheckoutEligibilityTests
     public async Task CheckAsync_AlreadyCheckedOutCart_IsCartAlreadyCheckedOut()
     {
         var cart = AddCart();
-        _checkouts.Checkouts.Add(Checkout.PayFor(cart, Card, "ada", Now));
+        _checkouts.Checkouts.Add(CheckoutInformation.PayFor(cart, Card, "ada", Now));
 
         Assert.Equal(CheckoutEligibilityResult.CartAlreadyCheckedOut, await _eligibility.CheckAsync(cart));
     }
@@ -50,7 +52,7 @@ public class CheckoutEligibilityTests
     public async Task CheckAsync_CheckedOutButCartMissing_StillReportsAlreadyCheckedOut()
     {
         var cart = Guid.NewGuid();
-        _checkouts.Checkouts.Add(Checkout.PayFor(cart, Card, "ada", Now));
+        _checkouts.Checkouts.Add(CheckoutInformation.PayFor(cart, Card, "ada", Now));
 
         Assert.Equal(CheckoutEligibilityResult.CartAlreadyCheckedOut, await _eligibility.CheckAsync(cart));
     }

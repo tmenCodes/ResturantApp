@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Resturant.Domain.Repositories;
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 
 namespace Resturant.Infrastructure.Persistence.Repositories;
 

@@ -25,7 +25,7 @@ public class UpdatePaymentMethodHandler : IHandler
             return null;
         }
 
-        paymentMethod.UpdateCard(paymentInformation.ToPaymentCard());
+        paymentMethod.UpdateCard(paymentInformation.ToCreditCardInformation());
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return SavedPaymentMethodDto.From(paymentMethod);
     }

@@ -1,18 +1,16 @@
+using Resturant.Domain.Payments;
+
 namespace Resturant.Domain.Ordering;
 
 /// <summary>Payment recorded for a shopping cart.</summary>
-public class Checkout
+public class CheckoutInformation
 {
-    private Checkout()
+    private CheckoutInformation()
     {
     }
 
     public int Id { get; private set; }
-    public string? Credit { get; private set; }
-    public string? NameonCard { get; private set; }
-    public string? CreditCardNumber { get; private set; }
-    public string? Expiration { get; private set; }
-    public string? CVV { get; private set; }
+    public CreditCardInformation Card { get; private set; } = null!;
 
     public bool Paid { get; private set; }
 
@@ -23,13 +21,9 @@ public class Checkout
     public Guid ShoppingCartIdentity { get; private set; }
 
     /// <summary>Records the cart as paid by this card at <paramref name="paidAtUtc"/>.</summary>
-    public static Checkout PayFor(Guid shoppingCartIdentity, PaymentCard card, string? userName, DateTime paidAtUtc) => new()
+    public static CheckoutInformation PayFor(Guid shoppingCartIdentity, CreditCardInformation card, string? userName, DateTime paidAtUtc) => new()
     {
-        Credit = card.Credit,
-        NameonCard = card.NameOnCard,
-        CreditCardNumber = card.Number,
-        Expiration = card.Expiration,
-        CVV = card.Cvv,
+        Card = card,
         UserProfileName = userName,
         ShoppingCartIdentity = shoppingCartIdentity,
         CheckoutTime = paidAtUtc,

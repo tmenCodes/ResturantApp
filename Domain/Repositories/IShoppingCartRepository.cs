@@ -1,4 +1,6 @@
+using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 
 namespace Resturant.Domain.Repositories;
 

@@ -1,5 +1,5 @@
 using Resturant.Domain.Menu;
-using Resturant.Domain.Ordering;
+using Resturant.Domain.Cart;
 
 namespace Domain.Tests;
 

@@ -1,4 +1,4 @@
-namespace Resturant.Domain.Contact;
+namespace Resturant.Domain.ContactInfo;
 
 /// <summary>A message a customer sent through the contact form.</summary>
 public class CustomerInquiry

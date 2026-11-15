@@ -1,4 +1,6 @@
-namespace Resturant.Domain.Ordering;
+using Resturant.Domain.Ordering;
+
+namespace Resturant.Domain.Cart;
 
 /// <summary>A customer's cart. Keeps its subtotal, tax and total in step with its order items.</summary>
 public class ShoppingCart
@@ -24,7 +26,7 @@ public class ShoppingCart
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
 
     public int? CheckoutId { get; private set; }
-    public Checkout? Checkout { get; private set; }
+    public CheckoutInformation? Checkout { get; private set; }
 
     /// <summary>Starts an empty cart with the default tax rate.</summary>
     public static ShoppingCart Create(Guid identity, DateTime createdUtc) =>

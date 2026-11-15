@@ -1,4 +1,4 @@
-using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 
 namespace API.Features.UserProfile.Shared;
 
@@ -21,5 +21,5 @@ public record UserPaymentInformationDto
     }
 
     /// <summary>Returns the submitted details as a domain payment card.</summary>
-    public PaymentCard ToPaymentCard() => new(CardType, NameonCard, CreditCardNumber, Expiration, CVV);
+    public CreditCardInformation ToCreditCardInformation() => new(CardType, NameonCard, CreditCardNumber, Expiration, CVV);
 }
