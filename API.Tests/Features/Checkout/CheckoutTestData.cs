@@ -1,10 +1,7 @@
 using API.Features.Checkout.CheckoutCart;
 using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
-using Resturant.Domain.Payments;
-using Resturant.Domain.Services.Ordering;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.Checkout;
 
@@ -15,9 +12,7 @@ public static class CheckoutTestData
 
     public static CheckoutCartHandler CheckoutHandler(RestaurantContext context)
     {
-        var checkoutRepository = new CheckoutRepository(context);
-        var eligibility = new CheckoutEligibility(checkoutRepository, new ShoppingCartRepository(context));
-        return new CheckoutCartHandler(checkoutRepository, eligibility, new EfUnitOfWork(context), new FixedTimeProvider(Now));
+        return new CheckoutCartHandler(context, new FixedTimeProvider(Now));
     }
 
     public static async Task<Guid> AddCartAsync(RestaurantContext context)

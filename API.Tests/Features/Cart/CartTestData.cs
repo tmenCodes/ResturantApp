@@ -1,8 +1,6 @@
 using API.Features.Cart.AddCartItem;
 using Resturant.Domain.Menu;
-using Resturant.Domain.Services.Ordering;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.Cart;
 
@@ -13,7 +11,7 @@ public static class CartTestData
     public static readonly DateTimeOffset Now = new(2026, 10, 28, 12, 0, 0, TimeSpan.Zero);
 
     public static AddCartItemHandler AddHandler(RestaurantContext context) =>
-        new(new ShoppingCartRepository(context), new OrderItemFactory(new MenuRepository(context)), new EfUnitOfWork(context), new FixedTimeProvider(Now));
+        new(context, new FixedTimeProvider(Now));
 
     public static async Task SeedMenuAsync(RestaurantContext context)
     {

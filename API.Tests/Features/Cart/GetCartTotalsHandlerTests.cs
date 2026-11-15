@@ -1,13 +1,12 @@
 using API.Features.Cart.GetCartTotals;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.Cart.CartTestData;
 
 namespace API.Tests.Features.Cart;
 
 public class GetCartTotalsHandlerTests
 {
-    private static GetCartTotalsHandler CreateHandler(RestaurantContext context) => new(new ShoppingCartRepository(context));
+    private static GetCartTotalsHandler CreateHandler(RestaurantContext context) => new(context);
 
     [Fact]
     public async Task HandleAsync_FormatsAmountsWithTwoDecimals()

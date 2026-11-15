@@ -1,27 +1,20 @@
 using API.Common;
 using API.Features.Checkout.Shared;
-using Resturant.Domain.Cart;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Payments;
-using Resturant.Domain.Repositories;
-using Resturant.Domain.Services.Ordering;
-using CheckoutEntity = Resturant.Domain.Ordering.CheckoutInformation;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.Checkout.CheckoutCart;
 
 /// <summary>Records payment for a shopping cart.</summary>
 public class CheckoutCartHandler : IHandler
 {
-    private readonly ICheckoutRepository _checkoutRepository;
-    private readonly ICheckoutEligibility _checkoutEligibility;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly RestaurantContext _context;
     private readonly TimeProvider _timeProvider;
 
-    public CheckoutCartHandler(ICheckoutRepository checkoutRepository, ICheckoutEligibility checkoutEligibility, IUnitOfWork unitOfWork, TimeProvider timeProvider)
+    public CheckoutCartHandler(RestaurantContext context, TimeProvider timeProvider)
     {
-        _checkoutRepository = checkoutRepository;
-        _checkoutEligibility = checkoutEligibility;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _timeProvider = timeProvider;
     }
 
@@ -36,7 +29,7 @@ public class CheckoutCartHandler : IHandler
             return new CheckoutResult(CheckoutStatus.CartNotFound);
         }
 
-        switch (await _checkoutEligibility.CheckAsync(cartIdentity, cancellationToken))
+        switch (await CheckoutEligibility.CheckAsync(_context, cartIdentity, cancellationToken))
         {
             case CheckoutEligibilityResult.CartAlreadyCheckedOut:
                 return new CheckoutResult(CheckoutStatus.CartAlreadyCheckedOut);
@@ -45,9 +38,10 @@ public class CheckoutCartHandler : IHandler
         }
 
         var card = new CreditCardInformation(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
-        var checkout = CheckoutEntity.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
-        await _checkoutRepository.AddAsync(checkout, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var checkout = CheckoutInformation.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
+
+        _context.Checkouts.Add(checkout);
+        await _context.SaveChangesAsync(cancellationToken);
         return new CheckoutResult(CheckoutStatus.Created, CheckoutDto.From(checkout));
     }
 }

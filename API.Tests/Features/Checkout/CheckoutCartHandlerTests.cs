@@ -1,4 +1,6 @@
 using API.Features.Checkout.CheckoutCart;
+using Resturant.Domain.Ordering;
+using Resturant.Domain.Payments;
 using static API.Tests.Features.Checkout.CheckoutTestData;
 
 namespace API.Tests.Features.Checkout;
@@ -34,6 +36,21 @@ public class CheckoutCartHandlerTests
 
         Assert.Equal(CheckoutStatus.CartAlreadyCheckedOut, result.Status);
         Assert.Null(result.Checkout);
+        Assert.Single(context.Checkouts);
+    }
+
+    [Fact]
+    public async Task HandleAsync_CheckedOutButCartMissing_ReturnsCartAlreadyCheckedOut()
+    {
+        await using var context = TestDatabase.Create();
+        var cart = Guid.NewGuid();
+        var card = new CreditCardInformation("Visa", "Ada", "4111", "12/30", "123");
+        context.Checkouts.Add(CheckoutInformation.PayFor(cart, card, "ada", Now.UtcDateTime));
+        await context.SaveChangesAsync();
+
+        var result = await CheckoutHandler(context).HandleAsync(Request(cart.ToString()));
+
+        Assert.Equal(CheckoutStatus.CartAlreadyCheckedOut, result.Status);
         Assert.Single(context.Checkouts);
     }
 

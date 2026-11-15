@@ -1,5 +1,4 @@
 using API.Features.Checkout.GetAllCheckouts;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.Checkout.CheckoutTestData;
 
 namespace API.Tests.Features.Checkout;
@@ -14,7 +13,7 @@ public class GetAllCheckoutsHandlerTests
         await checkout.HandleAsync(Request((await AddCartAsync(context)).ToString()));
         await checkout.HandleAsync(Request((await AddCartAsync(context)).ToString()));
 
-        var all = await new GetAllCheckoutsHandler(new CheckoutRepository(context)).HandleAsync();
+        var all = await new GetAllCheckoutsHandler(context).HandleAsync();
 
         Assert.Equal(2, all.Count);
     }

@@ -1,8 +1,5 @@
 using System.Reflection;
 using Resturant.Domain.Cart;
-using Resturant.Domain.Ordering;
-using Resturant.Domain.Payments;
-using Resturant.Domain.Services.Ordering;
 using Resturant.Infrastructure.Persistence;
 
 namespace API.Tests;
@@ -23,14 +20,6 @@ public class ArchitectureTests
     private static readonly Assembly DomainModel = typeof(ShoppingCart).Assembly;
     private static readonly Assembly Infrastructure = typeof(RestaurantContext).Assembly;
 
-    private static readonly string[] EntityNamespaces =
-    [
-        "Resturant.Domain.Menu",
-        "Resturant.Domain.Ordering",
-        "Resturant.Domain.Customers",
-        "Resturant.Domain.Contact"
-    ];
-
     private static IReadOnlyList<string> ProjectReferences(Assembly assembly) =>
         assembly.GetReferencedAssemblies().Select(x => x.Name!).Where(name => name.StartsWith("Resturant.")).Order().ToList();
 
@@ -42,14 +31,6 @@ public class ArchitectureTests
     {
         Assert.Empty(ProjectReferences(DomainModel));
         Assert.Empty(FrameworkReferences(DomainModel));
-    }
-
-    [Fact]
-    public void DomainServices_BelongToDomainProject()
-    {
-        Assert.Same(DomainModel, typeof(OrderItemFactory).Assembly);
-        Assert.Same(DomainModel, typeof(CheckoutEligibility).Assembly);
-        Assert.Contains(DomainModel.GetTypes(), t => t.Namespace?.StartsWith("Resturant.Domain.Services") == true);
     }
 
     [Fact]
@@ -65,24 +46,5 @@ public class ArchitectureTests
 
         Assert.NotEmpty(repositories);
         Assert.All(repositories, t => Assert.Equal("Resturant.Domain.Repositories", t.Namespace));
-    }
-
-    [Fact]
-    public void Entities_NeverDependOnDomainServices()
-    {
-        const BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
-        var entities = DomainModel.GetTypes().Where(t => EntityNamespaces.Contains(t.Namespace)).ToList();
-        var violations = entities
-            .SelectMany(e => e.GetFields(all).Select(f => f.FieldType)
-                .Concat(e.GetProperties(all).Select(p => p.PropertyType))
-                .Concat(e.GetMethods(all).SelectMany(m => m.GetParameters().Select(p => p.ParameterType).Append(m.ReturnType)))
-                .Concat(e.GetConstructors(all).SelectMany(c => c.GetParameters().Select(p => p.ParameterType)))
-                .SelectMany(TypeGraph.Flatten)
-                .Select(type => (Entity: e, Type: type)))
-            .Where(x => TypeGraph.InNamespace(x.Type, "Resturant.Domain.Services"))
-            .Select(x => $"{x.Entity.Name} uses {x.Type}");
-
-        Assert.NotEmpty(entities);
-        Assert.Empty(violations);
     }
 }

@@ -33,9 +33,7 @@ public static class InfrastructureServiceCollectionExtensions
     private static void AddRepositories(this IServiceCollection services)
     {
         services.TryAddScoped<IUnitOfWork, EfUnitOfWork>();
-        services.TryAddScoped<IShoppingCartRepository, ShoppingCartRepository>();
         services.TryAddScoped<IContactRepository, ContactRepository>();
-        services.TryAddScoped<ICheckoutRepository, CheckoutRepository>();
         services.TryAddScoped<IMenuRepository, MenuRepository>();
         services.TryAddScoped<IUserProfileRepository, UserProfileRepository>();
         services.TryAddScoped<IOrderHistoryQueries, OrderHistoryQueries>();

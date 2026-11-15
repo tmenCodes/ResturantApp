@@ -1,7 +1,6 @@
 using API.Features.Cart.RemoveCartItem;
 using Microsoft.EntityFrameworkCore;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.Cart.CartTestData;
 
 namespace API.Tests.Features.Cart;
@@ -9,7 +8,7 @@ namespace API.Tests.Features.Cart;
 public class RemoveCartItemHandlerTests
 {
     private static RemoveCartItemHandler CreateHandler(RestaurantContext context) =>
-        new(new ShoppingCartRepository(context), new EfUnitOfWork(context));
+        new(context);
 
     [Fact]
     public async Task HandleAsync_RemovesLineAndRecalculatesTotals()

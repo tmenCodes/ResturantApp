@@ -1,5 +1,4 @@
 using API.Features.Cart.GetCartItems;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.Cart.CartTestData;
 
 namespace API.Tests.Features.Cart;
@@ -15,7 +14,7 @@ public class GetCartItemsHandlerTests
         await AddAsync(context, cartId, 1, "Extra Tofu");
         await AddAsync(context, Guid.NewGuid());
 
-        var items = await new GetCartItemsHandler(new ShoppingCartRepository(context)).HandleAsync(cartId.ToString());
+        var items = await new GetCartItemsHandler(context).HandleAsync(cartId.ToString());
 
         var item = Assert.Single(items);
         Assert.Equal(cartId, item.ShoppingCartIdentity);
@@ -27,6 +26,6 @@ public class GetCartItemsHandlerTests
     {
         await using var context = TestDatabase.Create();
 
-        Assert.Empty(await new GetCartItemsHandler(new ShoppingCartRepository(context)).HandleAsync("not-a-guid"));
+        Assert.Empty(await new GetCartItemsHandler(context).HandleAsync("not-a-guid"));
     }
 }

@@ -1,25 +1,19 @@
 using API.Common;
+using Microsoft.EntityFrameworkCore;
 using Resturant.Domain.Cart;
-using Resturant.Domain.Ordering;
-using Resturant.Domain.Payments;
-using Resturant.Domain.Repositories;
-using Resturant.Domain.Services.Ordering;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.Cart.AddCartItem;
 
-/// <summary>Adds a menu item to a cart. Order items are built by <see cref="IOrderItemFactory"/>; totals by <see cref="ShoppingCart"/>.</summary>
+/// <summary>Adds a menu item to a cart. Order items are built by <see cref="MenuOrderItemBuilder"/>; totals by <see cref="ShoppingCart"/>.</summary>
 public class AddCartItemHandler : IHandler
 {
-    private readonly IShoppingCartRepository _shoppingCartRepository;
-    private readonly IOrderItemFactory _orderItemFactory;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly RestaurantContext _context;
     private readonly TimeProvider _timeProvider;
 
-    public AddCartItemHandler(IShoppingCartRepository shoppingCartRepository, IOrderItemFactory orderItemFactory, IUnitOfWork unitOfWork, TimeProvider timeProvider)
+    public AddCartItemHandler(RestaurantContext context, TimeProvider timeProvider)
     {
-        _shoppingCartRepository = shoppingCartRepository;
-        _orderItemFactory = orderItemFactory;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _timeProvider = timeProvider;
     }
 
@@ -31,18 +25,20 @@ public class AddCartItemHandler : IHandler
     /// <exception cref="ArgumentOutOfRangeException">The quantity is not greater than zero.</exception>
     public async Task<AddToCartResultDto> HandleAsync(OrderItemDto request, CancellationToken cancellationToken = default)
     {
-        var (menuItem, orderItem) = await _orderItemFactory.CreateAsync(request.Name, request.Options, request.Quantity, cancellationToken);
+        var (menuItem, orderItem) = await MenuOrderItemBuilder.BuildAsync(_context, request.Name, request.Options, request.Quantity, cancellationToken);
 
-        var cart = await _shoppingCartRepository.GetCartAsync(request.GuidId);
+        var cart = await _context.ShoppingCarts
+            .Include(x => x.OrderItems)
+            .FirstOrDefaultAsync(x => x.Identity == request.GuidId, cancellationToken);
         var isNewCart = cart is null;
         cart ??= ShoppingCart.Create(request.GuidId, _timeProvider.GetUtcNow().UtcDateTime);
         cart.AddItem(orderItem);
 
         if (isNewCart)
         {
-            await _shoppingCartRepository.AddCartAsync(cart);
+            await _context.ShoppingCarts.AddAsync(cart, cancellationToken);
         }
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var price = isNewCart ? menuItem.BasePrice : orderItem.TotalItemPrice;
         return new AddToCartResultDto { Name = menuItem.Name, Price = price };

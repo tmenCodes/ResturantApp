@@ -1,5 +1,4 @@
 using API.Features.Cart.GetAllOrderItems;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.Cart.CartTestData;
 
 namespace API.Tests.Features.Cart;
@@ -14,7 +13,7 @@ public class GetAllOrderItemsHandlerTests
         await AddAsync(context, Guid.NewGuid());
         await AddAsync(context, Guid.NewGuid(), 2);
 
-        var items = await new GetAllOrderItemsHandler(new ShoppingCartRepository(context)).HandleAsync();
+        var items = await new GetAllOrderItemsHandler(context).HandleAsync();
 
         Assert.Equal(2, items.Count);
         Assert.All(items, item => Assert.Null(item.GuidId));

@@ -1,23 +1,27 @@
 using API.Common;
 using API.Features.Cart.Shared;
-using Resturant.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.Cart.GetCartItemCount;
 
 /// <summary>Counts the lines in a cart.</summary>
 public class GetCartItemCountHandler : IHandler
 {
-    private readonly IShoppingCartRepository _shoppingCartRepository;
+    private readonly RestaurantContext _context;
 
-    public GetCartItemCountHandler(IShoppingCartRepository shoppingCartRepository)
+    public GetCartItemCountHandler(RestaurantContext context)
     {
-        _shoppingCartRepository = shoppingCartRepository;
+        _context = context;
     }
 
     /// <summary>Returns how many items are in a cart. A malformed or unknown identity yields zero.</summary>
-    public async Task<int> HandleAsync(string? cartIdentity)
+    public Task<int> HandleAsync(string? cartIdentity)
     {
-        var orderItems = await _shoppingCartRepository.GetCartOrderItemsAsync(CartIdentity.ParseOrEmpty(cartIdentity));
-        return orderItems.Count;
+        var identity = CartIdentity.ParseOrEmpty(cartIdentity);
+        return _context.ShoppingCarts
+            .Where(x => x.Identity == identity)
+            .SelectMany(x => x.OrderItems)
+            .CountAsync();
     }
 }

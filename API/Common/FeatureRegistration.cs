@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Resturant.Domain.Services.Ordering;
 
 namespace API.Common;
 
@@ -18,14 +17,12 @@ public static class FeatureRegistration
     public static IEnumerable<Type> EndpointTypes => FeatureTypes.Where(typeof(IEndpoint).IsAssignableFrom);
 
     /// <summary>
-    /// Adds every handler (scoped) and endpoint, the Domain Services they use and the JSON settings
+    /// Adds every handler (scoped) and endpoint and the JSON settings
     /// the controllers used. Safe to call more than once.
     /// </summary>
     public static IServiceCollection AddFeatures(this IServiceCollection services)
     {
         services.TryAddSingleton(TimeProvider.System);
-        services.TryAddScoped<IOrderItemFactory, OrderItemFactory>();
-        services.TryAddScoped<ICheckoutEligibility, CheckoutEligibility>();
         services.ConfigureHttpJsonOptions(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
         foreach (var handler in HandlerTypes)

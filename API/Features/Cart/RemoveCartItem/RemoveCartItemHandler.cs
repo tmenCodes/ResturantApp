@@ -1,18 +1,17 @@
 using API.Common;
-using Resturant.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.Cart.RemoveCartItem;
 
 /// <summary>Removes a line from a cart.</summary>
 public class RemoveCartItemHandler : IHandler
 {
-    private readonly IShoppingCartRepository _shoppingCartRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly RestaurantContext _context;
 
-    public RemoveCartItemHandler(IShoppingCartRepository shoppingCartRepository, IUnitOfWork unitOfWork)
+    public RemoveCartItemHandler(RestaurantContext context)
     {
-        _shoppingCartRepository = shoppingCartRepository;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     /// <summary>
@@ -21,13 +20,15 @@ public class RemoveCartItemHandler : IHandler
     /// </summary>
     public async Task<bool> HandleAsync(int orderItemId, Guid cartIdentity, CancellationToken cancellationToken = default)
     {
-        var cart = await _shoppingCartRepository.GetCartAsync(cartIdentity);
+        var cart = await _context.ShoppingCarts
+            .Include(x => x.OrderItems)
+            .FirstOrDefaultAsync(x => x.Identity == cartIdentity, cancellationToken);
         if (cart is null || !cart.RemoveItem(orderItemId))
         {
             return false;
         }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
 }
