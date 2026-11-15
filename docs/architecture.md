@@ -26,16 +26,15 @@ Slices sit on two shared projects that keep the business rules and the technolog
             └───────────┬───────────────────────────┬───────────────┘
                         ▼                           ▼
             ┌───── Domain ──────┐          ┌──── Infrastructure ─────┐
-            │ entities + rules, │ ◀─────── │ EF Core, repositories,  │
-            │ repository ports, │          │ Identity, JWT, queries  │
-            │ Domain Services   │          └─────────────────────────┘
-            └───────────────────┘
+            │ entities + rules  │ ◀─────── │ EF Core, Identity,      │
+            │                   │          │ JWT, queries            │
+            └───────────────────┘          └─────────────────────────┘
 ```
 
 | Project | Namespace root | Responsibility | References |
 |---|---|---|---|
-| `Domain` | `Resturant.Domain` | Entities and their rules (cart totals, item pricing, checkout creation), repository interfaces (`Repositories/`), Domain Services that need several entities or a repository (`Services/`) | nothing |
-| `Infrastructure` | `Resturant.Infrastructure` | EF Core context, configurations, migrations, seed data, repository implementations; Identity account store (`IUserAccountStore`), JWT issuer (`ITokenIssuer`), read-side queries (`IOrderHistoryQueries`), each interface next to its implementation | `Domain`, EF Core, Npgsql, Identity |
+| `Domain` | `Resturant.Domain` | Entities and their rules (cart totals, item pricing, checkout creation) | nothing |
+| `Infrastructure` | `Resturant.Infrastructure` | EF Core context, configurations, migrations, seed data; Identity account store (`IUserAccountStore`), JWT issuer (`ITokenIssuer`), read-side queries (`IOrderHistoryQueries`), each interface next to its implementation | `Domain`, EF Core, Npgsql, Identity |
 | `API` | `API` | `Features/`: the slices. `Common/`: slice plumbing. `Program.cs`: composition root | `Domain`, `Infrastructure` |
 
 ### Anatomy of a slice
@@ -46,7 +45,8 @@ Slices sit on two shared projects that keep the business rules and the technolog
 |---|---|
 | `OrderItemDto.cs` | Request body. Property names define the JSON contract |
 | `AddToCartResultDto.cs` | Response body |
-| `AddCartItemHandler.cs` | The use case: load, call the domain, commit through `IUnitOfWork`, map to DTOs. Implements `IHandler` |
+| `AddCartItemHandler.cs` | The use case: load through `RestaurantContext`, call the entity, `SaveChangesAsync`, map to DTOs. Implements `IHandler` |
+| `MenuOrderItemBuilder.cs` | Slice-local helper: looks up the menu item and options and builds the `OrderItem` |
 | `AddCartItemEndpoint.cs` | Implements `IEndpoint`: maps the route on an `ApiGroups` group, binds input, calls the handler and turns its result into an HTTP response |
 
 A slice with no logic (for example `Contact/Test`) has only an endpoint. Shapes used by several slices of one feature
@@ -59,24 +59,26 @@ live in that feature's `Shared/` folder (`Cart/Shared/CartIdentity`, `Checkout/S
    feature's `Shared/`. Logic needed by several features goes into `Domain`; logic needed by several slices of one
    feature goes into that feature's `Shared/`.
 2. **Endpoints only talk HTTP.** They bind input, call their handler and choose the response. They never take a
-   repository, entity or other Domain/Infrastructure type.
-3. **Handlers only orchestrate.** Rules live as far inward as possible: a rule about one entity is a method on that
-   entity, and a rule that needs several entities or a repository is a Domain Service. Handlers return DTOs, never
-   entities.
+   `RestaurantContext`, entity or other Domain/Infrastructure type.
+3. **Handlers hold the use case.** There is no service layer: the handler is the use case. A rule about one entity
+   is a method on that entity (cart totals live on `ShoppingCart`). Logic a handler needs that is not an entity rule
+   stays in the slice, or in the feature's `Shared/` when several slices of that feature need it. Handlers return
+   DTOs, never entities.
 4. **The Domain Model is plain C#.** It has no EF Core, ASP.NET, JSON or data-annotation attributes. EF maps the
    entities through `IEntityTypeConfiguration<T>` classes in `Infrastructure/Persistence/Configurations`. Entities
    have no public setters and expose collections as read-only; they change only through their own constructors and
    methods, so rules like cart totals can't be bypassed. `Domain.Tests/EncapsulationTests` guards this.
-5. **Repositories read and stage; handlers commit.** Repository interfaces belong to `Resturant.Domain.Repositories`.
-   A handler commits once through `IUnitOfWork`, so related changes are saved together.
+5. **Handlers use `RestaurantContext` directly.** A handler takes the injected `RestaurantContext`, queries it
+   (read slices project straight to their DTO) and calls `SaveChangesAsync` once, so related changes are saved
+   together. There are no repositories or unit of work.
 6. **Reports are queries, not repositories.** Read-only views that join several tables (order history) are query
-   interfaces in `Infrastructure/Persistence/Queries` returning read models. Repositories return entities only.
-7. **Composition is idempotent.** `AddFeatures()` discovers every `IHandler` (scoped) and `IEndpoint`, and registers
-   Domain Services with `TryAdd*`; `AddInfrastructure(...)` does the same for the outer adapters.
+   interfaces in `Infrastructure/Persistence/Queries` returning read models.
+7. **Composition is idempotent.** `AddFeatures()` discovers every `IHandler` (scoped) and `IEndpoint` and registers
+   them with `TryAdd*`; `AddInfrastructure(...)` does the same for the outer adapters.
 8. **Names are constants.** Route prefixes live in `ApiGroups`; each endpoint declares its own `Route` and message
    constants.
 9. **The architecture is tested.** `API.Tests/ArchitectureTests` checks project references (Domain references
-   nothing, Infrastructure only Domain) and that entities never depend on Domain Services.
+   nothing, Infrastructure only Domain).
    `API.Tests/SliceArchitectureTests` checks at IL level that no slice depends on another slice, that every handler
    and endpoint is registered, and that no endpoint, handler result or DTO exposes a Domain or Infrastructure type.
 
@@ -96,7 +98,7 @@ behave differently by default, so `API/Common` reproduces MVC explicitly:
 | `AddJsonOptions(ReferenceHandler.IgnoreCycles)` | `ConfigureHttpJsonOptions` in `AddFeatures()` |
 | `[Authorize]` | `.RequireAuthorization()` |
 
-`API.Tests/Http` holds the **HTTP contract tests**: they run the real API in memory and pin every route's status,
+`API.Tests/Integration` holds the **HTTP contract tests**: they run the real API in memory and pin every route's status,
 content type and body. They were written against the controllers before the migration and kept passing unchanged,
 which shows the frontend contract held. Any change to an endpoint must keep them green.
 
@@ -111,11 +113,11 @@ change the 401 and unknown-route 404 responses that currently match MVC exactly.
 
 ```
 Domain/
-  Menu/, Ordering/, Customers/, Contact/     entities
-  Repositories/                              IUnitOfWork and repository interfaces
-  Services/Ordering/                         IOrderItemFactory, ICheckoutEligibility
+  Menu/, Cart/, Ordering/, Customers/, ContactInfo/   entities
+  Payments/                                  CreditCardInformation: card details held by CheckoutInformation and
+                                             SavedPaymentMethod, stored in their own columns as an EF owned type
 Infrastructure/
-  Persistence/          RestaurantContext, EfUnitOfWork, Configurations/, Repositories/, Queries/, Migrations/
+  Persistence/          RestaurantContext, Configurations/, Queries/, Migrations/
   Identity/             WebUser, IUserAccountStore, IdentityUserAccountStore, UserAccount, ...
   Auth/                 JwtSettings, ITokenIssuer, JwtTokenIssuer
   InfrastructureServiceCollectionExtensions.cs   AddInfrastructure()
@@ -124,8 +126,8 @@ API/
                         MvcResults, MvcProblemResult, MvcValidationFilter, DomainExceptionEndpointFilter
   Features/<Feature>/<Slice>/                    one folder per endpoint; <Feature>/Shared/ for shared shapes
   Program.cs
-Domain.Tests/           entity rules and Domain Services (with in-memory fake repositories)
-API.Tests/              Http/ contract tests, Features/ handler tests, Infrastructure and architecture tests
+Domain.Tests/           entity rules and encapsulation
+API.Tests/              Integration/ contract tests, Features/ handler tests, Infrastructure and architecture tests
 ```
 
 ## Slice catalog
@@ -154,6 +156,6 @@ API.Tests/              Http/ contract tests, Features/ handler tests, Infrastru
 
 ## Known issues
 
-- Card numbers and CVVs are stored and returned in plain text (`Checkout`, `SavedPaymentMethod`). That's a PCI-DSS
+- Card numbers and CVVs are stored and returned in plain text (`CheckoutInformation`, `SavedPaymentMethod`). That's a PCI-DSS
   concern to handle separately.
 - `UserHistoryPayments` sorts dates as text, so "10/1" comes before "9/1".
