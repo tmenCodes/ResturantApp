@@ -1,32 +1,33 @@
 using API.Common;
 using API.Features.UserProfile.Shared;
-using Resturant.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.UserProfile.UpdatePaymentMethod;
 
 /// <summary>Replaces the card on a user's saved payment method.</summary>
 public class UpdatePaymentMethodHandler : IHandler
 {
-    private readonly IUserProfileRepository _userProfileRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly RestaurantContext _context;
 
-    public UpdatePaymentMethodHandler(IUserProfileRepository userProfileRepository, IUnitOfWork unitOfWork)
+    public UpdatePaymentMethodHandler(RestaurantContext context)
     {
-        _userProfileRepository = userProfileRepository;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
-    /// <summary>Overwrites the user's saved payment method. Returns null when they have none to update.</summary>
+    /// <summary>Overwrites the user's first saved payment method (lowest id). Returns null when they have none to update.</summary>
     public async Task<SavedPaymentMethodDto?> HandleAsync(string userName, UserPaymentInformationDto paymentInformation, CancellationToken cancellationToken = default)
     {
-        var paymentMethod = await _userProfileRepository.GetPaymentMethodAsync(userName, cancellationToken);
+        var paymentMethod = await _context.SavedPaymentMethods
+            .OrderBy(x => x.Id)
+            .FirstOrDefaultAsync(x => x.UserName == userName, cancellationToken);
         if (paymentMethod is null)
         {
             return null;
         }
 
         paymentMethod.UpdateCard(paymentInformation.ToCreditCardInformation());
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         return SavedPaymentMethodDto.From(paymentMethod);
     }
 }

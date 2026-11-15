@@ -1,13 +1,12 @@
 using API.Features.Contact.CreateReservation;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.Contact;
 
 public class CreateReservationHandlerTests
 {
     private static CreateReservationHandler CreateHandler(RestaurantContext context) =>
-        new(new ContactRepository(context), new EfUnitOfWork(context));
+        new(context);
 
     [Fact]
     public async Task HandleAsync_SavesReservationAndReturnsGeneratedId()

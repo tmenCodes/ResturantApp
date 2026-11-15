@@ -1,5 +1,4 @@
 using API.Features.Menu.GetMenuItemOptions;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.Menu;
 
@@ -11,7 +10,7 @@ public class GetMenuItemOptionsHandlerTests
         await using var context = TestDatabase.Create();
         await MenuTestData.SeedAsync(context);
 
-        var options = await new GetMenuItemOptionsHandler(new MenuRepository(context)).HandleAsync();
+        var options = await new GetMenuItemOptionsHandler(context).HandleAsync();
 
         var option = Assert.Single(options);
         Assert.Equal("Extra Tofu", option.Name);

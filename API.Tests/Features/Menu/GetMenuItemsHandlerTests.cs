@@ -1,5 +1,4 @@
 using API.Features.Menu.GetMenuItems;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.Menu;
 
@@ -11,7 +10,7 @@ public class GetMenuItemsHandlerTests
         await using var context = TestDatabase.Create();
         await MenuTestData.SeedAsync(context);
 
-        var items = await new GetMenuItemsHandler(new MenuRepository(context)).HandleAsync();
+        var items = await new GetMenuItemsHandler(context).HandleAsync();
 
         Assert.Equal(2, items.Count);
         var salad = Assert.Single(items, x => x.MenuItemName == "Papaya Salad");

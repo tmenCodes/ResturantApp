@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Resturant.Domain.ContactInfo;
 
 namespace API.Features.Contact.CreateInquiry;
 
@@ -12,4 +13,14 @@ public class CustomerInquiryDto
     public string? Email { get; set; }
     public string? Subject { get; set; }
     public string? Message { get; set; }
+
+    /// <summary>Copies a saved inquiry entity, including its generated id.</summary>
+    public static CustomerInquiryDto From(CustomerInquiry entity) => new()
+    {
+        Id = entity.Id,
+        Name = entity.Name,
+        Email = entity.Email,
+        Subject = entity.Subject,
+        Message = entity.Message
+    };
 }

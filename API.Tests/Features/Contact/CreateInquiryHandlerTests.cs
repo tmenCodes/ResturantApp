@@ -1,6 +1,5 @@
 using API.Features.Contact.CreateInquiry;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.Contact;
 
@@ -10,7 +9,7 @@ public class CreateInquiryHandlerTests
     public async Task HandleAsync_SavesInquiryAndReturnsGeneratedId()
     {
         await using var context = TestDatabase.Create();
-        var handler = new CreateInquiryHandler(new ContactRepository(context), new EfUnitOfWork(context));
+        var handler = new CreateInquiryHandler(context);
 
         var result = await handler.HandleAsync(new CustomerInquiryDto
         {

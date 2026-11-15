@@ -1,13 +1,12 @@
 using API.Features.UserProfile.GetPaymentMethod;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.UserProfile.UserProfileTestData;
 
 namespace API.Tests.Features.UserProfile;
 
 public class GetPaymentMethodHandlerTests
 {
-    private static GetPaymentMethodHandler CreateHandler(RestaurantContext context) => new(new UserProfileRepository(context));
+    private static GetPaymentMethodHandler CreateHandler(RestaurantContext context) => new(context);
 
     [Fact]
     public async Task HandleAsync_ReturnsOnlyThatUsersFirstPaymentMethod()

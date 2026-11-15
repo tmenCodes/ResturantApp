@@ -38,13 +38,4 @@ public class ArchitectureTests
     {
         Assert.Equal(["Resturant.Domain"], ProjectReferences(Infrastructure));
     }
-
-    [Fact]
-    public void RepositoryInterfaces_BelongToDomainModel()
-    {
-        var repositories = DomainModel.GetTypes().Where(t => t.IsInterface && t.Name.EndsWith("Repository")).ToList();
-
-        Assert.NotEmpty(repositories);
-        Assert.All(repositories, t => Assert.Equal("Resturant.Domain.Repositories", t.Namespace));
-    }
 }

@@ -1,6 +1,5 @@
 using API.Features.UserProfile.UpdatePaymentMethod;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 using static API.Tests.Features.UserProfile.UserProfileTestData;
 
 namespace API.Tests.Features.UserProfile;
@@ -8,7 +7,7 @@ namespace API.Tests.Features.UserProfile;
 public class UpdatePaymentMethodHandlerTests
 {
     private static UpdatePaymentMethodHandler CreateHandler(RestaurantContext context) =>
-        new(new UserProfileRepository(context), new EfUnitOfWork(context));
+        new(context);
 
     [Fact]
     public async Task HandleAsync_ExistingPaymentMethod_OverwritesIt()

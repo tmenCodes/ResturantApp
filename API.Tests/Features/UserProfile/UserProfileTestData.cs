@@ -1,12 +1,10 @@
 using API.Features.UserProfile.AddPaymentMethod;
 using API.Features.UserProfile.Shared;
-using Resturant.Domain.Menu;
 using Resturant.Domain.Cart;
+using Resturant.Domain.Menu;
 using Resturant.Domain.Ordering;
 using Resturant.Domain.Payments;
-using CheckoutEntity = Resturant.Domain.Ordering.CheckoutInformation;
 using Resturant.Infrastructure.Persistence;
-using Resturant.Infrastructure.Persistence.Repositories;
 
 namespace API.Tests.Features.UserProfile;
 
@@ -16,7 +14,7 @@ public static class UserProfileTestData
     public static UserPaymentInformationDto Payment(string nameOnCard) => new("Visa", nameOnCard, "4111", "12/30", "123");
 
     public static AddPaymentMethodHandler AddHandler(RestaurantContext context) =>
-        new(new UserProfileRepository(context), new EfUnitOfWork(context));
+        new(context);
 
     public static async Task<Guid> AddCheckedOutCartAsync(RestaurantContext context, string userName, DateTime created, decimal total)
     {
@@ -24,7 +22,7 @@ public static class UserProfileTestData
         var cart = ShoppingCart.Create(identity, created);
         context.ShoppingCarts.Add(cart);
         context.Entry(cart).Property(x => x.TotalPrice).CurrentValue = total;
-        context.Checkouts.Add(CheckoutEntity.PayFor(identity, new CreditCardInformation("Visa", null, null, null, null), userName, created));
+        context.Checkouts.Add(CheckoutInformation.PayFor(identity, new CreditCardInformation("Visa", null, null, null, null), userName, created));
         await context.SaveChangesAsync();
         return identity;
     }

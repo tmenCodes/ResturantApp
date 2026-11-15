@@ -1,19 +1,17 @@
 using API.Common;
 using Resturant.Domain.ContactInfo;
-using Resturant.Domain.Repositories;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.Contact.CreateReservation;
 
 /// <summary>Saves a table reservation.</summary>
 public class CreateReservationHandler : IHandler
 {
-    private readonly IContactRepository _contactRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly RestaurantContext _context;
 
-    public CreateReservationHandler(IContactRepository contactRepository, IUnitOfWork unitOfWork)
+    public CreateReservationHandler(RestaurantContext context)
     {
-        _contactRepository = contactRepository;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     /// <summary>Saves a reservation. Any client-supplied id is ignored; the returned DTO carries the generated id.</summary>
@@ -22,8 +20,8 @@ public class CreateReservationHandler : IHandler
         var entity = new Reservation(
             reservation.Name, reservation.Email, reservation.Phone, reservation.Date, reservation.Time,
             reservation.People, reservation.Message);
-        await _contactRepository.AddReservationAsync(entity, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _context.Reservations.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         return ToDto(entity);
     }
 

@@ -1,22 +1,22 @@
 using API.Common;
-using Resturant.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Resturant.Infrastructure.Persistence;
 
 namespace API.Features.Menu.GetImagePaths;
 
 /// <summary>Lists the menu's image file names.</summary>
 public class GetImagePathsHandler : IHandler
 {
-    private readonly IMenuRepository _menuRepository;
+    private readonly RestaurantContext _context;
 
-    public GetImagePathsHandler(IMenuRepository menuRepository)
+    public GetImagePathsHandler(RestaurantContext context)
     {
-        _menuRepository = menuRepository;
+        _context = context;
     }
 
     /// <summary>Returns the image file name of every menu item.</summary>
     public async Task<IReadOnlyList<string>> HandleAsync(CancellationToken cancellationToken = default)
     {
-        var menuItems = await _menuRepository.GetMenuItemsAsync(cancellationToken);
-        return menuItems.Select(x => x.ImageUrl).ToList();
+        return await _context.MenuItems.Select(x => x.ImageUrl).ToListAsync(cancellationToken);
     }
 }
