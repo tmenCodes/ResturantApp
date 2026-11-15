@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace API.Tests.Http;
+namespace API.Tests.Integration;
 
 /// <summary>Pins the <c>[ApiController]</c> validation responses: required parameters, required DTO members and empty bodies.</summary>
 public class ValidationContractTests : ContractTest

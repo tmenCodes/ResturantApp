@@ -8,13 +8,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Resturant.Infrastructure.Persistence;
 
-namespace API.Tests.Http;
+namespace API.Tests.Integration;
 
 /// <summary>
 /// Runs the real API in memory, as production does, but on a fresh EF Core in-memory database (with seed data) and a
 /// fixed clock. Each instance has its own database.
 /// </summary>
-public sealed class ContractApi : WebApplicationFactory<Program>
+public sealed class ApiFactory : WebApplicationFactory<Program>
 {
     /// <summary>The fixed current time, truncated to whole seconds and close enough to real time for JWT lifetimes.</summary>
     public static readonly DateTimeOffset Now = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
@@ -22,9 +22,9 @@ public sealed class ContractApi : WebApplicationFactory<Program>
     private readonly string _databaseName = Guid.NewGuid().ToString();
 
     /// <summary>Starts the API, creates its seeded database and returns a client for it.</summary>
-    public static async Task<(ContractApi Api, HttpClient Client)> StartAsync()
+    public static async Task<(ApiFactory Api, HttpClient Client)> StartAsync()
     {
-        var api = new ContractApi();
+        var api = new ApiFactory();
         var client = api.CreateClient();
         await using var scope = api.Services.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<RestaurantContext>().Database.EnsureCreatedAsync();

@@ -1,4 +1,4 @@
-namespace API.Tests.Http;
+namespace API.Tests.Integration;
 
 /// <summary>
 /// Base for HTTP contract tests. They pin the routes, status codes, content types and bodies the Angular app
@@ -7,15 +7,15 @@ namespace API.Tests.Http;
 /// </summary>
 public abstract class ContractTest : IAsyncLifetime
 {
-    private ContractApi? _api;
+    private ApiFactory? _api;
 
     protected HttpClient Client { get; private set; } = null!;
 
-    protected static readonly DateTime Now = ContractApi.Now.UtcDateTime;
+    protected static readonly DateTime Now = ApiFactory.Now.UtcDateTime;
 
     public async Task InitializeAsync()
     {
-        (_api, Client) = await ContractApi.StartAsync();
+        (_api, Client) = await ApiFactory.StartAsync();
     }
 
     public async Task DisposeAsync()

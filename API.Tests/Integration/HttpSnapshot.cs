@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 
-namespace API.Tests.Http;
+namespace API.Tests.Integration;
 
 /// <summary>What the frontend observes from one HTTP response: status, content type and raw body.</summary>
 public sealed record HttpSnapshot(int Status, string? ContentType, string Body)

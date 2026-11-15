@@ -1,6 +1,6 @@
-using static API.Tests.Http.HttpSnapshot;
+using static API.Tests.Integration.HttpSnapshot;
 
-namespace API.Tests.Http;
+namespace API.Tests.Integration;
 
 public class CheckoutContractTests : ContractTest
 {
