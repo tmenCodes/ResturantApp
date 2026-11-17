@@ -13,10 +13,10 @@ public class CheckoutCartHandlerTests
         await using var context = TestDatabase.Create();
         var cart = await AddCartAsync(context);
 
-        var result = await CheckoutHandler(context).HandleAsync(Request(cart.ToString()));
+        var result = await CheckoutHandler(context).HandleAsync(Request(cart.ToString()), "ada");
 
         Assert.Equal(CheckoutStatus.Created, result.Status);
-        var saved = Assert.Single(context.Checkouts);
+        var saved = Assert.Single(context.Orders);
         Assert.Equal(saved.Id, result.Checkout!.Id);
         Assert.True(saved.Paid);
         Assert.Equal(cart, saved.ShoppingCartIdentity);
@@ -25,18 +25,30 @@ public class CheckoutCartHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_Guest_SavesCheckoutForNobody()
+    {
+        await using var context = TestDatabase.Create();
+        var cart = await AddCartAsync(context);
+
+        var result = await CheckoutHandler(context).HandleAsync(Request(cart.ToString()), userName: null);
+
+        Assert.Equal(CheckoutStatus.Created, result.Status);
+        Assert.Null(Assert.Single(context.Orders).UserProfileName);
+    }
+
+    [Fact]
     public async Task HandleAsync_CartAlreadyCheckedOut_ReturnsCartAlreadyCheckedOut()
     {
         await using var context = TestDatabase.Create();
         var cart = await AddCartAsync(context);
         var handler = CheckoutHandler(context);
-        await handler.HandleAsync(Request(cart.ToString()));
+        await handler.HandleAsync(Request(cart.ToString()), "ada");
 
-        var result = await handler.HandleAsync(Request(cart.ToString()));
+        var result = await handler.HandleAsync(Request(cart.ToString()), "ada");
 
         Assert.Equal(CheckoutStatus.CartAlreadyCheckedOut, result.Status);
         Assert.Null(result.Checkout);
-        Assert.Single(context.Checkouts);
+        Assert.Single(context.Orders);
     }
 
     [Fact]
@@ -45,13 +57,13 @@ public class CheckoutCartHandlerTests
         await using var context = TestDatabase.Create();
         var cart = Guid.NewGuid();
         var card = new CreditCardInformation("Visa", "Ada", "4111", "12/30", "123");
-        context.Checkouts.Add(CheckoutInformation.PayFor(cart, card, "ada", Now.UtcDateTime));
+        context.Orders.Add(Order.PayFor(cart, card, "ada", Now.UtcDateTime));
         await context.SaveChangesAsync();
 
-        var result = await CheckoutHandler(context).HandleAsync(Request(cart.ToString()));
+        var result = await CheckoutHandler(context).HandleAsync(Request(cart.ToString()), "ada");
 
         Assert.Equal(CheckoutStatus.CartAlreadyCheckedOut, result.Status);
-        Assert.Single(context.Checkouts);
+        Assert.Single(context.Orders);
     }
 
     [Fact]
@@ -59,10 +71,10 @@ public class CheckoutCartHandlerTests
     {
         await using var context = TestDatabase.Create();
 
-        var result = await CheckoutHandler(context).HandleAsync(Request(Guid.NewGuid().ToString()));
+        var result = await CheckoutHandler(context).HandleAsync(Request(Guid.NewGuid().ToString()), "ada");
 
         Assert.Equal(CheckoutStatus.CartNotFound, result.Status);
-        Assert.Empty(context.Checkouts);
+        Assert.Empty(context.Orders);
     }
 
     [Fact]
@@ -70,9 +82,9 @@ public class CheckoutCartHandlerTests
     {
         await using var context = TestDatabase.Create();
 
-        var result = await CheckoutHandler(context).HandleAsync(Request("not-a-guid"));
+        var result = await CheckoutHandler(context).HandleAsync(Request("not-a-guid"), "ada");
 
         Assert.Equal(CheckoutStatus.CartNotFound, result.Status);
-        Assert.Empty(context.Checkouts);
+        Assert.Empty(context.Orders);
     }
 }

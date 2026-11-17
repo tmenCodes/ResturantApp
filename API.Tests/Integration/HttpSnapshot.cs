@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using Resturant.Infrastructure.Identity;
 
 namespace API.Tests.Integration;
 
@@ -79,30 +80,41 @@ public static class ContractClient
 
     /// <summary>Adds an item to the cart and returns the response.</summary>
     public static Task<HttpSnapshot> AddToCartAsync(this HttpClient client, Guid cart, string name = "Tofu Stir Fry", int quantity = 1, params string[] options) =>
-        client.PostSnapshotAsync("api/Order/ShoppingCartItems", new { guidId = cart, name, quantity, options });
+        client.PostSnapshotAsync("api/Cart/AddItem", new { guidId = cart, name, quantity, options });
 
-    /// <summary>Checks out the cart for <paramref name="userName"/> and returns the response.</summary>
-    public static Task<HttpSnapshot> CheckoutAsync(this HttpClient client, string cart, string userName = "ada") =>
-        client.PostSnapshotAsync("api/Payment/PaymentInformation", new
+    /// <summary>
+    /// Checks out the cart and returns the response. With a <paramref name="token"/> the order belongs to that user;
+    /// without one it is a guest order.
+    /// </summary>
+    public static Task<HttpSnapshot> CheckoutAsync(this HttpClient client, string cart, string? token = null) =>
+        client.PostSnapshotAsync("api/Cart/Checkout", new
         {
             credit = "Visa", nameonCard = "Ada", creditCardNumber = "4111", expiration = "12/30", cvv = "123",
-            userName, cartsIdentity = cart
-        });
+            cartsIdentity = cart
+        }, token);
 
     /// <summary>Registers ada@example.com and returns the response.</summary>
     public static Task<HttpSnapshot> RegisterAdaAsync(this HttpClient client, string password = Password) =>
-        client.PostSnapshotAsync("api/RegisterUser/CreateUser",
+        client.PostSnapshotAsync("api/Registration/CreateUser",
             new { fullName = "Ada Lovelace", username = "Ada", email = "Ada@Example.com", password });
 
     /// <summary>Logs in as ada@example.com and returns the response.</summary>
     public static Task<HttpSnapshot> LoginAdaAsync(this HttpClient client, string password = Password) =>
-        client.PostSnapshotAsync("api/RegisterUser/Login", new { email = "ada@example.com", password });
+        client.PostSnapshotAsync("api/Login/Login", new { email = "ada@example.com", password });
 
     /// <summary>Registers and logs in as ada@example.com and returns the bearer token.</summary>
     public static async Task<string> SignInAdaAsync(this HttpClient client)
     {
         await client.RegisterAdaAsync();
         var login = await client.LoginAdaAsync();
+        return (string)login.JsonBody!["token"]!;
+    }
+
+    /// <summary>Logs in as the seeded super admin and returns the bearer token.</summary>
+    public static async Task<string> SignInSuperAdminAsync(this HttpClient client)
+    {
+        var login = await client.PostSnapshotAsync("api/Login/Login",
+            new { email = ApiFactory.AdminEmail, password = SeedSuperAdmin.Password });
         return (string)login.JsonBody!["token"]!;
     }
 }

@@ -17,7 +17,7 @@ public class CheckoutDto
     public Guid ShoppingCartIdentity { get; set; }
 
     /// <summary>Copies a checkout entity's recorded details.</summary>
-    public static CheckoutDto From(CheckoutInformation checkout) => new()
+    public static CheckoutDto From(Order checkout) => new()
     {
         Id = checkout.Id,
         Credit = checkout.Card.CardType,

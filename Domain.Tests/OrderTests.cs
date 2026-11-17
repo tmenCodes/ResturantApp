@@ -3,7 +3,7 @@ using Resturant.Domain.Payments;
 
 namespace Domain.Tests;
 
-public class CheckoutInformationTests
+public class OrderTests
 {
     [Fact]
     public void PayFor_RecordsCardUserCartAndTimeAsPaid()
@@ -12,7 +12,7 @@ public class CheckoutInformationTests
         var paidAt = new DateTime(2026, 10, 28, 12, 0, 0, DateTimeKind.Utc);
         var card = new CreditCardInformation("Visa", "Ada Lovelace", "4111", "12/30", "123");
 
-        var checkout = CheckoutInformation.PayFor(cart, card, "ada", paidAt);
+        var checkout = Order.PayFor(cart, card, "ada", paidAt);
 
         Assert.True(checkout.Paid);
         Assert.Equal(paidAt, checkout.CheckoutTime);

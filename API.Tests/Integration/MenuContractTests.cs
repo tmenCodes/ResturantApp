@@ -7,7 +7,7 @@ public class MenuContractTests : ContractTest
     [Fact]
     public async Task GetMenuItems_ReturnsSeededMenuWithFormattedPrices()
     {
-        var response = await Client.GetSnapshotAsync("api/Order/GetMenuItems");
+        var response = await Client.GetSnapshotAsync("api/Menu/GetMenuItems");
 
         Assert.Equal(200, response.Status);
         Assert.Equal(Json, response.ContentType);
@@ -20,7 +20,7 @@ public class MenuContractTests : ContractTest
     [Fact]
     public async Task GetMenuItemOptions_ReturnsSeededOptions()
     {
-        var response = await Client.GetSnapshotAsync("api/Order/GetMenuItemOptions");
+        var response = await Client.GetSnapshotAsync("api/Menu/GetMenuItemOptions");
 
         Assert.Equal(
             new HttpSnapshot(200, Json,
@@ -28,14 +28,14 @@ public class MenuContractTests : ContractTest
             response);
     }
 
-    [Fact]
-    public async Task ImagePath_ReturnsImageFileNames()
+    [Theory]
+    [InlineData("api/Order/GetMenuItems")]
+    [InlineData("api/Order/GetMenuItemOptions")]
+    [InlineData("api/Order/ImagePath")]
+    public async Task OldOrderMenuRoutes_Return404(string url)
     {
-        var response = await Client.GetSnapshotAsync("api/Order/ImagePath");
+        var response = await Client.GetSnapshotAsync(url);
 
-        Assert.Equal(
-            new HttpSnapshot(200, Json,
-                """["EggRollPlatter.png","PapayaSalad.png","TofuStirFry.png","ChoppedBeef.png","VeggiePlatter.png","CaesarSalad.png","PadThai.png","GreenCurry.png"]"""),
-            response);
+        Assert.Equal(new HttpSnapshot(404, null, ""), response);
     }
 }

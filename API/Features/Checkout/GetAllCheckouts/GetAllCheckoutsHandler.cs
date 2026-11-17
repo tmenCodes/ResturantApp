@@ -18,7 +18,7 @@ public class GetAllCheckoutsHandler : IHandler
     /// <summary>Returns every checkout, or an empty list when there are none.</summary>
     public async Task<IReadOnlyList<CheckoutDto>> HandleAsync(CancellationToken cancellationToken = default)
     {
-        var checkouts = await _context.Checkouts.AsNoTracking().ToListAsync(cancellationToken);
+        var checkouts = await _context.Orders.AsNoTracking().ToListAsync(cancellationToken);
         return checkouts.Select(CheckoutDto.From).ToList();
     }
 }

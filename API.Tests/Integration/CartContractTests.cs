@@ -8,12 +8,12 @@ public class CartContractTests : ContractTest
 
     private async Task<int> FirstOrderItemIdAsync()
     {
-        var items = await Client.GetSnapshotAsync($"api/Order/GetMenuItemByGuid?guidId={_cart}");
+        var items = await Client.GetSnapshotAsync($"api/Cart/GetItems?guidId={_cart}");
         return (int)items.JsonBody![0]!["id"]!;
     }
 
     [Fact]
-    public async Task ShoppingCartItems_NewCart_ReturnsBasePrice()
+    public async Task AddItem_NewCart_ReturnsBasePrice()
     {
         var response = await Client.AddToCartAsync(_cart);
 
@@ -21,7 +21,7 @@ public class CartContractTests : ContractTest
     }
 
     [Fact]
-    public async Task ShoppingCartItems_ExistingCart_ReturnsLineTotal()
+    public async Task AddItem_ExistingCart_ReturnsLineTotal()
     {
         await Client.AddToCartAsync(_cart);
 
@@ -31,7 +31,7 @@ public class CartContractTests : ContractTest
     }
 
     [Fact]
-    public async Task ShoppingCartItems_UnknownMenuItem_Returns404WithMessage()
+    public async Task AddItem_UnknownMenuItem_Returns404WithMessage()
     {
         var response = await Client.AddToCartAsync(_cart, name: "Pizza");
 
@@ -39,56 +39,99 @@ public class CartContractTests : ContractTest
     }
 
     [Fact]
-    public async Task GetTotalPrice_ReturnsFormattedTotals()
+    public async Task GetTotals_ReturnsFormattedTotals()
     {
         await Client.AddToCartAsync(_cart);
 
-        var response = await Client.GetSnapshotAsync($"api/Order/GetTotalPrice?guid={_cart}");
+        var response = await Client.GetSnapshotAsync($"api/Cart/GetTotals?guid={_cart}");
 
         Assert.Equal(new HttpSnapshot(200, Json, """{"subTotal":"10.95","taxAmount":"0.75","totalPrice":"11.70"}"""), response);
     }
 
     [Fact]
-    public async Task GetTotalPrice_UnknownCart_Returns404Problem()
+    public async Task GetTotals_UnknownCart_Returns404Problem()
     {
-        var response = await Client.GetSnapshotAsync($"api/Order/GetTotalPrice?guid={_cart}");
+        var response = await Client.GetSnapshotAsync($"api/Cart/GetTotals?guid={_cart}");
 
         response.AssertProblem(404);
     }
 
     [Fact]
-    public async Task GetTotalPrice_MalformedGuid_Returns404Problem()
+    public async Task GetTotals_MalformedGuid_Returns404Problem()
     {
-        var response = await Client.GetSnapshotAsync("api/Order/GetTotalPrice?guid=not-a-guid");
+        var response = await Client.GetSnapshotAsync("api/Cart/GetTotals?guid=not-a-guid");
 
         response.AssertProblem(404);
     }
 
     [Fact]
-    public async Task GetAllTempItems_NoItems_Returns404WithMessage()
+    public async Task CreateCart_ReturnsNewGuidAsJsonString()
     {
-        var response = await Client.GetSnapshotAsync("api/Order/GetAllTempItems");
+        var response = await Client.GetSnapshotAsync("api/Cart/CreateCart");
 
-        Assert.Equal(new HttpSnapshot(404, Text, "no value was found"), response);
+        Assert.Equal(200, response.Status);
+        Assert.Equal(Json, response.ContentType);
+        Assert.True(Guid.TryParse((string)response.JsonBody!, out _));
+    }
+
+    [Theory]
+    [InlineData("api/Order/GetMenuItemByGuid")]
+    [InlineData("api/Order/GetMenuItemByGuidSize")]
+    public async Task OldOrderGetRoutes_Return404(string route)
+    {
+        await Client.AddToCartAsync(_cart);
+
+        var response = await Client.GetSnapshotAsync($"{route}?guidId={_cart}");
+
+        Assert.Equal(new HttpSnapshot(404, null, ""), response);
     }
 
     [Fact]
-    public async Task GetAllTempItems_ReturnsEveryOrderItem()
+    public async Task OldShoppingCartItemsRoute_Returns404()
+    {
+        var response = await Client.PostSnapshotAsync("api/Order/ShoppingCartItems",
+            new { guidId = _cart, name = "Tofu Stir Fry", quantity = 1, options = Array.Empty<string>() });
+
+        Assert.Equal(new HttpSnapshot(404, null, ""), response);
+    }
+
+    [Fact]
+    public async Task OldDeleteMenuItemRoute_Returns404()
     {
         await Client.AddToCartAsync(_cart);
         var id = await FirstOrderItemIdAsync();
 
-        var response = await Client.GetSnapshotAsync("api/Order/GetAllTempItems");
+        var response = await Client.DeleteSnapshotAsync($"api/Order/DeleteMenuItem?id={id}&guidId={_cart}");
 
-        Assert.Equal(new HttpSnapshot(200, Json, $$"""[{"id":{{id}},"guidId":null,"name":"Tofu Stir Fry","price":10.95}]"""), response);
+        Assert.Equal(new HttpSnapshot(404, null, ""), response);
     }
 
     [Fact]
-    public async Task GetMenuItemByGuid_ReturnsCartLinesWithOptions()
+    public async Task GetTotalPrice_OldRoute_Returns404()
+    {
+        await Client.AddToCartAsync(_cart);
+
+        var response = await Client.GetSnapshotAsync($"api/Order/GetTotalPrice?guid={_cart}");
+
+        Assert.Equal(new HttpSnapshot(404, null, ""), response);
+    }
+
+    [Fact]
+    public async Task GetAllTempItems_Removed_Returns404()
+    {
+        await Client.AddToCartAsync(_cart);
+
+        var response = await Client.GetSnapshotAsync("api/Order/GetAllTempItems");
+
+        Assert.Equal(new HttpSnapshot(404, null, ""), response);
+    }
+
+    [Fact]
+    public async Task GetItems_ReturnsCartLinesWithOptions()
     {
         await Client.AddToCartAsync(_cart, options: "Soy Sauce");
 
-        var response = await Client.GetSnapshotAsync($"api/Order/GetMenuItemByGuid?guidId={_cart}");
+        var response = await Client.GetSnapshotAsync($"api/Cart/GetItems?guidId={_cart}");
 
         Assert.Equal(200, response.Status);
         Assert.Equal(Json, response.ContentType);
@@ -100,40 +143,40 @@ public class CartContractTests : ContractTest
     }
 
     [Fact]
-    public async Task GetMenuItemByGuid_WithoutGuid_UsesDefaultAndReturnsEmptyList()
+    public async Task GetItems_WithoutGuid_UsesDefaultAndReturnsEmptyList()
     {
-        var response = await Client.GetSnapshotAsync("api/Order/GetMenuItemByGuid");
+        var response = await Client.GetSnapshotAsync("api/Cart/GetItems");
 
         Assert.Equal(new HttpSnapshot(200, Json, "[]"), response);
     }
 
     [Fact]
-    public async Task GetMenuItemByGuidSize_ReturnsLineCount()
+    public async Task GetItemCount_ReturnsLineCount()
     {
         await Client.AddToCartAsync(_cart);
         await Client.AddToCartAsync(_cart);
 
-        var response = await Client.GetSnapshotAsync($"api/Order/GetMenuItemByGuidSize?guidId={_cart}");
+        var response = await Client.GetSnapshotAsync($"api/Cart/GetItemCount?guidId={_cart}");
 
         Assert.Equal(new HttpSnapshot(200, Json, "2"), response);
     }
 
     [Fact]
-    public async Task DeleteMenuItem_RemovesLineAndReturnsEmpty200()
+    public async Task RemoveItem_RemovesLineAndReturnsEmpty200()
     {
         await Client.AddToCartAsync(_cart);
         var id = await FirstOrderItemIdAsync();
 
-        var response = await Client.DeleteSnapshotAsync($"api/Order/DeleteMenuItem?id={id}&guidId={_cart}");
+        var response = await Client.DeleteSnapshotAsync($"api/Cart/RemoveItem?id={id}&guidId={_cart}");
 
         Assert.Equal(new HttpSnapshot(200, null, ""), response);
-        Assert.Equal("0", (await Client.GetSnapshotAsync($"api/Order/GetMenuItemByGuidSize?guidId={_cart}")).Body);
+        Assert.Equal("0", (await Client.GetSnapshotAsync($"api/Cart/GetItemCount?guidId={_cart}")).Body);
     }
 
     [Fact]
-    public async Task DeleteMenuItem_UnknownLine_Returns404WithMessage()
+    public async Task RemoveItem_UnknownLine_Returns404WithMessage()
     {
-        var response = await Client.DeleteSnapshotAsync($"api/Order/DeleteMenuItem?id=99&guidId={_cart}");
+        var response = await Client.DeleteSnapshotAsync($"api/Cart/RemoveItem?id=99&guidId={_cart}");
 
         Assert.Equal(new HttpSnapshot(404, Text, "No menu item was found"), response);
     }

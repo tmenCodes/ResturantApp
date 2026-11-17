@@ -31,7 +31,7 @@ namespace Resturant.Infrastructure.Persistence
         }
 
         
-        public DbSet<CheckoutInformation> Checkouts { get; set; }
+        public DbSet<Order> Orders { get; set; }
    
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }

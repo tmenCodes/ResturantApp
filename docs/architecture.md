@@ -49,7 +49,7 @@ Slices sit on two shared projects that keep the business rules and the technolog
 | `MenuOrderItemBuilder.cs` | Slice-local helper: looks up the menu item and options and builds the `OrderItem` |
 | `AddCartItemEndpoint.cs` | Implements `IEndpoint`: maps the route on an `ApiGroups` group, binds input, calls the handler and turns its result into an HTTP response |
 
-A slice with no logic (for example `Contact/Test`) has only an endpoint. Shapes used by several slices of one feature
+A slice with no logic (for example `Account/Logout`) has only an endpoint. Shapes used by several slices of one feature
 live in that feature's `Shared/` folder (`Cart/Shared/CartIdentity`, `Checkout/Shared/CheckoutDto`,
 `Account/Shared/FindAccountHandler`, ...).
 
@@ -113,7 +113,7 @@ change the 401 and unknown-route 404 responses that currently match MVC exactly.
 ```
 Domain/
   Menu/, Cart/, Ordering/, Customers/, ContactInfo/   entities
-  Payments/                                  CreditCardInformation: card details held by CheckoutInformation and
+  Payments/                                  CreditCardInformation: card details held by Order and
                                              SavedPaymentMethod, stored in their own columns as an EF owned type
 Infrastructure/
   Persistence/          RestaurantContext, Configurations/, Migrations/
@@ -122,7 +122,8 @@ Infrastructure/
   InfrastructureServiceCollectionExtensions.cs   AddInfrastructure()
 API/
   Common/               IEndpoint, IHandler, FeatureRegistration (AddFeatures, MapFeatureEndpoints), ApiGroups,
-                        MvcResults, MvcProblemResult, MvcValidationFilter, DomainExceptionEndpointFilter
+                        MvcResults, MvcProblemResult, MvcValidationFilter, DomainExceptionEndpointFilter,
+                        AuthorizationPolicies
   Features/<Feature>/<Slice>/                    one folder per endpoint; <Feature>/Shared/ for shared shapes
   Program.cs
 Domain.Tests/           entity rules and encapsulation
@@ -131,30 +132,93 @@ API.Tests/              Integration/ contract tests, Features/ handler tests, In
 
 ## Slice catalog
 
-| Route (unchanged) | Slice |
+Each route group matches one business area. Auth: none unless noted.
+
+| Route | Slice |
 |---|---|
-| `GET api/Order/GetMenuItems`, `GetMenuItemOptions`, `ImagePath` | `Menu/GetMenuItems`, `Menu/GetMenuItemOptions`, `Menu/GetImagePaths` |
-| `POST api/Order/ShoppingCartItems` | `Cart/AddCartItem` |
-| `DELETE api/Order/DeleteMenuItem` | `Cart/RemoveCartItem` |
-| `GET api/Order/GetTotalPrice`, `GetMenuItemByGuid`, `GetMenuItemByGuidSize`, `GetAllTempItems` | `Cart/GetCartTotals`, `Cart/GetCartItems`, `Cart/GetCartItemCount`, `Cart/GetAllOrderItems` |
-| `POST api/Payment/PaymentInformation` | `Checkout/CheckoutCart` |
-| `GET api/Payment/GetAllOrders`, `GetAllOrdersWithMenu` | `Checkout/GetAllCheckouts`, `Checkout/GetAllOrdersWithMenu` |
-| `POST api/RegisterUser/Login`, `SignOut`, `CreateUser` | `Account/Login`, `Account/Logout`, `Account/CreateUser` |
-| `GET api/RegisterUser/CheckDuplicateEmail`, `FindByUser` | `Account/CheckDuplicateEmail`, `Account/FindByUser` |
-| `GET api/RegisterUser/ReturnAllUsers`, `GetTheCurrentUser`, `IsUserLoggedIn`, `user` (signed in) | `Account/GetAllUsers`, `Account/GetCurrentUser`, `Account/IsUserLoggedIn`, `Account/AuthCheck` |
-| `POST/GET/PUT api/UserInformation/...PaymentInformation` (signed in) | `UserProfile/AddPaymentMethod`, `GetPaymentMethod`, `UpdatePaymentMethod` |
-| `GET api/UserInformation/UserHistoryPayments`, `UserHistoryMenu` (signed in) | `UserProfile/GetRecentOrderTotals`, `UserProfile/GetOrderedItems` |
-| `POST api/Misc/BookingInformation`, `CustomerInquiry` | `Contact/CreateReservation`, `Contact/CreateInquiry` |
-| `GET api/Misc/CreateGuideForFrontend`, `Test` | `Contact/CreateGuid`, `Contact/Test` |
+| `GET api/Menu/GetMenuItems`, `GetMenuItemOptions` | `Menu/GetMenuItems`, `Menu/GetMenuItemOptions` |
+| `GET api/Cart/CreateCart` | `Cart/CreateGuid` |
+| `POST api/Cart/AddItem` | `Cart/AddCartItem` |
+| `GET api/Cart/GetItems`, `GetItemCount`, `GetTotals` | `Cart/GetCartItems`, `Cart/GetCartItemCount`, `Cart/GetCartTotals` |
+| `DELETE api/Cart/RemoveItem` | `Cart/RemoveCartItem` |
+| `POST api/Cart/Checkout` (token optional; see Authorization) | `Checkout/CheckoutCart` |
+| `POST api/Registration/CreateUser`; `GET api/Registration/CheckDuplicateEmail`, `FindByUser` | `Account/CreateUser`, `Account/CheckDuplicateEmail`, `Account/FindByUser` |
+| `POST api/Login/Login`, `SignOut`; `GET api/Login/IsUserLoggedIn` (signed in) | `Account/Login`, `Account/Logout`, `Account/IsUserLoggedIn` |
+| `POST api/UserInformation/AddPaymentMethod`; `GET GetPaymentMethod`, `UserHistoryPayments`; `PUT UpdatePaymentMethod` (signed in) | `UserProfile/AddPaymentMethod`, `GetPaymentMethod`, `GetRecentOrderTotals`, `UpdatePaymentMethod` |
+| `POST api/Contact/MakeReservation`, `SendInquiry` | `Contact/CreateReservation`, `Contact/CreateInquiry` |
+| `GET api/Admin/ReturnAllUsers`, `GetAllOrders` (SuperAdmin) | `Account/GetAllUsers`, `Checkout/GetAllCheckouts` |
 
-## Unchanged contracts
+## Authorization
 
-- Every route, HTTP method and JSON request/response shape stays the same.
-- The database schema stays the same. `MigrationsAssembly` is `Resturant.Infrastructure`, and migration IDs in
-  `__EFMigrationsHistory` don't depend on the assembly, so nothing needs re-applying.
+- `.RequireAuthorization()` means any valid JWT. `.RequireAuthorization(AuthorizationPolicies.SuperAdmin)` also
+  requires the `SeedSuperAdmin.Role` role. The `api/Admin` group itself requires `AuthorizationPolicies.SuperAdmin`
+  (in `ApiGroups.Admin`), so every endpoint mapped there (`ReturnAllUsers`, `GetAllOrders`) is super admin only
+  without repeating the policy.
+- `POST api/Cart/Checkout` allows guests. It saves the order for the token's user (`ClaimTypes.Name`) when a valid
+  JWT is sent, and for nobody otherwise. The buyer is never read from the request body, so a client can't put an
+  order into someone else's `UserHistoryPayments`.
+- Policies are HTTP pipeline concerns, so `AuthorizationPolicies` lives in `API/Common`; it builds on the role name
+  that Infrastructure owns (`SeedSuperAdmin.Role`). Endpoints import the policy from `API.Common`, not Infrastructure.
+- Roles are ASP.NET Core Identity roles stored in the database (`AddRoles<IdentityRole>()`). `LoginHandler` reads the
+  account's roles through `IUserAccountStore.GetRolesAsync` and `JwtTokenIssuer` writes one role claim per role, so a
+  role change takes effect at the next login.
+- `Program.cs` calls `app.Services.SeedSuperAdminAsync()` after the app is built.
+  `Infrastructure/Identity/SeedSuperAdmin.cs` creates the `SuperAdmin` role, the `admin@gmail.com` account (with the
+  plain-text password in that file, for local deployment only) and the link between them, each only if missing.
+  It never resets an existing password. Startup fails if Identity rejects the role, account or password.
+- `ApiFactory` creates the seeded in-memory database before the app starts, so contract tests log in as
+  `ApiFactory.AdminEmail` with `SeedSuperAdmin.Password`.
+
+## Route changes
+
+The routes were regrouped by business area. Every old URL below returns 404, so the API and the Angular frontend
+(`http.service.ts`, `cart.service.ts`) must be deployed together. JSON request and response shapes are unchanged,
+except where noted.
+
+| Old | New |
+|---|---|
+| `api/Order/GetMenuItems`, `GetMenuItemOptions` | `api/Menu/...` (same names) |
+| `GET api/Misc/CreateGuideForFrontend` | `GET api/Cart/CreateCart` |
+| `POST api/Order/ShoppingCartItems` | `POST api/Cart/AddItem` |
+| `GET api/Order/GetMenuItemByGuid` | `GET api/Cart/GetItems` |
+| `GET api/Order/GetMenuItemByGuidSize` | `GET api/Cart/GetItemCount` |
+| `GET api/Order/GetTotalPrice` | `GET api/Cart/GetTotals` |
+| `DELETE api/Order/DeleteMenuItem` | `DELETE api/Cart/RemoveItem` |
+| `POST api/Payment/PaymentInformation` | `POST api/Cart/Checkout`; the body's `userName` is now ignored |
+| `POST api/RegisterUser/CreateUser`; `GET CheckDuplicateEmail`, `FindByUser` | `api/Registration/...` (same names) |
+| `POST api/RegisterUser/Login`, `SignOut`; `GET IsUserLoggedIn` | `api/Login/...` (same names) |
+| `GET api/RegisterUser/ReturnAllUsers` (any signed-in user) | `GET api/Admin/ReturnAllUsers` (SuperAdmin) |
+| `GET api/Payment/GetAllOrders` (public) | `GET api/Admin/GetAllOrders` (SuperAdmin) |
+| `api/UserInformation/AddUserPaymentInformation`, `GetUserPaymentInformation`, `UpdateUserPaymentInformation` | `api/UserInformation/AddPaymentMethod`, `GetPaymentMethod`, `UpdatePaymentMethod` |
+| `POST api/Misc/BookingInformation` | `POST api/Contact/MakeReservation` |
+| `POST api/Misc/CustomerInquiry` | `POST api/Contact/SendInquiry` |
+
+Removed, because nothing called them:
+- `GET api/RegisterUser/user`, which only confirmed a token. `IsUserLoggedIn` covers that.
+- `GET api/Order/GetAllTempItems`, which listed every cart's items to anyone.
+- `GET api/Payment/GetAllOrdersWithMenu`, a placeholder that returned "completed for now".
+- `GET api/UserInformation/UserHistoryMenu`.
+- `GET api/Order/ImagePath`, which repeated the image names that `GetMenuItems` already returns in
+  `menuItemImageUrl`.
+- `GET api/RegisterUser/GetTheCurrentUser`. Its only caller was checkout, which now takes the buyer from the token.
+- `GET api/Misc/Test`, a liveness check.
+
+Some slices sit in a different feature folder from their URL group:
+- `Checkout/CheckoutCart` is under `api/Cart`.
+- `Checkout/GetAllCheckouts` is under `api/Admin`.
+- `Account/*` is split across `api/Registration`, `api/Login` and `api/Admin`.
+
+These slices stay with the feature whose `Shared/` they use.
+
+The `Checkouts` table is now `Orders`, and its entity `CheckoutInformation` is now `Domain/Ordering/Order`, because each
+row is one paid purchase. The `RenameCheckoutsToOrders` migration renames the table, its primary key and the
+`ShoppingCarts` foreign key in place, so every row is kept. EF scaffolds an entity rename as drop-and-create, so that
+migration is hand-written and must stay a rename. Columns, `ShoppingCarts.CheckoutId` and the API's JSON
+(`CheckoutDto`) are unchanged. No other schema change was made. `MigrationsAssembly` is `Resturant.Infrastructure`,
+and migration IDs in `__EFMigrationsHistory` don't depend on the assembly.
 
 ## Known issues
 
-- Card numbers and CVVs are stored and returned in plain text (`CheckoutInformation`, `SavedPaymentMethod`). That's a PCI-DSS
+- Card numbers and CVVs are stored and returned in plain text (`Order`, `SavedPaymentMethod`). That's a PCI-DSS
   concern to handle separately.
 - `UserHistoryPayments` sorts dates as text, so "10/1" comes before "9/1".

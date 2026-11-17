@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Features.Account.CreateUser;
 
-/// <summary><c>POST api/RegisterUser/CreateUser</c>: registers a user account.</summary>
+/// <summary><c>POST api/Registration/CreateUser</c>: registers a user account.</summary>
 public class CreateUserEndpoint : IEndpoint
 {
     public const string Route = "CreateUser";
@@ -15,7 +15,7 @@ public class CreateUserEndpoint : IEndpoint
     private const string CreatedMessage = "User created successfully";
 
     public void Map(IEndpointRouteBuilder app) =>
-        ApiGroups.RegisterUser(app).MapPost(Route, async ([FromBody] WebUserDto? userDTO, CreateUserHandler handler) =>
+        ApiGroups.Registration(app).MapPost(Route, async ([FromBody] WebUserDto? userDTO, CreateUserHandler handler) =>
             MissingFieldMessage(userDTO!) is { } missing
                 ? MvcResults.Message(StatusCodes.Status400BadRequest, missing)
                 : ToResult(await handler.HandleAsync(userDTO!.FullName!, userDTO.Username!, userDTO.Email!, userDTO.Password)));

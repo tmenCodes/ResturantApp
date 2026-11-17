@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Features.Account.Login;
 
-/// <summary><c>POST api/RegisterUser/Login</c>: exchanges email and password for a JWT.</summary>
+/// <summary><c>POST api/Login/Login</c>: exchanges email and password for a JWT.</summary>
 public class LoginEndpoint : IEndpoint
 {
     public const string Route = "Login";
@@ -14,7 +14,7 @@ public class LoginEndpoint : IEndpoint
     private const string SucceededMessage = "Login successful";
 
     public void Map(IEndpointRouteBuilder app) =>
-        ApiGroups.RegisterUser(app).MapPost(Route, async ([FromBody] LoginDTO? login, LoginHandler handler) =>
+        ApiGroups.Login(app).MapPost(Route, async ([FromBody] LoginDTO? login, LoginHandler handler) =>
         {
             if (login?.Email is null || login.Password is null)
             {

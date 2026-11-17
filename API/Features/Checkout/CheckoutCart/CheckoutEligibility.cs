@@ -20,7 +20,7 @@ internal static class CheckoutEligibility
     /// </summary>
     public static async Task<CheckoutEligibilityResult> CheckAsync(RestaurantContext context, Guid cartIdentity, CancellationToken cancellationToken)
     {
-        if (await context.Checkouts.AnyAsync(x => x.ShoppingCartIdentity == cartIdentity, cancellationToken))
+        if (await context.Orders.AnyAsync(x => x.ShoppingCartIdentity == cartIdentity, cancellationToken))
         {
             return CheckoutEligibilityResult.CartAlreadyCheckedOut;
         }

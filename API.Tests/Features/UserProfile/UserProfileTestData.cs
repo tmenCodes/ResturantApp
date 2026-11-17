@@ -22,7 +22,7 @@ public static class UserProfileTestData
         var cart = ShoppingCart.Create(identity, created);
         context.ShoppingCarts.Add(cart);
         context.Entry(cart).Property(x => x.TotalPrice).CurrentValue = total;
-        context.Checkouts.Add(CheckoutInformation.PayFor(identity, new CreditCardInformation("Visa", null, null, null, null), userName, created));
+        context.Orders.Add(Order.PayFor(identity, new CreditCardInformation("Visa", null, null, null, null), userName, created));
         await context.SaveChangesAsync();
         return identity;
     }

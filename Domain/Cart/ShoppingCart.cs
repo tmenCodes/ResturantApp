@@ -26,7 +26,7 @@ public class ShoppingCart
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
 
     public int? CheckoutId { get; private set; }
-    public CheckoutInformation? Checkout { get; private set; }
+    public Order? Checkout { get; private set; }
 
     /// <summary>Starts an empty cart with the default tax rate.</summary>
     public static ShoppingCart Create(Guid identity, DateTime createdUtc) =>

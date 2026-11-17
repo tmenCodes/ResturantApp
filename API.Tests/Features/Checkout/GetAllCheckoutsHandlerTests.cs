@@ -10,8 +10,8 @@ public class GetAllCheckoutsHandlerTests
     {
         await using var context = TestDatabase.Create();
         var checkout = CheckoutHandler(context);
-        await checkout.HandleAsync(Request((await AddCartAsync(context)).ToString()));
-        await checkout.HandleAsync(Request((await AddCartAsync(context)).ToString()));
+        await checkout.HandleAsync(Request((await AddCartAsync(context)).ToString()), "ada");
+        await checkout.HandleAsync(Request((await AddCartAsync(context)).ToString()), "ada");
 
         var all = await new GetAllCheckoutsHandler(context).HandleAsync();
 

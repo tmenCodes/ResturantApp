@@ -20,7 +20,7 @@ public class GetRecentOrderTotalsHandler : IHandler
     public async Task<IReadOnlyList<UserOrderHistoryDto>> HandleAsync(string userName, CancellationToken cancellationToken = default)
     {
         var carts = await (
-            from checkout in _context.Checkouts
+            from checkout in _context.Orders
             where checkout.UserProfileName == userName
             join cart in _context.ShoppingCarts on checkout.ShoppingCartIdentity equals cart.Identity
             select new { cart.Created, cart.TotalPrice }).ToListAsync(cancellationToken);

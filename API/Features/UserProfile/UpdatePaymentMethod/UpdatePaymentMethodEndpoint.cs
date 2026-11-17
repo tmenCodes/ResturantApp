@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Features.UserProfile.UpdatePaymentMethod;
 
-/// <summary><c>PUT api/UserInformation/UpdateUserPaymentInformation</c>: replaces the signed-in user's payment method.</summary>
+/// <summary><c>PUT api/UserInformation/UpdatePaymentMethod</c>: replaces the signed-in user's payment method.</summary>
 public class UpdatePaymentMethodEndpoint : IEndpoint
 {
-    public const string Route = "UpdateUserPaymentInformation";
+    public const string Route = "UpdatePaymentMethod";
 
     public void Map(IEndpointRouteBuilder app) =>
         ApiGroups.UserInformation(app).MapPut(Route, async (

@@ -4,13 +4,13 @@ using API.Features.Account.Shared;
 
 namespace API.Features.Account.IsUserLoggedIn;
 
-/// <summary><c>GET api/RegisterUser/IsUserLoggedIn</c>: true when the signed-in user's account exists; 401 otherwise.</summary>
+/// <summary><c>GET api/Login/IsUserLoggedIn</c>: true when the signed-in user's account exists; 401 otherwise.</summary>
 public class IsUserLoggedInEndpoint : IEndpoint
 {
     public const string Route = "IsUserLoggedIn";
 
     public void Map(IEndpointRouteBuilder app) =>
-        ApiGroups.RegisterUser(app).MapGet(Route, async (
+        ApiGroups.Login(app).MapGet(Route, async (
             ClaimsPrincipal user, FindAccountHandler handler, ILogger<IsUserLoggedInEndpoint> logger) =>
         {
             logger.LogCritical("--------------------------------------------------------------");

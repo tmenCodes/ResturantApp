@@ -30,7 +30,6 @@ public static class CheckoutTestData
         CreditCardNumber = "4111",
         Expiration = "12/30",
         CVV = "123",
-        UserName = "ada",
         CartsIdentity = cartsIdentity
     };
 }

@@ -20,9 +20,11 @@ public class CheckoutCartHandler : IHandler
 
     /// <summary>
     /// Checks out the cart named by <see cref="CheckoutRequestDto.CartsIdentity"/>. The cart must exist and must
-    /// not already be checked out. The checkout is recorded as paid at the current UTC time.
+    /// not already be checked out. The checkout is recorded as paid at the current UTC time, for
+    /// <paramref name="userName"/> (the signed-in user), or for nobody when it is null (a guest checkout).
     /// </summary>
-    public async Task<CheckoutResult> HandleAsync(CheckoutRequestDto request, CancellationToken cancellationToken = default)
+    public async Task<CheckoutResult> HandleAsync(
+        CheckoutRequestDto request, string? userName, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(request.CartsIdentity, out var cartIdentity))
         {
@@ -38,9 +40,9 @@ public class CheckoutCartHandler : IHandler
         }
 
         var card = new CreditCardInformation(request.Credit, request.NameonCard, request.CreditCardNumber, request.Expiration, request.CVV);
-        var checkout = CheckoutInformation.PayFor(cartIdentity, card, request.UserName, _timeProvider.GetUtcNow().UtcDateTime);
+        var checkout = Order.PayFor(cartIdentity, card, userName, _timeProvider.GetUtcNow().UtcDateTime);
 
-        _context.Checkouts.Add(checkout);
+        _context.Orders.Add(checkout);
         await _context.SaveChangesAsync(cancellationToken);
         return new CheckoutResult(CheckoutStatus.Created, CheckoutDto.From(checkout));
     }

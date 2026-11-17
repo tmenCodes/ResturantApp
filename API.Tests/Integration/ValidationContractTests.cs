@@ -13,9 +13,9 @@ public class ValidationContractTests : ContractTest
     }
 
     [Theory]
-    [InlineData("api/Order/GetTotalPrice", "guid")]
-    [InlineData("api/RegisterUser/CheckDuplicateEmail", "email")]
-    [InlineData("api/RegisterUser/FindByUser", "username")]
+    [InlineData("api/Cart/GetTotals", "guid")]
+    [InlineData("api/Registration/CheckDuplicateEmail", "email")]
+    [InlineData("api/Registration/FindByUser", "username")]
     public async Task MissingRequiredQueryParameter_Returns400ValidationProblem(string url, string parameter)
     {
         var response = await Client.GetSnapshotAsync(url);
@@ -24,37 +24,37 @@ public class ValidationContractTests : ContractTest
     }
 
     [Fact]
-    public async Task DeleteMenuItem_WithoutParameters_BindsDefaultsAndReturns404()
+    public async Task RemoveItem_WithoutParameters_BindsDefaultsAndReturns404()
     {
-        var response = await Client.DeleteSnapshotAsync("api/Order/DeleteMenuItem");
+        var response = await Client.DeleteSnapshotAsync("api/Cart/RemoveItem");
 
         Assert.Equal(new HttpSnapshot(404, HttpSnapshot.Text, "No menu item was found"), response);
     }
 
     [Fact]
-    public async Task PaymentInformation_WithoutCartsIdentity_Returns400ValidationProblem()
+    public async Task Checkout_WithoutCartsIdentity_Returns400ValidationProblem()
     {
-        var response = await Client.PostSnapshotAsync("api/Payment/PaymentInformation", new { credit = "Visa" });
+        var response = await Client.PostSnapshotAsync("api/Cart/Checkout", new { credit = "Visa" });
 
         response.AssertValidationProblem(("CartsIdentity", "The CartsIdentity field is required."));
     }
 
     [Fact]
-    public async Task ShoppingCartItems_NullOptions_Returns400ValidationProblem()
+    public async Task AddItem_NullOptions_Returns400ValidationProblem()
     {
-        var response = await Client.PostSnapshotAsync("api/Order/ShoppingCartItems",
+        var response = await Client.PostSnapshotAsync("api/Cart/AddItem",
             new { guidId = Guid.NewGuid(), name = "Tofu Stir Fry", quantity = 1, options = (string[]?)null });
 
         response.AssertValidationProblem(("Options", "The Options field is required."));
     }
 
     [Theory]
-    [InlineData("api/RegisterUser/Login", "login")]
-    [InlineData("api/RegisterUser/CreateUser", "userDTO")]
-    [InlineData("api/Order/ShoppingCartItems", "orderItemDto")]
-    [InlineData("api/Payment/PaymentInformation", "customerInformationDto")]
-    [InlineData("api/Misc/BookingInformation", "bookingInformation")]
-    [InlineData("api/Misc/CustomerInquiry", "contact")]
+    [InlineData("api/Login/Login", "login")]
+    [InlineData("api/Registration/CreateUser", "userDTO")]
+    [InlineData("api/Cart/AddItem", "orderItemDto")]
+    [InlineData("api/Cart/Checkout", "customerInformationDto")]
+    [InlineData("api/Contact/MakeReservation", "bookingInformation")]
+    [InlineData("api/Contact/SendInquiry", "contact")]
     public async Task EmptyBody_Returns400ValidationProblem(string url, string parameter)
     {
         var response = await PostEmptyJsonAsync(url);
@@ -63,8 +63,8 @@ public class ValidationContractTests : ContractTest
     }
 
     [Theory]
-    [InlineData("POST", "api/UserInformation/AddUserPaymentInformation")]
-    [InlineData("PUT", "api/UserInformation/UpdateUserPaymentInformation")]
+    [InlineData("POST", "api/UserInformation/AddPaymentMethod")]
+    [InlineData("PUT", "api/UserInformation/UpdatePaymentMethod")]
     public async Task EmptyBody_OnProfileEndpoint_Returns400ValidationProblem(string method, string url)
     {
         var token = await Client.SignInAdaAsync();

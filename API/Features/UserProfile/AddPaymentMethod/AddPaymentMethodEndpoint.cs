@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Features.UserProfile.AddPaymentMethod;
 
-/// <summary><c>POST api/UserInformation/AddUserPaymentInformation</c>: saves a payment method for the signed-in user.</summary>
+/// <summary><c>POST api/UserInformation/AddPaymentMethod</c>: saves a payment method for the signed-in user.</summary>
 public class AddPaymentMethodEndpoint : IEndpoint
 {
-    public const string Route = "AddUserPaymentInformation";
+    public const string Route = "AddPaymentMethod";
 
     public void Map(IEndpointRouteBuilder app) =>
         ApiGroups.UserInformation(app).MapPost(Route, async (
