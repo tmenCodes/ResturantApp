@@ -17,31 +17,33 @@ public class IdentityUserAccountStore : IUserAccountStore
 
     public async Task<UserAccount?> FindByEmailAsync(string email)
     {
-        return ToAccount(await _userManager.FindByEmailAsync(email));
+        var user = await _userManager.FindByEmailAsync(email);
+        return user is null ? null : new UserAccount(user.Id, user.UserName, user.Email, user.FullName);
     }
 
     public async Task<UserAccount?> FindByUserNameAsync(string userName)
     {
-        return ToAccount(await _userManager.FindByNameAsync(userName));
+        var user = await _userManager.FindByNameAsync(userName);
+        return user is null ? null : new UserAccount(user.Id, user.UserName, user.Email, user.FullName);
     }
 
     public async Task<UserAccount?> FindByIdAsync(string userId)
     {
-        return ToAccount(await _userManager.FindByIdAsync(userId));
+        var user = await _userManager.FindByIdAsync(userId);
+        return user is null ? null : new UserAccount(user.Id, user.UserName, user.Email, user.FullName);
     }
 
     public async Task<IReadOnlyList<UserAccount>> GetAllAsync()
     {
         var users = await _userManager.Users.ToListAsync();
-        return users.Select(user => ToAccount(user)!).ToList();
+        return users.Select(user => new UserAccount(user.Id, user.UserName, user.Email, user.FullName)).ToList();
     }
 
     public async Task<AccountCreationResult> CreateAsync(string fullName, string userName, string email, string password)
     {
         var user = new WebUser { FullName = fullName, UserName = userName, Email = email };
         var result = await _userManager.CreateAsync(user, password);
-        var errors = result.Errors.Select(error => new AccountError(error.Code, error.Description)).ToList();
-        return new AccountCreationResult(result.Succeeded, errors);
+        return new AccountCreationResult(result.Succeeded, result.Errors.ToList());
     }
 
     public async Task<PasswordCheckResult> CheckPasswordAsync(string userId, string password)
@@ -60,6 +62,9 @@ public class IdentityUserAccountStore : IUserAccountStore
         return result.IsLockedOut ? PasswordCheckResult.LockedOut : PasswordCheckResult.Failed;
     }
 
-    private static UserAccount? ToAccount(WebUser? user) =>
-        user is null ? null : new UserAccount(user.Id, user.UserName, user.Email, user.FullName);
+    public async Task<IReadOnlyList<string>> GetRolesAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        return user is null ? [] : (await _userManager.GetRolesAsync(user)).ToList();
+    }
 }

@@ -16,7 +16,10 @@ public class LoginHandler : IHandler
         _tokenIssuer = tokenIssuer;
     }
 
-    /// <summary>Checks the password for the account with this email and issues a JWT on success. Failed attempts count toward lockout.</summary>
+    /// <summary>
+    /// Checks the password for the account with this email and issues a JWT on success, carrying the roles the account
+    /// holds in the database. Failed attempts count toward lockout.
+    /// </summary>
     public async Task<LoginResult> HandleAsync(string email, string password)
     {
         var account = await _accountStore.FindByEmailAsync(email);
@@ -25,11 +28,13 @@ public class LoginHandler : IHandler
             return new LoginResult(LoginStatus.InvalidCredentials);
         }
 
-        return await _accountStore.CheckPasswordAsync(account.Id, password) switch
+        var check = await _accountStore.CheckPasswordAsync(account.Id, password);
+        if (check == PasswordCheckResult.Succeeded)
         {
-            PasswordCheckResult.Succeeded => new LoginResult(LoginStatus.Succeeded, _tokenIssuer.Issue(account)),
-            PasswordCheckResult.LockedOut => new LoginResult(LoginStatus.LockedOut),
-            _ => new LoginResult(LoginStatus.InvalidCredentials)
-        };
+            var roles = await _accountStore.GetRolesAsync(account.Id);
+            return new LoginResult(LoginStatus.Succeeded, _tokenIssuer.Issue(account, roles));
+        }
+
+        return new LoginResult(check == PasswordCheckResult.LockedOut ? LoginStatus.LockedOut : LoginStatus.InvalidCredentials);
     }
 }

@@ -22,7 +22,7 @@ public class JwtTokenIssuerTests
     private static readonly UserAccount Ada = new("user-1", "ada", "ada@example.com", "Ada Lovelace");
 
     private static string Generate() =>
-        new JwtTokenIssuer(Options.Create(Settings), new FixedTimeProvider(Now)).Issue(Ada);
+        new JwtTokenIssuer(Options.Create(Settings), new FixedTimeProvider(Now)).Issue(Ada, []);
 
     [Fact]
     public void Issue_CarriesUserClaimsIssuerAudienceAndExpiry()
@@ -55,9 +55,21 @@ public class JwtTokenIssuerTests
     }
 
     [Fact]
+    public void Issue_AddsOneRoleClaimPerRole()
+    {
+        var token = new JwtTokenIssuer(Options.Create(Settings), new FixedTimeProvider(DateTimeOffset.UtcNow))
+            .Issue(Ada, [SeedSuperAdmin.Role, "Staff"]);
+
+        var principal = new JwtSecurityTokenHandler().ValidateToken(token, Settings.CreateValidationParameters(), out _);
+
+        Assert.True(principal.IsInRole(SeedSuperAdmin.Role));
+        Assert.True(principal.IsInRole("Staff"));
+    }
+
+    [Fact]
     public void Issue_TokenPassesTheSharedValidationParameters()
     {
-        var token = new JwtTokenIssuer(Options.Create(Settings), new FixedTimeProvider(DateTimeOffset.UtcNow)).Issue(Ada);
+        var token = new JwtTokenIssuer(Options.Create(Settings), new FixedTimeProvider(DateTimeOffset.UtcNow)).Issue(Ada, []);
 
         var principal = new JwtSecurityTokenHandler().ValidateToken(token, Settings.CreateValidationParameters(), out _);
 
@@ -73,7 +85,7 @@ public class JwtTokenIssuerTests
             Issuer = Settings.Issuer,
             Audience = Settings.Audience
         };
-        var token = new JwtTokenIssuer(Options.Create(otherSettings), new FixedTimeProvider(DateTimeOffset.UtcNow)).Issue(Ada);
+        var token = new JwtTokenIssuer(Options.Create(otherSettings), new FixedTimeProvider(DateTimeOffset.UtcNow)).Issue(Ada, []);
 
         Assert.ThrowsAny<SecurityTokenException>(() =>
             new JwtSecurityTokenHandler().ValidateToken(token, Settings.CreateValidationParameters(), out _));

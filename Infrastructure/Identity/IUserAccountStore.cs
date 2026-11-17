@@ -20,4 +20,7 @@ public interface IUserAccountStore
 
     /// <summary>Checks the password of the account with this id. Failed attempts count toward lockout.</summary>
     Task<PasswordCheckResult> CheckPasswordAsync(string userId, string password);
+
+    /// <summary>Returns the names of the roles the account with this id holds; empty when it has none or doesn't exist.</summary>
+    Task<IReadOnlyList<string>> GetRolesAsync(string userId);
 }

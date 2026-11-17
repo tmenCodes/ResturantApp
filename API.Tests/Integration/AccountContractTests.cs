@@ -1,3 +1,4 @@
+using Resturant.Infrastructure.Identity;
 using static API.Tests.Integration.HttpSnapshot;
 
 namespace API.Tests.Integration;
@@ -124,15 +125,27 @@ public class AccountContractTests : ContractTest
     }
 
     [Fact]
-    public async Task ReturnAllUsers_ReturnsAccounts()
+    public async Task ReturnAllUsers_NonAdmin_Returns403()
     {
         var token = await Client.SignInAdaAsync();
 
         var response = await Client.GetSnapshotAsync("api/RegisterUser/ReturnAllUsers", token);
 
+        Assert.Equal(new HttpSnapshot(403, null, ""), response);
+    }
+
+    [Fact]
+    public async Task ReturnAllUsers_SuperAdmin_ReturnsAccounts()
+    {
+        var login = await Client.PostSnapshotAsync("api/RegisterUser/Login",
+            new { email = ApiFactory.AdminEmail, password = SeedSuperAdmin.Password });
+        var token = (string)login.JsonBody!["token"]!;
+
+        var response = await Client.GetSnapshotAsync("api/RegisterUser/ReturnAllUsers", token);
+
         var id = (string)response.JsonBody![0]!["id"]!;
         Assert.Equal(
-            new HttpSnapshot(200, Json, $$"""[{"id":"{{id}}","userName":"ada","email":"ada@example.com","fullName":"Ada Lovelace"}]"""),
+            new HttpSnapshot(200, Json, $$"""[{"id":"{{id}}","userName":"{{ApiFactory.AdminEmail}}","email":"{{ApiFactory.AdminEmail}}","fullName":"Administrator"}]"""),
             response);
     }
 

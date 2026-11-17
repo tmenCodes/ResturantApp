@@ -17,7 +17,7 @@ public class JwtTokenIssuer : ITokenIssuer
         _timeProvider = timeProvider;
     }
 
-    public string Issue(UserAccount account)
+    public string Issue(UserAccount account, IReadOnlyList<string> roles)
     {
         var credentials = new SigningCredentials(_settings.CreateSigningKey(), SecurityAlgorithms.HmacSha256);
 
@@ -28,6 +28,7 @@ public class JwtTokenIssuer : ITokenIssuer
             new(ClaimTypes.Email, account.Email ?? string.Empty),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             issuer: _settings.Issuer,

@@ -1,5 +1,6 @@
 using API.Features.Account.Login;
 using Microsoft.AspNetCore.Identity;
+using Resturant.Infrastructure.Identity;
 
 namespace API.Tests.Features.Account;
 
@@ -15,6 +16,17 @@ public class LoginHandlerTests : AccountTestHost
         var result = await Handler.HandleAsync("ada@example.com", Password);
 
         Assert.Equal(new LoginResult(LoginStatus.Succeeded, "token-for-ada"), result);
+    }
+
+    [Fact]
+    public async Task HandleAsync_AccountInSuperAdminRole_IssuesTokenWithThatRole()
+    {
+        await CreateAsync("Admin", "admin", "admin@example.com");
+        await AddToRoleAsync("admin@example.com", SeedSuperAdmin.Role);
+
+        var result = await Handler.HandleAsync("admin@example.com", Password);
+
+        Assert.Equal(new LoginResult(LoginStatus.Succeeded, "token-for-admin[SuperAdmin]"), result);
     }
 
     [Fact]

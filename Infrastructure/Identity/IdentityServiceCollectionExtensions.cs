@@ -7,10 +7,11 @@ namespace Resturant.Infrastructure.Identity;
 /// <summary>Registers ASP.NET Core Identity for <see cref="WebUser"/>, stored in <see cref="RestaurantContext"/>.</summary>
 public static class IdentityServiceCollectionExtensions
 {
-    /// <summary>Adds Identity with its API endpoints, sign-in manager and EF Core stores.</summary>
+    /// <summary>Adds Identity with its API endpoints, sign-in manager, roles and EF Core stores.</summary>
     public static IServiceCollection AddIdentityAccounts(this IServiceCollection services)
     {
         services.AddIdentityApiEndpoints<WebUser>()
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<RestaurantContext>()
             .AddApiEndpoints();
         return services;

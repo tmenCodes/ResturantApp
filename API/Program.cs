@@ -31,7 +31,7 @@ builder.Services.AddFeatures();
 
 
 
-builder.Services.AddAuthorization();
+builder.Services.AddRoleAuthorization();
 
 
 
@@ -73,10 +73,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 
 
 
-builder.Services.AddSwaggerGen(opt =>
-{
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyResturantAPI", Version = "v1" });
-});
+builder.Services.AddSwaggerWithJwt();
 
 // In Program.cs
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -114,10 +111,12 @@ builder.Services.AddHttpContextAccessor();
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+await app.Services.SeedSuperAdminAsync();
+
 
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
